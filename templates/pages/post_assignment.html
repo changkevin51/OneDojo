@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Assignment</title>
+</head>
+<body>
+    <h2>Post Assignment</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="unit">Select Unit:</label>
+        <select name="unit" id="unit" required>
+            <option value="">Select Unit</option>
+            {% for unit in units %}
+                <option value="{{ unit.id }}">{{ unit.name }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+
+        <label for="title">Assignment Title:</label>
+        <input type="text" name="title" id="title" placeholder="Enter assignment title" required>
+        <br><br>
+
+        <label for="description">Description:</label>
+        <textarea name="description" id="description" placeholder="Enter assignment description" rows="5" required></textarea>
+        <br><br>
+
+        <label for="file">Upload Assignment (PDF):</label>
+        <input type="file" name="file" id="file" accept=".pdf" required>
+        <br><br>
+
+        <button type="submit">Post Assignment</button>
+    </form>
+
+    <p><a href="{% url 'teacher_dashboard' %}">Back to Dashboard</a></p>
+</body>
+</html>

@@ -1,0 +1,9 @@
+<h2>Teacher Dashboard</h2>
+<h3>Your Units</h3>
+<ul>
+    {% for unit in units %}
+    <li>{{ unit.name }} (Code: {{ unit.code }})</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'post_assignment' %}">Post Assignment</a>

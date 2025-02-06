@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students in {{ unit.name }}</title>
+</head>
+<body>
+    <h2>Students Registered for {{ unit.name }}</h2>
+    <ul>
+        {% for registration in registrations %}
+        <li>{{ registration.student.username }} - {{ registration.student.email }}</li>
+        {% endfor %}
+    </ul>
+    <p><a href="{% url 'teacher_dashboard' %}">Back to Dashboard</a></p>
+</body>
+</html>

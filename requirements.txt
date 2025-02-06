@@ -1,0 +1,9 @@
+django==4.2.8
+gunicorn==21.2.0
+whitenoise==6.6.0
+python-dotenv==1.0.1
+django-admin-adminlte
+django-allauth==0.58.1
+psycopg2-binary>=2.9.9
+python-dotenv
+django-debug-toolbar>=4.3.0

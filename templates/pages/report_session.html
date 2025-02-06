@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report for Session</title>
+</head>
+<body>
+    <h2>Report for the Current Session</h2>
+    <form method="post">
+        {% csrf_token %}
+        <p>Are you sure you want to report for this session?</p>
+        <button type="submit">Report</button>
+    </form>
+    <p><a href="{% url 'student_dashboard' %}">Back to Dashboard</a></p>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Submissions</title>
+</head>
+<body>
+    <h2>Submissions for {{ assignment.title }}</h2>
+    <ul>
+        {% for submission in submissions %}
+        <li>
+            <strong>{{ submission.student.username }}</strong>:
+            <a href="{{ submission.file.url }}" target="_blank">View Submission</a>
+        </li>
+        {% endfor %}
+    </ul>
+    <p><a href="{% url 'teacher_dashboard' %}">Back to Dashboard</a></p>
+</body>
+</html>

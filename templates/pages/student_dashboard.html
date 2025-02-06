@@ -1,0 +1,16 @@
+<h2>Student Dashboard</h2>
+<h3>Your Registered Units</h3>
+<ul>
+    {% for reg in registrations %}
+    <li>{{ reg.unit.name }} ({{ reg.session.name }})</li>
+    {% endfor %}
+</ul>
+
+<h3>Assignments</h3>
+<ul>
+    {% for assignment in assignments %}
+    <li>
+        {{ assignment.title }} - <a href="{{ assignment.file.url }}">Download</a>
+    </li>
+    {% endfor %}
+</ul>

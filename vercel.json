@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "student_portal/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "env": {
+    "DJANGO_SECRET_KEY": "i9=zi(+fgy*5u4$wqv6z3h$@mq46(q)3ngc@+19+r7+d_d$o_g"
+  }
+}
