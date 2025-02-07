@@ -20,7 +20,7 @@
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-md-6 text-center mb-5">
-            <h2 class="heading-section">Login</h2>
+            <h2 class="heading-section">Student Login</h2>
           </div>
         </div>
         <div class="row justify-content-center">
@@ -47,7 +47,7 @@
                     </label>
                   </div>
                   <div class="w-50 text-md-right">
-                    <a href="#" style=\"color: #fff\">Forgot Password</a>
+                    <a href="#" style="color: #fff">Forgot Password</a>
                   </div>
                 </div>
               </form>
@@ -56,14 +56,11 @@
                 &bull;
                 <a href="{% url 'register' %}" class="text-center">Sign UP</a>
               </p>
-              <p class="w-100 text-center">Don't have an account? Register as a:</p>
-              <div class="form-group d-flex justify-content-between">
-                <a href="{% url 'register_student' %}" class="btn btn-secondary">Student</a>
-                <a href="{% url 'register_teacher' %}" class="btn btn-secondary">Teacher</a>
-              </div>
+              <p class="w-100 text-center">Don't have an account? <a href="{% url 'register_student' %}">Register as a Student</a></p>
               <br>
-              <p class="w-100 text-center">Hi Ray</p>
-              <p class="w-100 text-center">Learn front-end already!</p>
+              <div class="form-group d-flex justify-content-center">
+                <a href="/admin" class="btn btn-dark">Admin Login</a>
+              </div>
             </div>
           </div>
         </div>

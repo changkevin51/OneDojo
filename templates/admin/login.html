@@ -1,6 +1,6 @@
 {% extends 'layouts/auth_base.html' %}
 {% load i18n static admin_adminlte %}
-
+{% load static %}
 {% block title %} Log in {% endblock title %}
 
 {% block bodyclass %} login-page {% endblock bodyclass %}
@@ -8,8 +8,9 @@
 {% block content %}
 <div class="login-box">
   <div class="login-logo">
-    <a href="{% url 'dashboardv2' %}"><b>Admin</b>LTE</a>
+    <a href="{% url 'dashboardv2' %}">One<b>Dojo</b> Admin</a>
   </div>
+  <img src="{% static 'images/logo.png' %}" alt="AdminLTELogo" style="width: 150px; height: 150px; margin-left: auto; margin-right: auto;">
   <!-- /.login-logo -->
   <div class="card">
     <div class="card-body login-card-body">
