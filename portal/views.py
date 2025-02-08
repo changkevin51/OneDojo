@@ -172,7 +172,7 @@ def student_dashboard(request):
         return redirect('login')
     registrations = Registration.objects.filter(student=request.user)
     assignments = Assignment.objects.filter(unit__in=[reg.unit for reg in registrations])
-    return render(request, 'pages/index.html')
+    return render(request, 'portal/student_dashboard.html', {'registrations': registrations, 'assignments': assignments})
 
 # Teacher Dashboard
 @login_required

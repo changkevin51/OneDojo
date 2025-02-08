@@ -15,7 +15,10 @@
   <!-- Font Awesome -->
   <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
 
-
+  <!-- Add these in the head section -->
+  <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'admin/css/widgets.css' %}">
+  {{ form.media }}
   {% block extrastyle %}{% endblock extrastyle %}
 </head>
 <body class="{% block bodyclass %}{% endblock bodyclass %}">
@@ -59,6 +62,16 @@
   {% include 'includes/scripts.html' %}
   {% block extra_scripts %}{% endblock extra_scripts %}
 
-
+  {% block javascript %}
+    <!-- Add these before closing body tag -->
+    <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/jquery.init.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/core.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/admin/RelatedObjectLookups.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/actions.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/urlify.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/prepopulate.js' %}"></script>
+    <script type="text/javascript" src="{% static 'admin/js/vendor/xregexp/xregexp.min.js' %}"></script>
+  {% endblock %}
 </body>
 </html>

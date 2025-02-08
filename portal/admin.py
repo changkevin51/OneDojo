@@ -3,6 +3,8 @@ from .models import *  # Import all models from your app
 from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.admin import SimpleListFilter
+from django.contrib.admin import AdminSite
+from django.db.models import Count
 
 # Registration Form with validation to prevent duplicate registrations
 class RegistrationForm(forms.ModelForm):
@@ -44,6 +46,12 @@ class UnitAdmin(admin.ModelAdmin):
     search_fields = ['name', 'code']
     list_filter = ['teacher']
     inlines = [RegistrationInline]
+    
+    def get_context_data(self, request, obj=None, **kwargs):
+        context = super().get_context_data(request, obj, **kwargs)
+        if obj:  # If this is a change form
+            context['unit_students'] = obj.students.all()
+        return context
 
 class StudentGenderFilter(SimpleListFilter):
     title = 'Gender'
@@ -150,3 +158,31 @@ class SubmissionAdmin(admin.ModelAdmin):
     search_fields = ['assignment__title', 'student__username']
     list_filter = ['assignment', 'submitted_at']
     list_select_related = ['assignment', 'student']  # Optimize queries
+
+class MyAdminSite(AdminSite):
+    site_header = "My Admin Dashboard"
+    site_title = "My Admin Panel"
+    index_title = "Dashboard"
+
+    def index(self, request, extra_context=None):
+        from .models import Unit  # import here to avoid circular imports
+        units = Unit.objects.all().annotate(
+            student_count=Count('registration__student', distinct=True)
+        ).prefetch_related('teacher')
+        if extra_context is None:
+            extra_context = {}
+        extra_context['units'] = units
+        return super().index(request, extra_context=extra_context)
+
+# Instantiate and register models with the new admin site.
+my_admin_site = MyAdminSite(name='myadmin')
+# Instead of using decorators, manually register your models:
+from .models import Unit, Registration, CustomUser, Session, Assignment, Submission
+# Also import the existing admin classes
+# ...existing registrations (e.g. UnitAdmin, RegistrationAdmin, etc.) assumed to be defined above...
+my_admin_site.register(Unit, UnitAdmin)
+my_admin_site.register(Registration, RegistrationAdmin)
+my_admin_site.register(CustomUser, CustomUserAdmin)
+my_admin_site.register(Session, SessionAdmin)
+my_admin_site.register(Assignment, AssignmentAdmin)
+my_admin_site.register(Submission, SubmissionAdmin)

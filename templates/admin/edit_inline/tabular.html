@@ -1,44 +1,41 @@
 {% load i18n admin_urls static admin_modify %}
 
-<div class="js-inline-admin-formset inline-group" id="{{ inline_admin_formset.formset.prefix }}-group" data-inline-type="tabular" data-inline-formset="{{ inline_admin_formset.inline_formset_data }}">
+<div class="js-inline-admin-formset inline-group" id="{{ inline_admin_formset.formset.prefix }}-group"
+     data-inline-type="tabular" data-inline-formset="{{ inline_admin_formset.inline_formset_data }}">
     <div class="tabular inline-related {% if forloop.last %}last-related{% endif %}">
-        <div class="card">
+        <div class="card card-outline card-primary">
             {{ inline_admin_formset.formset.management_form }}
 
             <fieldset class="module {{ inline_admin_formset.classes }}">
                 <div class="card-header">
-                    {% if inline_admin_formset.formset.max_num == 1 %}
-                        <h2>{{ inline_admin_formset.opts.verbose_name|capfirst }}</h2>
-                    {% else %}
-                        <h2>{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}</h2>
-                    {% endif %}
-                    {{ inline_admin_formset.formset.non_form_errors }}
+                    <h3 class="card-title">
+                        {% if inline_admin_formset.formset.max_num == 1 %}
+                            {{ inline_admin_formset.opts.verbose_name|capfirst }}
+                        {% else %}
+                            {{ inline_admin_formset.opts.verbose_name_plural|capfirst }}
+                        {% endif %}
+                    </h3>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="table table-centered table-nowrap mb-0 rounded">
-                        <thead class="thead-light">
-                        <tr>
-                            <th class="original"></th>
-
-                            {% for field in inline_admin_formset.fields %}
-                                {% if not field.widget.is_hidden %}
-                                    <th class="column-
-                                            {{ field.name }}{% if field.required %} required{% endif %}">{{ field.label|capfirst }}
-                                        {% if field.help_text %}
-                                            <img src="{% static "admin/img/icon-unknown.svg" %}" class="help help-tooltip"
-                                                 width="10" height="10" alt="({{ field.help_text|striptags }})"
-                                                 title="{{ field.help_text|striptags }}">{% endif %}
-                                    </th>
+                <div class="card-body table-responsive p-0">
+                    <table class="table table-hover w-100">
+                        <thead>
+                            <tr>
+                                {% for field in inline_admin_formset.fields %}
+                                    {% if not field.widget.is_hidden %}
+                                        <th class="{{ field.name }}{% if field.required %} required{% endif %} align-field">
+                                            {{ field.label|capfirst }}
+                                            {% if field.help_text %}
+                                                <i class="fas fa-question-circle" title="{{ field.help_text|striptags }}"></i>
+                                            {% endif %}
+                                        </th>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if inline_admin_formset.formset.can_delete and inline_admin_formset.has_delete_permission %}
+                                    <th class="delete-column">{% translate "Delete?" %}</th>
                                 {% endif %}
-                            {% endfor %}
-
-                            {% if inline_admin_formset.formset.can_delete and inline_admin_formset.has_delete_permission %}
-                                <th>{% translate "Delete?" %}</th>
-                            {% endif %}
-                        </tr>
+                            </tr>
                         </thead>
-
                         <tbody>
                         {% for inline_admin_form in inline_admin_formset %}
                             {% if inline_admin_form.form.non_field_errors %}
@@ -112,7 +109,44 @@
                         </tbody>
                     </table>
                 </div>
+                <style>
+                    .table th.align-field {
+                        padding: 0.5rem;
+                        text-align: left;
+                        white-space: nowrap;
+                    }
+                    
+                    .table td select,
+                    .table td input[type="text"],
+                    .table td input[type="number"],
+                    .table td textarea {
+                        width: 100% !important;
+                        padding: 0.375rem 0.75rem;
+                    }
+                    
+                    .table th.delete-column {
+                        width: 80px;
+                        text-align: center;
+                    }
+                    
+                    .table td.delete {
+                        text-align: center;
+                        width: 80px;
+                    }
+                </style>
             </fieldset>
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+(function($) {
+    $(document).ready(function() {
+        $('.js-inline-admin-formset').formset({
+            prefix: '{{ inline_admin_formset.formset.prefix }}',
+            addText: '{% translate "Add another" %}',
+            deleteText: '{% translate "Remove" %}'
+        });
+    });
+})(django.jQuery);
+</script>
