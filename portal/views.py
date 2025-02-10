@@ -11,6 +11,8 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from portal.models import CustomUser
 from admin_adminlte.forms import LoginForm, RegistrationForm, UserPasswordResetForm, UserSetPasswordForm, UserPasswordChangeForm
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import get_object_or_404
 
 # User Registration View
 def register(request):
@@ -172,7 +174,7 @@ def student_dashboard(request):
         return redirect('login')
     registrations = Registration.objects.filter(student=request.user)
     assignments = Assignment.objects.filter(unit__in=[reg.unit for reg in registrations])
-    return render(request, 'portal/student_dashboard.html', {'registrations': registrations, 'assignments': assignments})
+    return render(request, 'pages/index.html')
 
 # Teacher Dashboard
 @login_required
@@ -207,10 +209,26 @@ def post_assignment(request):
     return render(request, 'portal/post_assignment.html', {'units': units})
 
 
+@login_required
+def admin_student_list(request, unit_id):
+    if not request.user.is_staff:
+        return redirect('admin:login')
+        
+    unit = get_object_or_404(Unit, id=unit_id)
+    registrations = Registration.objects.filter(unit=unit).select_related('student')
 
-
-
-
+    context = {
+        'unit': unit,
+        'registrations': registrations,
+        'title': f'Students in {unit.name}',
+        # Add AdminLTE specific context
+        'parent': 'Students',
+        'segment': 'student_list',
+        'has_permission': True,
+        'is_popup': False,
+        'has_view_permission': True
+    }
+    return render(request, 'pages/student_list.html', context)
 
 
 
@@ -805,3 +823,4 @@ def table_jsgrid(request):
     'segment': 'jsGrid'
   }
   return render(request, 'pages/tables/jsgrid.html', context)
+

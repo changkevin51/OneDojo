@@ -4,7 +4,6 @@
     <!-- Add icons to the links using the .nav-icon class
            with font-awesome or any other icon font library -->
 
-    {% admin_get_menu as app_list %}
     {% if app_list %}
     {% for app in app_list %}
     {% if app.has_perms and not app.pinned %}

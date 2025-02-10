@@ -165,10 +165,11 @@ class MyAdminSite(AdminSite):
     index_title = "Dashboard"
 
     def index(self, request, extra_context=None):
-        from .models import Unit  # import here to avoid circular imports
+        from .models import Unit  
         units = Unit.objects.all().annotate(
             student_count=Count('registration__student', distinct=True)
-        ).prefetch_related('teacher')
+        ).prefetch_related('teacher').order_by('name') 
+        
         if extra_context is None:
             extra_context = {}
         extra_context['units'] = units
