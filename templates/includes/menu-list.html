@@ -91,6 +91,15 @@
       </li>
     {% endif %}
 
+    {% if request.user.is_staff %}
+    <li class="nav-item">
+      <a href="/admin/portal/customuser/" class="nav-link">
+        <i class="nav-icon fas fa-users"></i>
+        <p>Users</p>
+      </a>
+    </li>
+    {% endif %}
+
     {% if request.user.is_authenticated and not request.user.is_superuser %}
     <li class="nav-item">
       <a href="{% url 'widgets' %}" class="nav-link {% if 'widgets' in segment %}active{% endif %}">

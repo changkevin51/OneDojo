@@ -165,16 +165,14 @@ class MyAdminSite(AdminSite):
     index_title = "Dashboard"
 
     def index(self, request, extra_context=None):
-        from .models import Unit  
+        from .models import Unit  # import here to avoid circular imports
         units = Unit.objects.all().annotate(
             student_count=Count('registration__student', distinct=True)
-        ).prefetch_related('teacher').order_by('name') 
-        
+        ).prefetch_related('teacher')
         if extra_context is None:
             extra_context = {}
         extra_context['units'] = units
         return super().index(request, extra_context=extra_context)
-
 # Instantiate and register models with the new admin site.
 my_admin_site = MyAdminSite(name='myadmin')
 # Instead of using decorators, manually register your models:

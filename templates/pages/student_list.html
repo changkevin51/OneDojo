@@ -68,19 +68,26 @@
                                 <span class="badge badge-success">Active</span>
                             </td>
                             <td class="project-actions text-right">
-                                <a class="btn btn-primary btn-sm" href="#">
-                                    <i class="fas fa-folder"></i>
-                                    View
-                                </a>
-                                <a class="btn btn-info btn-sm" href="#">
-                                    <i class="fas fa-pencil-alt"></i>
-                                    Edit
-                                </a>
-                                <a class="btn btn-danger btn-sm" href="{% url 'admin:portal_customuser_delete' registration.student.id %}">
-                                    <i class="fas fa-trash"></i>
-                                    Delete
-                                </a>
+                                <div class="d-flex justify-content-end align-items-center">
+                                    <a class="btn btn-primary d-flex align-items-center justify-content-center" 
+                                       href="#" style="padding: 5px 15px; height: 40px; font-size: 14px; margin-right: 5px;">
+                                        <i class="fas fa-folder"></i> &nbsp;View
+                                    </a>
+                                    <div class="d-flex flex-column">
+                                        <a class="btn btn-info btn-sm mb-1" href="#" style="padding: 4px 10px; font-size: 12px;">
+                                            <i class="fas fa-pencil-alt"></i> Edit
+                                        </a>
+                                        <a class="btn btn-danger btn-sm" href="{% url 'admin:portal_customuser_delete' registration.student.id %}" 
+                                           style="padding: 4px 10px; font-size: 12px;">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </a>
+                                    </div>
+                                </div>
                             </td>
+                            
+                            
+                            
+                            
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -99,5 +106,14 @@
     height: 2.5rem;
     width: 2.5rem;
 }
+.custom-view-btn {
+    background-color: #4CAF50;  /* Green background */
+    border-radius: 10px;        /* Rounded corners */
+    color: white;               /* White text */
+    padding: 10px 20px;         /* Larger padding */
+}
+
+
+
 </style>
 {% endblock stylesheets %}

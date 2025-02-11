@@ -4,80 +4,134 @@
 {% block title %}AdminLTE 3 | Assignments{% endblock title %}
 
 {%block content%}
-<div class="content-wrapper">
-  <!-- Content Header -->
-  <section class="content-header">
-    <div class="container-fluid">
-      <!-- ...existing header code if any... -->
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1>Assignments</h1>
-        </div>
-        <div class="col-sm-6">
-          <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item active">Assignment</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-  </section>
-  <div class="card card-primary">
+<div class="col-md-6">
+  <div class="card card-default">
     <div class="card-header">
-      <h3 class="card-title">Default Card Example</h3>
-      <div class="card-tools">
-        <!-- Buttons, labels, and many other things can be placed here! -->
-        <!-- Here is a label for example -->
-        <span class="badge badge-primary">Label</span>
-      </div>
-      <!-- /.card-tools -->
+      <h3 class="card-title">
+        <i class="fas fa-exclamation-triangle"></i>
+        Alerts
+      </h3>
     </div>
     <!-- /.card-header -->
-    <div class="card-body">
-      The body of the card
+    <div class="card-body"></div>
+      <div class="alert alert-warning alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+        <h5><i class="icon fas fa-exclamation-triangle"></i> Alert!</h5>
+        Warning alert preview. This alert is dismissable.
+      </div>
+      
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h1 class="card-title">Assignemnts</h1>
+      </div>
+      <!-- /.card-header -->
+      <div class="card-body">
+        <!-- we are adding the accordion ID so Bootstrap's collapse plugin detects it -->
+        <div id="accordion">
+          <div class="card card-primary">
+            <div class="card-header">
+              <h4 class="card-title w-100">
+                <a class="d-block w-100 collapsed" data-toggle="collapse" href="#collapseOne" aria-expanded="false">
+                  Assignment 1
+                </a>
+              </h4>
+            </div>
+            <div id="collapseOne" class="collapse" data-parent="#accordion" style="">
+              <div class="card-body">
+                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
+                3
+                wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
+                laborum
+                eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
+                nulla
+                assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
+                nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft
+                beer
+                farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus
+                labore sustainable VHS.
+              </div>
+            </div>
+          </div>
+          <div class="card card-danger">
+            <div class="card-header">
+              <h4 class="card-title w-100">
+                <a class="d-block w-100 collapsed" data-toggle="collapse" href="#collapseTwo" aria-expanded="false">
+                  Assignment 2
+                </a>
+              </h4>
+            </div>
+            <div id="collapseTwo" class="collapse" data-parent="#accordion" style="">
+              <div class="card-body">
+                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
+                3
+                wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
+                laborum
+                eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
+                nulla
+                assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
+                nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft
+                beer
+                farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus
+                labore sustainable VHS.
+              </div>
+            </div>
+          </div>
+          <div class="card card-success">
+            <div class="card-header">
+              <h4 class="card-title w-100">
+                <a class="d-block w-100" data-toggle="collapse" href="#collapseThree">
+                  Assignment 3
+                </a>
+              </h4>
+            </div>
+            <div id="collapseThree" class="collapse" data-parent="#accordion">
+              <div class="card-body">
+                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
+                3
+                wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
+                laborum
+                eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
+                nulla
+                assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
+                nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft
+                beer
+                farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus
+                labore sustainable VHS.
+              </div>
+            </div>
+          </div>
+          <div class="card card-primary">
+            <div class="card-header">
+              <h4 class="card-title w-100">
+                <a class="d-block w-100 collapsed" data-toggle="collapse" href="#collapseOne" aria-expanded="false">
+                  Assignment 1
+                </a>
+              </h4>
+            </div>
+            <div id="collapseOne" class="collapse" data-parent="#accordion" style="">
+              <div class="card-body">
+                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
+                3
+                wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
+                laborum
+                eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
+                nulla
+                assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
+                nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft
+                beer
+                farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus
+                labore sustainable VHS.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /.card-body -->
     </div>
     <!-- /.card-body -->
-    <div class="card-footer">
-      The footer of the card
-    </div>
-    <!-- /.card-footer -->
   </div>
   <!-- /.card -->
-  <div class="info-box bg-gradient-warning">
-    <span class="info-box-icon"><i class="far fa-calendar-alt"></i></span>
-    <div class="info-box-content">
-      <span class="info-box-text">Events</span>
-      <span class="info-box-number">41,410</span>
-      <div class="progress">
-        <div class="progress-bar" style="width: 70%"></div>
-      </div>
-      <span class="progress-description">
-        70% Increase in 30 Days
-      </span>
-    </div>
-  </div>
-  <div class="card card-primary">
-    <div class="card-header">
-      <h3 class="card-title">Default Card Example</h3>
-      <div class="card-tools">
-        <!-- Buttons, labels, and many other things can be placed here! -->
-        <!-- Here is a label for example -->
-        <span class="badge badge-primary">Label</span>
-      </div>
-      <!-- /.card-tools -->
-    </div>
-    <!-- /.card-header -->
-    <div class="card-body">
-      The body of the card
-    </div>
-    <!-- /.card-body -->
-    <div class="card-footer">
-      The footer of the card
-    </div>
-    <!-- /.card-footer -->
-  </div>
-  <!-- /.card -->
-
 </div>
 
 
