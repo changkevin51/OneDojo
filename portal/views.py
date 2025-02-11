@@ -118,7 +118,11 @@ def register_teacher(request):
         form = TeacherRegistrationForm()
     return render(request, 'auth/register_teacher.html', {'form': form})
 
-
+@login_required
+def view_assignment(request):
+    if not request.user.is_student:
+      return redirect('login')
+    return render(request, 'pages/assignments.html')
 
 @login_required
 def submit_assignment(request, assignment_id):

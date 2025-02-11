@@ -29,6 +29,9 @@ urlpatterns = [
     # Admin Views
     path('students/<int:unit_id>/', views.admin_student_list, name='admin_student_list'),
 
+    # Assignment Views
+    path('assignments/', views.view_assignment, name='assignments'),
+
     path('', views.index),
     path('dashboard-v1/', views.index, name='dashboardv1'),
     path('dashboard-v2/', views.index2, name='dashboardv2'),

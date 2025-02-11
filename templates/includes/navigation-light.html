@@ -15,7 +15,7 @@
         {% endif %}
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a href="#" class="nav-link">Assignments</a>
+        <a href="{% url 'assignments' %}" class="nav-link">Assignments</a>
       </li>
       {% if request.user.is_authenticated %}
         {% if request.user.is_superuser %}
