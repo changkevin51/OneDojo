@@ -234,6 +234,19 @@ def admin_student_list(request, unit_id):
     }
     return render(request, 'pages/student_list.html', context)
 
+@login_required
+def admin_student_info(request, student_id):
+    if not request.user.is_staff:
+        return redirect('admin:login')
+    
+    student = get_object_or_404(CustomUser, id=student_id)
+    context = {
+        'student': student,
+        'title': f'Student Info - {student.first_name} {student.last_name}',
+        # Add any other context you want to display on the student info page
+    }
+    return render(request, 'pages/student_info.html', context)
+
 
 
 

@@ -43,7 +43,7 @@
                         <tr>
                             <td>{{ forloop.counter }}</td>
                             <td>
-                                <a>
+                                <a href="{% url 'admin_student_info' student_id=registration.student.id %}">
                                     {{ registration.student.get_full_name|default:registration.student.username|default:"Unknown Student" }}
                                 </a>
                                 <br/>
@@ -70,9 +70,11 @@
                             <td class="project-actions text-right">
                                 <div class="d-flex justify-content-end align-items-center">
                                     <a class="btn btn-primary d-flex align-items-center justify-content-center" 
-                                       href="#" style="padding: 5px 15px; height: 40px; font-size: 14px; margin-right: 5px;">
-                                        <i class="fas fa-folder"></i> &nbsp;View
+                                    href="{% url 'admin_student_info' student_id=registration.student.id %}" 
+                                    style="padding: 5px 15px; height: 40px; font-size: 14px; margin-right: 5px;">
+                                     <i class="fas fa-folder"></i> &nbsp;View
                                     </a>
+                                 
                                     <div class="d-flex flex-column">
                                         <a class="btn btn-info btn-sm mb-1" href="#" style="padding: 4px 10px; font-size: 12px;">
                                             <i class="fas fa-pencil-alt"></i> Edit
@@ -84,10 +86,6 @@
                                     </div>
                                 </div>
                             </td>
-                            
-                            
-                            
-                            
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -112,8 +110,5 @@
     color: white;               /* White text */
     padding: 10px 20px;         /* Larger padding */
 }
-
-
-
 </style>
 {% endblock stylesheets %}

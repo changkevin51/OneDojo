@@ -98,6 +98,18 @@
         <p>Users</p>
       </a>
     </li>
+    <li class="nav-item">
+      <a href="/admin/portal/session/" class="nav-link">
+        <i class="nav-icon fas fa-users"></i>
+        <p>Session</p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="/admin/portal/unit/" class="nav-link">
+        <i class="nav-icon fas fa-users"></i>
+        <p>Units</p>
+      </a>
+    </li>
     {% endif %}
 
     {% if request.user.is_authenticated and not request.user.is_superuser %}
