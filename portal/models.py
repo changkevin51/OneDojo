@@ -14,6 +14,25 @@ class CustomUser(AbstractUser):
     city = models.CharField(max_length=100, null=True, blank=True)
     dob = models.DateField(null=True, blank=True)
 
+    BELT_CHOICES = [
+        ('none', 'None'),
+        ('white', 'White'),
+        ('yellow', 'Yellow'),
+        ('orange', 'Orange'),
+        ('green', 'Green'),
+        ('blue', 'Blue'),
+        ('purple', 'Purple'),
+        ('red', 'Red'),
+        ('brown', 'Brown'),
+        ('black', 'Black'),
+    ]
+    
+    belt = models.CharField(
+        max_length=10,
+        choices=BELT_CHOICES,
+        default='none'
+    )
+
     # Add related_name for groups and user_permissions to avoid conflicts
     groups = models.ManyToManyField(
         'auth.Group',
@@ -30,6 +49,7 @@ class CustomUser(AbstractUser):
         verbose_name='user permissions',
     )
 
+
     def __str__(self):
         return self.username
 
@@ -44,6 +64,11 @@ class CustomUser(AbstractUser):
             self.unit_set.all().delete()         # Clean up related units
 
         super().delete(*args, **kwargs)
+
+    def get_full_name(self):
+        if self.first_name and self.last_name:
+            return f"{self.first_name} {self.last_name}"
+        return self.username
 
 
 # Unit Model

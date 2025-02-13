@@ -30,7 +30,9 @@ urlpatterns = [
     path('student_list/<int:unit_id>/', views.admin_student_list, name='admin_student_list'),
     path('student/<int:student_id>/', views.admin_student_info, name='admin_student_info'),
 
+    path('student/<int:student_id>/change-belt/', views.change_belt, name='change_belt'),
 
+    
     # Assignment Views
     path('assignments/', views.view_assignment, name='assignments'),
 

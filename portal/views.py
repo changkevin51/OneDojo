@@ -247,8 +247,23 @@ def admin_student_info(request, student_id):
     }
     return render(request, 'pages/student_info.html', context)
 
-
-
+@login_required
+def change_belt(request, student_id):
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "You don't have permission to change belt levels.")
+        return redirect('admin_student_info', student_id=student_id)
+        
+    if request.method == 'POST':
+        student = get_object_or_404(CustomUser, id=student_id)
+        new_belt = request.POST.get('belt')
+        if new_belt in dict(CustomUser.BELT_CHOICES):
+            student.belt = new_belt
+            student.save()
+            messages.success(request, f"Belt level updated to {student.get_belt_display()}")
+        else:
+            messages.error(request, "Invalid belt level selected")
+    
+    return redirect('admin_student_info', student_id=student_id)
 
 
 def register_v1(request):

@@ -51,20 +51,36 @@
           <!-- Monthly Progress Report Card -->
           <div class="card">
             <div class="card-header">
-              <h3 class="card-title">Monthly Progress Report</h3>
+              <h3 class="card-title">Belt Status</h3>
               <div class="ribbon-wrapper">
-                <div class="ribbon bg-primary">
-                  Updated
-                </div>
+                <div class="ribbon bg-primary">Current</div>
               </div>
             </div>
-            <div class="card-body">
-              <p>Current Skill Level: <strong>Green Belt</strong></p>
-              <p>Progress towards next belt: <strong>60%</strong></p>
-              <div class="progress progress-sm">
-                <div class="progress-bar bg-success" style="width: 60%"></div>
+            <div class="card-body text-center">
+              <div class="belt-display mb-4">
+                <div class="belt-icon" style="
+                    width: 200px;
+                    height: 40px;
+                    background-color: {{ user.belt }};
+                    margin: 0 auto;
+                    border: 2px solid #333;
+                    border-radius: 5px;
+                    position: relative;
+                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+                  <div style="
+                      position: absolute;
+                      left: 50%;
+                      top: 50%;
+                      transform: translate(-50%, -50%);
+                      color: {% if user.belt == 'black' or user.belt == 'blue' or user.belt == 'purple' %}white{% else %}black{% endif %};
+                      font-weight: bold;
+                      font-size: 1.2em;">
+                    {{ user.get_belt_display }} Belt
+                  </div>
+                </div>
               </div>
-              <a href="" class="small-box-footer">View Detailed Assessments <i class="fas fa-arrow-circle-right"></i></a>
+              <p class="mt-3">Your current rank:</p>
+              <h4 class="text-bold">{{ user.get_belt_display }} Belt</h4>
             </div>
           </div>
         </div>

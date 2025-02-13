@@ -50,12 +50,14 @@
                                 <small>Registered {{ registration.student.date_joined|date }}</small>
                             </td>
                             <td>
-                                <ul class="list-inline">
-                                    <li class="list-inline-item">
-                                        <!-- Placeholder for belt level -->
-                                        <span class="badge badge-info">White Belt</span>
-                                    </li>
-                                </ul>
+                                <span class="badge" style="
+                                    background-color: {{ registration.student.belt }};
+                                    color: {% if registration.student.belt == 'black' or registration.student.belt == 'blue' or registration.student.belt == 'purple' %}white{% else %}black{% endif %};
+                                    padding: 8px 15px;
+                                    font-size: 0.9em;
+                                    border: 1px solid #ddd;">
+                                    {{ registration.student.get_belt_display }}
+                                </span>
                             </td>
                             <td class="project_progress">
                                 <div class="progress progress-sm">

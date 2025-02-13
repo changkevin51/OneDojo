@@ -1,7 +1,7 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
 
-{% block title %} Project Detail {% endblock title %}
+{% block title %} {{ student.get_full_name }} {% endblock title %}
 {% block bodyclass %} hold-transition sidebar-mini {% endblock bodyclass %}
 {% block content %}
   <!-- Content Wrapper. Contains page content -->
@@ -11,12 +11,18 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Project Detail</h1>
+            <h1>
+              {% if student.first_name and student.last_name %}
+                  {{ student.first_name }} {{ student.last_name }}
+              {% else %}
+                  {{ student.username }}
+              {% endif %}
+            </h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Project Detail</li>
+              <li class="breadcrumb-item"><a href="{% url 'dashboardv1' %}">Home</a></li>
+              <li class="breadcrumb-item active">Student Information</li>
             </ol>
           </div>
         </div>
@@ -29,7 +35,7 @@
       <!-- Default box -->
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Projects Detail</h3>
+          <h3 class="card-title">Student Information</h3>
 
           <div class="card-tools">
             <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
@@ -47,8 +53,23 @@
                 <div class="col-12 col-sm-4">
                   <div class="info-box bg-light">
                     <div class="info-box-content">
-                      <span class="info-box-text text-center text-muted">Estimated budget</span>
-                      <span class="info-box-number text-center text-muted mb-0">2300</span>
+                      <span class="info-box-text text-center text-muted">Current Belt</span>
+                      <div class="text-center mb-2">
+                        <span class="badge" style="
+                          background-color: {{ student.belt }};
+                          color: {% if student.belt == 'black' or student.belt == 'blue' or student.belt == 'purple' %}white{% else %}black{% endif %};
+                          padding: 10px 20px;
+                          font-size: 1.1em;
+                          border: 1px solid #ddd;
+                          min-width: 100px;">
+                          {{ student.get_belt_display }}
+                        </span>
+                      </div>
+                      {% if user.is_staff or user.is_teacher %}
+                      <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#beltModal">
+                        Change Belt Level
+                      </button>
+                      {% endif %}
                     </div>
                   </div>
                 </div>
@@ -134,18 +155,40 @@
               </div>
             </div>
             <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2">
-              <h3 class="text-primary"><i class="fas fa-paint-brush"></i> AdminLTE v3</h3>
-              <p class="text-muted">Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terr.</p>
-              <br>
+              <h3 class="text-primary">
+                {% if student.first_name and student.last_name %}
+                {{ student.first_name }} {{ student.last_name }}
+                {% else %}
+                    {{ student.username }}
+                {% endif %}
+
+              </h3>
+              {% if student.profile_picture %}
+                  <img class="img-fluid mb-3" src="{{ student.profile_picture.url }}" alt="Student Profile Picture">
+              {% endif %}
               <div class="text-muted">
-                <p class="text-sm">Client Company
-                  <b class="d-block">Deveint Inc</b>
+                <p class="text-sm">Email
+                  <b class="d-block">{{ student.email }}</b>
                 </p>
-                <p class="text-sm">Project Leader
-                  <b class="d-block">Tony Chicken</b>
+                <p class="text-sm">Date Joined
+                  <b class="d-block">{{ student.date_joined|date:"Y-m-d" }}</b>
+                </p>
+                <p class="text-sm">Date of Birth
+                  <b class="d-block">{{ student.dob|date:"Y-m-d" }}</b>
+                </p>
+                <p class="text-sm">Gender
+                  <b class="d-block">{{ student.gender }}</b>
+                </p>
+                <p class="text-sm">Address
+                  <b class="d-block">{{ student.address }}</b>
+                </p>
+                <p class="text-sm">City
+                  <b class="d-block">{{ student.city }}</b>
+                </p>
+                <p class="text-sm">Province
+                  <b class="d-block">{{ student.province }}</b>
                 </p>
               </div>
-
               <h5 class="mt-5 text-muted">Project files</h5>
               <ul class="list-unstyled">
                 <li>
@@ -177,5 +220,36 @@
 
     </section>
     <!-- /.content -->
+  </div>
+
+  <!-- Add this modal at the end of the body -->
+  <div class="modal fade" id="beltModal" tabindex="-1" role="dialog" aria-labelledby="beltModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="beltModalLabel">Change Belt Level</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form method="POST" action="{% url 'change_belt' student.id %}">
+          {% csrf_token %}
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="belt">Select Belt Level</label>
+              <select class="form-control" name="belt" id="belt">
+                {% for value, label in student.BELT_CHOICES %}
+                <option value="{{ value }}" {% if student.belt == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 {% endblock content %}
