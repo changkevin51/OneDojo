@@ -116,6 +116,64 @@
         </div>
       </div>
       <!-- Row 2: Messaging and Calendar -->
+      
+      <div class="card" style="width: 700px; margin: 35px auto;">
+
+
+        <div class="card-header">
+        
+          <h3 class="card-title">Progress Report</h3>
+          <div class="card-tools">
+            <!-- Buttons, labels, and many other things can be placed here! -->
+            <!-- Here is a label for example -->
+            <span class="badge badge-primary">Updated!</span>
+          </div>
+          <!-- /.card-tools -->
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <div class="info-box bg-gradient-warning">
+            <span class="info-box-icon"><i class="far fa-calendar-alt"></i></span>
+            <div class="info-box-content">
+              <span class="info-box-text">Days until next assessment</span>
+              <span class="info-box-number">37</span>
+              <div class="progress">
+                <div class="progress-bar" style="width: 70%"></div>
+              </div>
+              <span class="progress-description">
+                Current mark: 70%
+              </span>
+            </div>
+            
+              <a href="{% url 'student_progress' %}" class="small-box-footer">
+                More info <i class="fas fa-arrow-circle-right"></i>
+              </a>
+            
+          </div>
+
+          <div class="small-box bg-gradient-success">
+            <div class="inner">
+              <h3>44</h3>
+              <p>Classes attended</p>
+            </div>
+            <div class="icon">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <a href="{% url 'student_progress' %}" class="small-box-footer">
+              More info <i class="fas fa-arrow-circle-right"></i>
+            </a>
+          </div>
+
+        </div>
+        <!-- /.card-body -->
+        <div class="card-footer">
+          The footer of the card
+        </div>
+        <!-- /.card-footer -->
+      </div>
+      <!-- /.card -->
+
+
       <div class="row">
         <div class="col-md-6">
           <!-- Messaging System Card -->

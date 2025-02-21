@@ -14,9 +14,12 @@
           <a href="{% url 'student_dashboard' %}" class="nav-link">Home</a>
         {% endif %}
       </li>
+      {% if request.user.is_student %}
       <li class="nav-item d-none d-sm-inline-block">
         <a href="{% url 'assignments' %}" class="nav-link">Assignments</a>
       </li>
+      {% endif %}
+    
       {% if request.user.is_authenticated %}
         {% if request.user.is_superuser %}
           <li class="nav-item d-none d-sm-inline-block">

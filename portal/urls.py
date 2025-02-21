@@ -38,6 +38,10 @@ urlpatterns = [
 
     # View Student views
 
+    # path('assignments/', views.view_assignment, name='assignments'),
+
+    # Student progress views
+    path('student_progress/', views.student_progress, name='student_progress'),
 
 
 

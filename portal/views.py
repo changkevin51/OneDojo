@@ -118,11 +118,7 @@ def register_teacher(request):
         form = TeacherRegistrationForm()
     return render(request, 'auth/register_teacher.html', {'form': form})
 
-@login_required
-def view_assignment(request):
-    if not request.user.is_student:
-      return redirect('login')
-    return render(request, 'pages/assignments.html')
+
 
 @login_required
 def submit_assignment(request, assignment_id):
@@ -140,6 +136,10 @@ def submit_assignment(request, assignment_id):
     else:
         form = AssignmentSubmissionForm()
     return render(request, 'portal/submit_assignment.html', {'form': form, 'assignment': assignment})
+
+
+
+
 
 
 @login_required
@@ -179,6 +179,23 @@ def student_dashboard(request):
     registrations = Registration.objects.filter(student=request.user)
     assignments = Assignment.objects.filter(unit__in=[reg.unit for reg in registrations])
     return render(request, 'pages/index.html')
+
+
+# Student progress
+@login_required
+def student_progress(request):
+    if not request.user.is_student:
+        return redirect('login')
+    return render(request, 'pages/student_progress.html')
+
+# student assignments
+@login_required
+def view_assignment(request):
+    if not request.user.is_student:
+      return redirect('login')
+    return render(request, 'pages/assignments.html')
+
+
 
 # Teacher Dashboard
 @login_required
