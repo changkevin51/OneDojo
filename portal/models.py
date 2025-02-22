@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 
 class CustomUser(AbstractUser):
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
@@ -132,18 +133,66 @@ class Assignment(models.Model):
     def __str__(self):
         return self.title
 
-# Submission Model
-class Submission(models.Model):
-    assignment = models.ForeignKey(Assignment, on_delete=models.CASCADE)
-    student = models.ForeignKey(
-        CustomUser,
-        on_delete=models.SET_NULL,  # Update to SET_NULL
-        null=True,  # Allow null for this field
-        blank=True,
-        limit_choices_to={'is_student': True}
-    )
-    file = models.FileField(upload_to='submissions/')
-    submitted_at = models.DateTimeField(auto_now_add=True)
+
+class TimelineEvent(models.Model):
+    EVENT_TYPES = [
+        ('join', 'Join Event'),
+        ('assessment', 'Assessment'),
+        ('assignment', 'Assignment'),
+        ('submission', 'Assignment Submission'),
+        ('material', 'Learning Material'),
+    ]
+
+    student = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='timeline_events')
+    event_type = models.CharField(max_length=20, choices=EVENT_TYPES)
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    assessment_result = models.CharField(max_length=50, null=True, blank=True)
+    due_date = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='created_events')
+    submission_file = models.FileField(upload_to='submissions/', null=True, blank=True)
+    is_submitted = models.BooleanField(default=False)
+    submission_date = models.DateTimeField(null=True, blank=True)
+    submission_notes = models.TextField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
 
     def __str__(self):
-        return f"{self.student.username if self.student else 'Unassigned'} - {self.assignment.title}"
+        return f"{self.student.get_full_name()} - {self.get_event_type_display()}"
+
+    @property
+    def is_overdue(self):
+        if self.event_type == 'assignment' and self.due_date:
+            return timezone.now() > self.due_date
+        return False
+    
+    @property
+    def submission(self):
+        return self.submissions.first() if self.event_type == 'assignment' else None
+
+# Submission Model
+
+class Submission(models.Model):
+    assignment = models.ForeignKey(
+        TimelineEvent, 
+        on_delete=models.CASCADE,
+        related_name='submissions'
+    )
+    student = models.ForeignKey(
+        'CustomUser', 
+        on_delete=models.CASCADE,
+        limit_choices_to={'is_student': True},  # Only allow students
+        null=False,  # Make it non-nullable
+        default=1  # Set a default value - use the ID of a default student account
+    )
+    file = models.FileField(upload_to='submissions/')
+    notes = models.TextField(blank=True)
+    submitted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-submitted_at']
+
+    def __str__(self):
+        return f"{self.student.username} - {self.assignment.title}"

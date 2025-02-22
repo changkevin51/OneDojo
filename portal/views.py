@@ -13,7 +13,9 @@ from portal.models import CustomUser
 from admin_adminlte.forms import LoginForm, RegistrationForm, UserPasswordResetForm, UserSetPasswordForm, UserPasswordChangeForm
 from django.contrib.admin.views.decorators import staff_member_required
 from django.shortcuts import get_object_or_404
-
+from django.utils import timezone
+from django.db.models import Prefetch
+from datetime import datetime
 # User Registration View
 def register(request):
     if request.method == "POST":
@@ -121,26 +123,40 @@ def register_teacher(request):
 
 
 @login_required
-def submit_assignment(request, assignment_id):
+def submit_assignment(request, event_id):
     if not request.user.is_student:
         return redirect('login')
-    assignment = Assignment.objects.get(id=assignment_id)
+        
+    assignment_event = get_object_or_404(
+        TimelineEvent, 
+        id=event_id, 
+        student=request.user, 
+        event_type='assignment'
+    )
+    
     if request.method == 'POST':
-        form = AssignmentSubmissionForm(request.POST, request.FILES)
-        if form.is_valid():
-            submission = form.save(commit=False)
-            submission.assignment = assignment
-            submission.student = request.user
-            submission.save()
-            return redirect('student_dashboard')
-    else:
-        form = AssignmentSubmissionForm()
-    return render(request, 'portal/submit_assignment.html', {'form': form, 'assignment': assignment})
-
-
-
-
-
+        # Update the assignment event (if needed)
+        assignment_event.is_submitted = True
+        assignment_event.submission_notes = request.POST.get('notes', '')
+        assignment_event.submission_date = timezone.now()
+        
+        if 'submission_file' in request.FILES:
+            # Save the file on the assignment event if you want to keep a copy there
+            assignment_event.submission_file = request.FILES['submission_file']
+        assignment_event.save()
+        
+        # Create a Submission object linked to the assignment event
+        Submission.objects.create(
+            assignment=assignment_event,
+            student=request.user,
+            file=request.FILES.get('submission_file'),  # May be None if no file uploaded.
+            notes=request.POST.get('notes', '')
+        )
+        
+        messages.success(request, 'Assignment submitted successfully!')
+        return redirect('assignments')
+        
+    return redirect('assignments')
 
 @login_required
 def students_in_unit(request, unit_id):
@@ -192,9 +208,25 @@ def student_progress(request):
 @login_required
 def view_assignment(request):
     if not request.user.is_student:
-      return redirect('login')
-    return render(request, 'pages/assignments.html')
-
+        return redirect('login')
+    
+    active_assignments = TimelineEvent.objects.filter(
+        student=request.user,
+        event_type='assignment',
+        is_submitted=False
+    ).order_by('due_date')
+    
+    completed_assignments = TimelineEvent.objects.filter(
+        student=request.user,
+        event_type='assignment',
+        is_submitted=True
+    ).order_by('-submission_date')
+    
+    context = {
+        'active_assignments': active_assignments,
+        'completed_assignments': completed_assignments
+    }
+    return render(request, 'pages/assignments.html', context)
 
 
 # Teacher Dashboard
@@ -256,11 +288,28 @@ def admin_student_info(request, student_id):
     if not request.user.is_staff:
         return redirect('admin:login')
     
-    student = get_object_or_404(CustomUser, id=student_id)
+    student = get_object_or_404(
+        CustomUser.objects.prefetch_related(
+            Prefetch(
+                'timeline_events',
+                queryset=TimelineEvent.objects.prefetch_related('submissions').order_by('-created_at')
+            )
+        ),
+        id=student_id
+    )
+    timeline_events = TimelineEvent.objects.filter(student=student)
+    
+    event_types = [
+        ('assessment', 'fas fa-chart-bar', 'Assessment', 'warning'),
+        ('assignment', 'fas fa-tasks', 'Assignment', 'success'),
+        ('material', 'fas fa-book', 'Material', 'info')
+    ]
+    
     context = {
         'student': student,
-        'title': f'Student Info - {student.first_name} {student.last_name}',
-        # Add any other context you want to display on the student info page
+        'timeline_events': student.timeline_events.all(),
+        'event_types': event_types,
+        'title': f'Student Info - {student.get_full_name}'
     }
     return render(request, 'pages/student_info.html', context)
 
@@ -282,6 +331,28 @@ def change_belt(request, student_id):
     
     return redirect('admin_student_info', student_id=student_id)
 
+@login_required
+def add_timeline_event(request, student_id):
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('admin_student_info', student_id=student_id)
+        
+    if request.method == 'POST':
+        student = get_object_or_404(CustomUser, id=student_id)
+        event = TimelineEvent.objects.create(
+            student=student,
+            event_type=request.POST.get('event_type'),
+            title=request.POST.get('title'),
+            content=request.POST.get('content'),
+            created_by=request.user
+        )
+        if request.POST.get('event_type') == 'assignment':
+            due_date = request.POST.get('due_date')
+            event.due_date = timezone.make_aware(datetime.strptime(due_date, '%Y-%m-%d %H:%M:%S'))
+        event.save()
+        messages.success(request, "Event added successfully")
+        
+    return redirect('admin_student_info', student_id=student_id)
 
 def register_v1(request):
   if request.method == 'POST':

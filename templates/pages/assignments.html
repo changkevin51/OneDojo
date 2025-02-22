@@ -1,191 +1,150 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
 
-{% block title %}AdminLTE 3 | Assignments{% endblock title %}
+{% block title %}My Assignments{% endblock title %}
 
-
-  {%block content%}
-
-  <div class="content-wrapper">
-
-  <div class="container-fluid">
-  <div class="col">
-    <div class="container-fluid">
-    <div class="card card-default">
-      
-      <!-- /.card-header -->
-      <div class="card-body"></div>
-        <div class="alert alert-warning alert-dismissible">
-          <h5><i class="icon fas fa-exclamation-triangle"></i> Alert!</h5>
-          This alert is shown when an assignment is past due or due within 1 day.
-        </div>
-        
-      </div>
-      <div class="card">
-        <div class="card-header">
-          <h1 class="card-title">Assignemnts</h1>
-        </div>
-        <!-- /.card-header -->
-        <div class="card-body">
-          <!-- we are adding the accordion ID so Bootstrap's collapse plugin detects it -->
-          <div id="accordion">
-            <div class="card card-primary">
-              <div class="card-header">
-                <h4 class="card-title w-100">
-                  <a class="d-block w-100 collapsed" data-toggle="collapse" href="#collapseOne" aria-expanded="false">
-                    Assignment 1
-                  </a>
-                </h4>
-              </div>
-              <div id="collapseOne" class="collapse" data-parent="#accordion" style="">
-                <div class="card-body">
-                  Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
-                  3
-                  wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
-                  laborum
-                  eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
-                  nulla
-                  assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
-                  nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft
-                  beer
-                  farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus
-                  labore sustainable VHS.
+{% block content %}
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>My Assignments</h1>
                 </div>
-                <div class="card bg-warning">
-                  <div class="card-header">
-                    <h3 class="card-title">Default Card Example</h3>
-                    <div class="card-tools">
-                      <!-- Buttons, labels, and many other things can be placed here! -->
-                      <!-- Here is a label for example -->
-                      <span class="badge badge-primary">Label</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Active Assignments -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-primary card-outline">
+                        <div class="card-header">
+                            <h3 class="card-title">Active Assignments</h3>
+                        </div>
+                        <div class="card-body">
+                            {% for assignment in active_assignments %}
+                            <div class="assignment-card mb-4">
+                                <div class="card {% if assignment.is_overdue %}card-danger{% else %}card-info{% endif %}">
+                                    <div class="card-header">
+                                        <h3 class="card-title">{{ assignment.title }}</h3>
+                                        <div class="card-tools">
+                                            <span class="badge {% if assignment.is_overdue %}badge-danger{% else %}badge-info{% endif %}">
+                                                {% if assignment.due_date %}
+                                                    Due: {{ assignment.due_date|date:"F d, Y g:i A" }}
+                                                {% else %}
+                                                    No due date set
+                                                {% endif %}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        {{ assignment.content|safe }}
+                                    </div>
+                                    <div class="card-footer">
+                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#submitModal{{ assignment.id }}">
+                                            Submit Assignment
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Submit Modal -->
+                            <div class="modal fade" id="submitModal{{ assignment.id }}">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Submit Assignment: {{ assignment.title }}</h4>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <form method="POST" action="{% url 'submit_assignment' event_id=assignment.id %}" enctype="multipart/form-data">
+                                            {% csrf_token %}
+                                            <div class="modal-body">
+                                                <div class="form-group">
+                                                    <label>Submission Notes</label>
+                                                    <textarea name="notes" class="form-control" rows="4"></textarea>
+                                                </div>
+                                                <div class="form-group">
+                                                  <label>Upload File</label>
+                                                  <div class="custom-file">
+                                                      <input type="file" name="submission_file" class="custom-file-input">
+                                                      <label class="custom-file-label">Choose file (optional)</label>
+                                                  </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Submit</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="alert alert-info">
+                                No active assignments at this time.
+                            </div>
+                            {% endfor %}
+                        </div>
                     </div>
-                    <!-- /.card-tools -->
-                  </div>
-                  <!-- /.card-header -->
-                  <div class="card-body">
-                    The body of the card
-                  </div>
-                  <!-- /.card-body -->
-                  <div class="card-footer">
-                    The footer of the card
-                  </div>
-                  <!-- /.card-footer -->
                 </div>
-                <!-- /.card -->
-              </div>
-            </div>
-            <div class="card card-danger">
-              <div class="card-header">
-                <h4 class="card-title w-100">
-                  <a class="d-block w-100 collapsed" data-toggle="collapse" href="#collapseTwo" aria-expanded="false">
-                    Assignment 2
-                  </a>
-                </h4>
-              </div>
-              <div id="collapseTwo" class="collapse" data-parent="#accordion" style="">
-                <div class="card-body">
-                  Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
-                  3
-                  wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
-                  laborum
-                  eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
-                  nulla
-                  assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
-                  nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft
-                  beer
-                  farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus
-                  labore sustainable VHS.
-                </div>
-              </div>
             </div>
 
-            <div class="card card-success">
-              <div class="card-header">
-                <h4 class="card-title w-100">
-                  <a class="d-block w-100" data-toggle="collapse" href="#collapseThree">
-                    Assignment 3
-                  </a>
-                </h4>
-              </div>
-              <div id="collapseThree" class="collapse" data-parent="#accordion">
-                <div class="card-body">
-                  Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
-                  3
-                  wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
-                  laborum
-                  eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
-                  nulla
-                  assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
-                  nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft
-                  beer
-                  farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus
-                  labore sustainable VHS.
+            <!-- Completed Assignments -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-success card-outline">
+                        <div class="card-header">
+                            <h3 class="card-title">Completed Assignments</h3>
+                        </div>
+                        <div class="card-body">
+                            {% for assignment in completed_assignments %}
+                            <div class="card card-success collapsed-card">
+                                <div class="card-header">
+                                    <h3 class="card-title">{{ assignment.title }}</h3>
+                                    <div class="card-tools">
+                                        <span class="badge badge-success">
+                                            Submitted: {{ assignment.submission_date|date:"M d, Y H:i" }}
+                                        </span>
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-plus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body" style="display: none;">
+                                    {{ assignment.content|safe }}
+                                    <hr>
+                                    <h5>Your Submission</h5>
+                                    <p>{{ assignment.submission_notes }}</p>
+                                    {% if assignment.submission_file %}
+                                    <a href="{{ assignment.submission_file.url }}" class="btn btn-sm btn-info">
+                                        <i class="fas fa-download"></i> Download Submission
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="alert alert-info">
+                                No completed assignments yet.
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-
-            <div class="card card-fourth">
-              <div class="card-header">
-                <h4 class="card-title w-100">
-                  <a class="d-block w-100 collapsed" data-toggle="collapse" href="#collapseFour" aria-expanded="false">
-                    Assignment 4
-                  </a>
-                </h4>
-              </div>
-              <div id="collapseFour" class="collapse" data-parent="#accordion" style="">
-                <div class="card-body">
-                  Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
-                  3
-                  wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
-                  laborum
-                  eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
-                  nulla
-                  assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
-                  nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft
-                  beer
-                  farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus
-                  labore sustainable VHS.
-                </div>
-              </div>
-            </div>
-          </div>
-          
-
-          <div class="card card-fifth">
-            <div class="card-header">
-              <h4 class="card-title w-100">
-                <a class="d-block w-100 collapsed" data-toggle="collapse" href="#collapseFive" aria-expanded="false">
-                  Assignment 5
-                </a>
-              </h4>
-            </div>
-            <div id="collapseFive" class="collapse" data-parent="#accordion" style="">
-              <div class="card-body">
-                Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid.
-                3
-                wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt
-                laborum
-                eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee
-                nulla
-                assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred
-                nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft
-                beer
-                farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus
-                labore sustainable VHS.
-              </div>
-            </div>
-          </div>
         </div>
-
-        </div>
-        <!-- /.card-body -->
-      </div>
-      <!-- /.card-body -->
-    </div>
-    <!-- /.card -->
-  </div>
+    </section>
 </div>
-</div>
-
-
 {% endblock content %}
+
+{% block extra_scripts %}
+{{ block.super }}
+<script>
+$(document).ready(function() {
+    // Initialize custom file input
+    bsCustomFileInput.init();
+});
+</script>
+{% endblock extra_scripts %}

@@ -1,7 +1,16 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
-
+{% load custom_filters %}
 {% block title %} {{ student.get_full_name }} {% endblock title %}
+
+{% block extrastyle %}
+{{ block.super }}
+<!-- Summernote -->
+<link rel="stylesheet" href="{% static 'plugins/summernote/summernote-bs4.min.css' %}">
+<!-- Tempus Dominus -->
+<link rel="stylesheet" href="{% static 'plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+{% endblock extrastyle %}
+
 {% block bodyclass %} hold-transition sidebar-mini {% endblock bodyclass %}
 {% block content %}
   <!-- Content Wrapper. Contains page content -->
@@ -92,65 +101,88 @@
               </div>
               <div class="row">
                 <div class="col-12">
-                  <h4>Recent Activity</h4>
-                    <div class="post">
-                      <div class="user-block">
-                        <img class="img-circle img-bordered-sm" src="{% static 'dist/img/user1-128x128.jpg' %}" alt="user image">
-                        <span class="username">
-                          <a href="#">Jonathan Burke Jr.</a>
-                        </span>
-                        <span class="description">Shared publicly - 7:45 PM today</span>
-                      </div>
-                      <!-- /.user-block -->
-                      <p>
-                        Lorem ipsum represents a long-held tradition for designers,
-                        typographers and the like. Some people hate it and argue for
-                        its demise, but others ignore.
-                      </p>
+                  <h4>Student Activity 
+                    <div class="float-right">
+                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#assessmentModal">
+                        <i class="fas fa-chart-bar"></i> Add Assessment
+                      </button>
+                      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#assignmentModal">
+                        <i class="fas fa-tasks"></i> Add Assignment
+                      </button>
+                      <button type="button" class="btn btn-info" data-toggle="modal" data-target="#materialModal">
+                        <i class="fas fa-book"></i> Add Material
+                      </button>
+                    </div>
+                  </h4>
 
-                      <p>
-                        <a href="#" class="link-black text-sm"><i class="fas fa-link mr-1"></i> Demo File 1 v2</a>
-                      </p>
+                  <div class="timeline">
+                    {% for event in timeline_events %}
+                        {% ifchanged event.created_at|date:"Y-m-d" %}
+                        <div class="time-label">
+                            <span class="bg-green">{{ event.created_at|date:"d M Y" }}</span>
+                        </div>
+                        {% endifchanged %}
+
+                        <div>
+                            {% if event.event_type == 'assessment' %}
+                                <i class="fas fa-chart-bar bg-yellow"></i>
+                            {% elif event.event_type == 'assignment' %}
+                                <i class="fas fa-tasks bg-purple"></i>
+                            {% elif event.event_type == 'material' %}
+                                <i class="fas fa-book bg-blue"></i>
+                            {% endif %}
+
+                            <div class="timeline-item">
+                                <span class="time"><i class="fas fa-clock"></i> {{ event.created_at|date:"H:i" }}</span>
+                                <h3 class="timeline-header">{{ event.title }}</h3>
+                                <div class="timeline-body">
+                                    {{ event.content|safe }}
+                                    
+                                    <!-- Add this section for assignments -->
+                                    {% if event.event_type == 'assignment' %}
+                                        {% if event.submission %}
+                                            <div class="mt-3 p-3 bg-light">
+                                                <h5>Student Submission</h5>
+                                                <p><strong>Submitted on:</strong> {{ event.submission.submitted_at|date:"M d, Y H:i" }}</p>
+                                                {% if event.submission.notes %}
+                                                    <p><strong>Notes:</strong> {{ event.submission.notes }}</p>
+                                                {% endif %}
+                                                {% if event.submission.file %}
+                                                    <a href="{{ event.submission.file.url }}" class="btn btn-sm btn-info" target="_blank" download>
+                                                        <i class="fas fa-download"></i> Download Submission ({{ event.submission.file.name|split:"/"|last }})
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        {% else %}
+                                            {% if event.due_date %}
+                                                <div class="mt-3">
+                                                    <p class="text-muted">
+                                                        <i class="fas fa-clock"></i> Due: {{ event.due_date|date:"M d, Y H:i" }}
+                                                    </p>
+                                                </div>
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    
+                    <div class="time-label">
+                        <span class="bg-green">{{ student.date_joined|date:"d M Y" }}</span>
+                    </div>
+                    <div>
+                        <i class="fas fa-user bg-blue"></i>
+                        <div class="timeline-item">
+                            <span class="time"><i class="fas fa-clock"></i> {{ student.date_joined|date:"H:i" }}</span>
+                            <h3 class="timeline-header">{{ student.get_full_name }} joined the dojo!</h3>
+                        </div>
                     </div>
 
-                    <div class="post clearfix">
-                      <div class="user-block">
-                        <img class="img-circle img-bordered-sm" src="{% static 'dist/img/user7-128x128.jpg' %}" alt="User Image">
-                        <span class="username">
-                          <a href="#">Sarah Ross</a>
-                        </span>
-                        <span class="description">Sent you a message - 3 days ago</span>
-                      </div>
-                      <!-- /.user-block -->
-                      <p>
-                        Lorem ipsum represents a long-held tradition for designers,
-                        typographers and the like. Some people hate it and argue for
-                        its demise, but others ignore.
-                      </p>
-                      <p>
-                        <a href="#" class="link-black text-sm"><i class="fas fa-link mr-1"></i> Demo File 2</a>
-                      </p>
+                    <div>
+                        <i class="fas fa-clock bg-gray"></i>
                     </div>
-
-                    <div class="post">
-                      <div class="user-block">
-                        <img class="img-circle img-bordered-sm" src="{% static 'dist/img/user1-128x128.jpg' %}" alt="user image">
-                        <span class="username">
-                          <a href="#">Jonathan Burke Jr.</a>
-                        </span>
-                        <span class="description">Shared publicly - 5 days ago</span>
-                      </div>
-                      <!-- /.user-block -->
-                      <p>
-                        Lorem ipsum represents a long-held tradition for designers,
-                        typographers and the like. Some people hate it and argue for
-                        its demise, but others ignore.
-                      </p>
-
-                      <p>
-                        <a href="#" class="link-black text-sm"><i class="fas fa-link mr-1"></i> Demo File 1 v1</a>
-                      </p>
-                    </div>
+                </div>
                 </div>
               </div>
             </div>
@@ -252,4 +284,163 @@
       </div>
     </div>
   </div>
+
+<!-- Assessment Modal -->
+<div class="modal fade" id="assessmentModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title"><i class="fas fa-chart-bar"></i> Add Assessment</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <form method="POST" action="{% url 'add_timeline_event' student.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="event_type" value="assessment">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" name="title" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Result</label>
+            <input type="text" name="assessment_result" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Comments</label>
+            <textarea name="content" class="summernote-basic"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-warning">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Assignment Modal -->
+<div class="modal fade" id="assignmentModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-success">
+        <h5 class="modal-title"><i class="fas fa-tasks"></i> Add Assignment</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <form method="POST" action="{% url 'add_timeline_event' student.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="event_type" value="assignment">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" name="title" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Due Date</label>
+            <div class="input-group date" id="dueDatePicker" data-target-input="nearest">
+              <input type="text" name="due_date" class="form-control datetimepicker-input" data-target="#dueDatePicker" required/>
+              <div class="input-group-append" data-target="#dueDatePicker" data-toggle="datetimepicker">
+                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Content</label>
+            <textarea name="content" class="summernote-full"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Material Modal -->
+<div class="modal fade" id="materialModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        <h5 class="modal-title"><i class="fas fa-book"></i> Add Learning Material</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <form method="POST" action="{% url 'add_timeline_event' student.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="event_type" value="material">
+        <div class="modal-body">
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" name="title" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Content</label>
+            <textarea name="content" class="summernote-full"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-info">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% block extra_scripts %}
+{{ block.super }}
+<!-- Summernote -->
+<script src="{% static 'plugins/summernote/summernote-bs4.min.js' %}"></script>
+<!-- Moment.js -->
+<script src="{% static 'plugins/moment/moment.min.js' %}"></script>
+<!-- Tempus Dominus -->
+<script src="{% static 'plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+
+<script>
+$(document).ready(function() {
+    // Initialize Summernote editors
+    $('.summernote-basic').summernote({
+        height: 150,
+        toolbar: [
+            ['style', ['bold', 'italic', 'underline', 'clear']],
+            ['para', ['ul', 'ol']]
+        ]
+    });
+
+    $('.summernote-full').summernote({
+        height: 300,
+        toolbar: [
+            ['style', ['style', 'bold', 'italic', 'underline', 'clear']],
+            ['font', ['strikethrough', 'superscript', 'subscript']],
+            ['fontsize', ['fontsize']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']]
+        ]
+    });
+
+    // Initialize datetime picker with both date and time
+    $('#dueDatePicker').datetimepicker({
+        icons: {
+            time: 'far fa-clock',
+            date: 'far fa-calendar',
+            up: 'fas fa-arrow-up',
+            down: 'fas fa-arrow-down'
+        },
+        format: 'YYYY-MM-DD HH:mm:ss',
+        sideBySide: true,  // Shows the time picker alongside the date picker
+        stepping: 15  // Minutes stepping interval
+    });
+});
+</script>
+{% endblock extra_scripts %}
 {% endblock content %}
+
+{% block stylesheets %}
+{{ block.super }}
+<link href="{% static 'plugins/summernote/summernote-bs4.min.css' %}" rel="stylesheet">
+<link href="{% static 'plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}" rel="stylesheet">
+{% endblock stylesheets %}

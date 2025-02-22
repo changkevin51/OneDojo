@@ -1,3 +1,6 @@
+from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib import admin
 from django.urls import path, include
 from . import views
 
@@ -6,7 +9,7 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     # Authentication
     path('', views.user_login, name='login'),
-    path('logout/', views.user_logout, name='logout'),
+    path('', views.user_logout, name='logout'),
     path('register/', views.register, name='register'),
 
     path('register/student/', views.register_student, name='register_student'),
@@ -20,6 +23,7 @@ urlpatterns = [
     path('register_units/', views.register_units, name='register_units'),
     path('submit_assignment/<int:assignment_id>/', views.submit_assignment, name='submit_assignment'),
     path('report_session/', views.report_session, name='report_session'),
+    path('assignment/<int:event_id>/submit/', views.submit_assignment, name='submit_assignment'),
 
     # Teacher Views
     path('post_assignment/', views.post_assignment, name='post_assignment'),
@@ -31,10 +35,12 @@ urlpatterns = [
     path('student/<int:student_id>/', views.admin_student_info, name='admin_student_info'),
 
     path('student/<int:student_id>/change-belt/', views.change_belt, name='change_belt'),
+    path('student/<int:student_id>/add-event/', views.add_timeline_event, name='add_timeline_event'),
 
-    
     # Assignment Views
     path('assignments/', views.view_assignment, name='assignments'),
+
+    
 
     # View Student views
 
@@ -141,7 +147,7 @@ urlpatterns = [
     # Authentication
     path('accounts/register/', views.register, name='register'),
     # path('accounts/login/', views.UserLoginView.as_view(), name='login'),
-    path('accounts/logout/', views.user_logout_view, name='logout'),
+    path('', views.user_logout_view, name='logout'),
     path('accounts/password-change/', views.UserPasswordChangeView.as_view(), name='password_change'),
     path('accounts/password-change-done/', auth_views.PasswordChangeDoneView.as_view(
         template_name='accounts/password_change_done.html'
@@ -155,4 +161,6 @@ urlpatterns = [
     path('accounts/password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(
         template_name='accounts/password_reset_complete.html'
     ), name='password_reset_complete'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
