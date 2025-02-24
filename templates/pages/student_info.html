@@ -137,7 +137,68 @@
     color: #6c757d;
     margin: 0;
   }
+
+  .feedback-item {
+    border-left: 4px solid #17a2b8;
+}
+
+.btn-group .btn {
+    margin-right: 5px;
+}
+
+.assignment-details, .submission-details {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+}
+.submission-info {
+    font-size: 0.9em;
+    max-width: 300px;
+}
+
+.submission-info p {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.submission-content .card {
+    border: 1px solid rgba(0,0,0,.125);
+    box-shadow: 0 2px 4px rgba(0,0,0,.05);
+}
+
+.submission-content .card-header {
+    background-color: rgba(0,0,0,.03);
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.notes-content {
+    white-space: pre-wrap;
+    font-size: 0.95em;
+}
+
+.submission-content .fas {
+    width: 16px;
+    text-align: center;
+}
+
+.alert i {
+    font-size: 1.1em;
+}
+.submission-notes {
+    background-color: white;
+    border-radius: 0.25rem;
+    padding: 1rem;
+    margin-top: 1rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
 </style>
+
 {% endblock extrastyle %}
 
 {% block bodyclass %} hold-transition sidebar-mini {% endblock bodyclass %}
@@ -518,6 +579,7 @@
                     <th>Actions</th>
                   </tr>
                 </thead>
+                <!-- Replace the existing assignments table body in the viewAssignmentsModal -->
                 <tbody>
                   {% for event in timeline_events %}
                   {% if event.event_type == 'assignment' %}
@@ -525,9 +587,9 @@
                     <td>{{ event.title }}</td>
                     <td>{{ event.due_date|date:"M d, Y H:i" }}</td>
                     <td>
-                      {% if event.is_submitted %}
+                      {% if event.submission %}
                         <span class="badge badge-success">Submitted</span>
-                      {% elif event.is_overdue %}
+                      {% elif event.due_date|date:'U' < now|date:'U' %}
                         <span class="badge badge-danger">Overdue</span>
                       {% else %}
                         <span class="badge badge-warning">Pending</span>
@@ -535,18 +597,37 @@
                     </td>
                     <td>
                       {% if event.submission %}
-                        <a href="{{ event.submission.file.url }}" class="btn btn-sm btn-info" target="_blank">
-                          <i class="fas fa-download"></i> Download
-                          <small>({{ event.submission.file.name|get_file_extension }})</small>
-                        </a>
+                        <div class="submission-info">
+                          <p class="mb-1">
+                            <strong>Submitted:</strong> {{ event.submission.submitted_at|date:"M d, Y H:i" }}
+                          </p>
+                          {% if event.submission.notes %}
+                            <p class="mb-1 text-muted">
+                              <small><strong>Notes:</strong> {{ event.submission.notes }}</small>
+                            </p>
+                          {% endif %}
+                          {% if event.submission.file %}
+                            <a href="{{ event.submission.file.url }}" class="btn btn-sm btn-info" target="_blank">
+                              <i class="fas fa-download"></i> Download
+                              <small>({{ event.submission.file.name|split:"/"|last }})</small>
+                            </a>
+                          {% else %}
+                            <small class="text-muted">No file attached</small>
+                          {% endif %}
+                        </div>
                       {% else %}
                         <span class="text-muted">No submission</span>
                       {% endif %}
                     </td>
                     <td>
-                      <button class="btn btn-sm btn-primary" onclick="viewDetails('{{ event.id }}')">
-                        <i class="fas fa-eye"></i>
-                      </button>
+                      <div class="btn-group">
+                        <button class="btn btn-sm btn-info" onclick="viewSubmission('{{ event.id }}')" title="View Details">
+                          <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-primary" onclick="viewDetails('{{ event.id }}')" title="Edit Assignment">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                   {% endif %}
@@ -679,6 +760,51 @@
   </div>
 </div>
 
+<!-- Add this modal for viewing submissions -->
+<div class="modal fade" id="submissionDetailModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        <h5 class="modal-title">
+          <i class="fas fa-file-alt"></i> Student Submission
+        </h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="assignment-details mb-4">
+          <h6 class="border-bottom pb-2">Assignment Details</h6>
+          <div id="assignmentTitle" class="font-weight-bold mb-2"></div>
+          <div id="assignmentContent" class="mb-3"></div>
+          <div id="assignmentDueDate" class="text-muted small"></div>
+        </div>
+
+        <div class="submission-details">
+          <h6 class="border-bottom pb-2">Submission</h6>
+          <div id="submissionStatus" class="mb-3"></div>
+          <div id="submissionContent" class="mb-3"></div>
+          <div id="submissionFile" class="mb-3"></div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div class="feedback-section mt-4">
+          <h6 class="border-bottom pb-2">Feedback & Comments</h6>
+          <div id="submissionFeedbackList" class="mb-3">
+            <!-- Feedback items will be loaded here -->
+          </div>
+          <div class="form-group">
+            <label>Add New Feedback</label>
+            <textarea name="feedback" class="form-control" rows="3"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-info" onclick="submitFeedback()">Add Feedback</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% block extra_scripts %}
 {{ block.super }}
 <!-- Summernote -->
@@ -731,7 +857,9 @@ toastr.options = {
     "closeButton": true,
     "progressBar": true,
     "positionClass": "toast-top-right",
-    "timeOut": "3000"
+    "timeOut": "3000",
+    "extendedTimeOut": "1000",
+    "preventDuplicates": true
 };
 
 function viewDetails(eventId) {
@@ -758,29 +886,77 @@ function viewDetails(eventId) {
             toastr.error('Error loading event details: ' + (jqXHR.responseJSON?.error || 'Unknown error'));
         });
 }
-function loadFeedback(eventId) {
-    $.get(`/api/event/${eventId}/feedback/`)
-        .done(function(feedback) {
-            const feedbackHtml = feedback.map(f => `
-                <div class="feedback-item mb-3 p-3 bg-light rounded">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <strong>${f.user}</strong>
-                        <small class="text-muted">${f.created_at}</small>
-                    </div>
-                    <p class="mb-0">${f.content}</p>
-                </div>
-            `).join('');
-            $('#feedbackList').html(feedbackHtml);
+function viewSubmission(eventId) {
+    $.get(`/api/event/${eventId}/`)
+        .done(function(data) {
+            console.log('API Response:', data);
+            
+            // Set event ID for feedback functionality
+            $('#submissionDetailModal').attr('data-event-id', eventId);
+            
+            // Populate assignment details
+            $('#assignmentTitle').text(data.title);
+            $('#assignmentContent').html(data.content);
+            $('#assignmentDueDate').html(`<i class="fas fa-clock"></i> Due: ${moment(data.due_date).format('MMM D, YYYY HH:mm')}`);
+            
+            if (data.submission) {
+                // Status and Notes
+                let submissionHtml = `
+                    <div class="alert alert-success mb-3">
+                        <i class="fas fa-check-circle mr-2"></i> 
+                        <strong>Submitted on ${moment(data.submission.submitted_at).format('MMM D, YYYY HH:mm')}</strong>
+                    </div>`;
+                
+                if (data.submission.notes) {
+                    submissionHtml += `
+                        <div class="submission-notes">
+                            <strong>Notes:</strong><br>
+                            ${data.submission.notes}
+                        </div>`;
+                }
+                
+                $('#submissionContent').html(submissionHtml);
+                
+                // File attachment
+                if (data.submission.file) {
+                    $('#submissionFile').html(`
+                        <a href="${data.submission.file}" class="btn btn-info" target="_blank" download>
+                            <i class="fas fa-download"></i> Download Submission
+                            <small>(${data.submission.file.split('/').pop()})</small>
+                        </a>
+                    `);
+                } else {
+                    $('#submissionFile').html('<p class="text-muted">No file attached</p>');
+                }
+                
+                $('#submissionStatus').empty();
+            } else {
+                $('#submissionStatus').html(`
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle mr-2"></i>
+                        <strong>No submission received yet</strong>
+                    </div>`);
+                $('#submissionContent').empty();
+                $('#submissionFile').empty();
+            }
+            
+            // Load feedback
+            loadFeedback(eventId, 'submissionFeedbackList');
+            
+            // Show modal
+            $('#submissionDetailModal').modal('show');
         })
         .fail(function(jqXHR) {
-            toastr.error('Error loading feedback');
+            console.error('API Error:', jqXHR);
+            toastr.error('Failed to load submission details');
         });
 }
-
-
+// Update the feedback submission to work with both modals
 function submitFeedback() {
-    const eventId = $('#eventEditForm').attr('data-event-id');
-    const content = $('textarea[name="feedback"]').val().trim();
+    const modal = $('.modal.show'); // Get the currently visible modal
+    const eventId = modal.attr('data-event-id');
+    const feedbackTextarea = modal.find('textarea[name="feedback"]');
+    const content = feedbackTextarea.val().trim();
     
     if (!content) {
         toastr.warning('Please enter feedback content');
@@ -795,15 +971,37 @@ function submitFeedback() {
             csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val()
         },
         success: function(response) {
-            $('textarea[name="feedback"]').val('');
-            loadFeedback(eventId);
+            feedbackTextarea.val('');
+            loadFeedback(eventId, modal.find('.feedback-section').find('div[id$="FeedbackList"]').attr('id'));
             toastr.success('Feedback submitted successfully');
         },
         error: function(jqXHR) {
-            toastr.error('Error submitting feedback: ' + (jqXHR.responseJSON?.error || 'Unknown error'));
+            toastr.error('Error submitting feedback: ' + 
+                (jqXHR.responseJSON?.error || 'Unknown error'));
         }
     });
 }
+
+function loadFeedback(eventId, targetElementId = 'feedbackList') {
+    $.get(`/api/event/${eventId}/feedback/`)
+        .done(function(feedback) {
+            const feedbackHtml = feedback.map(f => `
+                <div class="feedback-item mb-3 p-3 bg-light rounded">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong>${f.user}</strong>
+                        <small class="text-muted">${f.created_at}</small>
+                    </div>
+                    <p class="mb-0">${f.content}</p>
+                </div>
+            `).join('');
+            $(`#${targetElementId}`).html(feedbackHtml);
+        })
+        .fail(function(jqXHR) {
+            toastr.error('Error loading feedback');
+        });
+}
+
+
 
 function saveEventChanges() {
     const eventId = $('#eventEditForm').attr('data-event-id');

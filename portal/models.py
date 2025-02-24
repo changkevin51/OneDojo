@@ -135,7 +135,7 @@ class Assignment(models.Model):
     title = models.CharField(max_length=255)
     due_date = models.DateTimeField(null=True, blank=True)  
     description = models.TextField()
-    file = models.FileField(upload_to='assignments/')
+    file = models.FileField(upload_to='assignments/', null=True, blank=True)  
     posted_at = models.DateTimeField(auto_now_add=True)
     is_submitted = models.BooleanField(default=False)
 
@@ -213,7 +213,6 @@ class EventFeedback(models.Model):
                 link=f'/assignments/#{self.event.id}'
             )
 
-# Add this after EventFeedback model
 class Notification(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='notifications')
     title = models.CharField(max_length=200)

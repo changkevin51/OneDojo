@@ -17,6 +17,8 @@ from django.utils import timezone
 from django.db.models import Prefetch
 from datetime import datetime
 from django.http import JsonResponse
+
+
 # User Registration View
 def register(request):
     if request.method == "POST":
@@ -356,7 +358,8 @@ def admin_student_info(request, student_id):
         'title': f'Student Info - {student.get_full_name}',
         'active_count': active_count,
         'completed_count': completed_count,
-        'total_assignments': active_count + completed_count
+        'total_assignments': active_count + completed_count,
+        'now': timezone.now(),
     }
     
     return render(request, 'pages/student_info.html', context)
