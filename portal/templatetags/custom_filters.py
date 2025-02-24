@@ -15,3 +15,7 @@ def split(value, arg):
 def filename(value):
     """Returns the filename from a file path"""
     return os.path.basename(value)
+
+@register.filter
+def get_file_extension(filename):
+    return os.path.splitext(filename)[1][1:].upper()

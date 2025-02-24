@@ -9,253 +9,332 @@
 <link rel="stylesheet" href="{% static 'plugins/summernote/summernote-bs4.min.css' %}">
 <!-- Tempus Dominus -->
 <link rel="stylesheet" href="{% static 'plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+<!-- Toastr -->
+<link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
+<!-- Add these before your closing </head> tag if you don't have the local files -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<style>
+  .profile-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  .profile-header img {
+    border: 4px solid white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  .stat-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    background: white;
+    margin-bottom: 1.5rem;
+  }
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  }
+  .belt-display {
+    padding: 1.5rem;
+    border-radius: 15px;
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+    text-align: center;
+  }
+  .belt-icon {
+    width: 100%;
+    height: 50px;
+    border-radius: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  }
+  .timeline {
+    position: relative;
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  }
+  
+  .timeline::before {
+    content: '';
+    position: absolute;
+    top: 90px; 
+    bottom: 0px;
+    width: 4px;
+    background: #dee2e6;
+    left: 31px;
+    margin: 0;
+    border-radius: 2px;
+  }
+
+  .timeline > h5 {
+    position: relative;
+    z-index: 2;
+    background: white;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #dee2e6;
+  }
+  .timeline-item {
+    border-radius: 10px;
+    margin-bottom: 1rem;
+  }
+  .info-list {
+    list-style: none;
+    padding: 0;
+  }
+  .info-list li {
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .info-list li:last-child {
+    border-bottom: none;
+  }
+  .action-buttons {
+    gap: 0.5rem;
+    display: flex;
+    margin-bottom: 1.5rem;
+  }
+  .action-buttons .btn {
+    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .stat-box {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  }
+  .stat-box h4 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .stat-box p {
+    color: #6c757d;
+    margin: 0;
+  }
+</style>
 {% endblock extrastyle %}
 
 {% block bodyclass %} hold-transition sidebar-mini {% endblock bodyclass %}
 {% block content %}
-  <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1>
-              {% if student.first_name and student.last_name %}
-                  {{ student.first_name }} {{ student.last_name }}
-              {% else %}
-                  {{ student.username }}
-              {% endif %}
-            </h1>
-          </div>
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="{% url 'dashboardv1' %}">Home</a></li>
-              <li class="breadcrumb-item active">Student Information</li>
-            </ol>
-          </div>
-        </div>
-      </div><!-- /.container-fluid -->
-    </section>
-
-    <!-- Main content -->
-    <section class="content">
-
-      <!-- Default box -->
-      <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">Student Information</h3>
-
-          <div class="card-tools">
-            <button type="button" class="btn btn-tool" data-card-widget="collapse" title="Collapse">
-              <i class="fas fa-minus"></i>
-            </button>
-            <button type="button" class="btn btn-tool" data-card-widget="remove" title="Remove">
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-12 col-md-12 col-lg-8 order-2 order-md-1">
-              <div class="row">
-                <div class="col-12 col-sm-4">
-                  <div class="info-box bg-light">
-                    <div class="info-box-content">
-                      <span class="info-box-text text-center text-muted">Current Belt</span>
-                      <div class="text-center mb-2">
-                        <span class="badge" style="
-                          background-color: {{ student.belt }};
-                          color: {% if student.belt == 'black' or student.belt == 'blue' or student.belt == 'purple' %}white{% else %}black{% endif %};
-                          padding: 10px 20px;
-                          font-size: 1.1em;
-                          border: 1px solid #ddd;
-                          min-width: 100px;">
-                          {{ student.get_belt_display }}
-                        </span>
-                      </div>
-                      {% if user.is_staff or user.is_teacher %}
-                      <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#beltModal">
-                        Change Belt Level
-                      </button>
-                      {% endif %}
-                    </div>
-                  </div>
-                </div>
-                <div class="col-12 col-sm-4">
-                  <div class="info-box bg-light">
-                    <div class="info-box-content">
-                      <span class="info-box-text text-center text-muted">Total amount spent</span>
-                      <span class="info-box-number text-center text-muted mb-0">2000</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-12 col-sm-4">
-                  <div class="info-box bg-light">
-                    <div class="info-box-content">
-                      <span class="info-box-text text-center text-muted">Estimated project duration</span>
-                      <span class="info-box-number text-center text-muted mb-0">20</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-12">
-                  <h4>Student Activity 
-                    <div class="float-right">
-                      <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#assessmentModal">
-                        <i class="fas fa-chart-bar"></i> Add Assessment
-                      </button>
-                      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#assignmentModal">
-                        <i class="fas fa-tasks"></i> Add Assignment
-                      </button>
-                      <button type="button" class="btn btn-info" data-toggle="modal" data-target="#materialModal">
-                        <i class="fas fa-book"></i> Add Material
-                      </button>
-                    </div>
-                  </h4>
-
-                  <div class="timeline">
-                    {% for event in timeline_events %}
-                        {% ifchanged event.created_at|date:"Y-m-d" %}
-                        <div class="time-label">
-                            <span class="bg-green">{{ event.created_at|date:"d M Y" }}</span>
-                        </div>
-                        {% endifchanged %}
-
-                        <div>
-                            {% if event.event_type == 'assessment' %}
-                                <i class="fas fa-chart-bar bg-yellow"></i>
-                            {% elif event.event_type == 'assignment' %}
-                                <i class="fas fa-tasks bg-purple"></i>
-                            {% elif event.event_type == 'material' %}
-                                <i class="fas fa-book bg-blue"></i>
-                            {% endif %}
-
-                            <div class="timeline-item">
-                                <span class="time"><i class="fas fa-clock"></i> {{ event.created_at|date:"H:i" }}</span>
-                                <h3 class="timeline-header">{{ event.title }}</h3>
-                                <div class="timeline-body">
-                                    {{ event.content|safe }}
-                                    
-                                    <!-- Add this section for assignments -->
-                                    {% if event.event_type == 'assignment' %}
-                                        {% if event.submission %}
-                                            <div class="mt-3 p-3 bg-light">
-                                                <h5>Student Submission</h5>
-                                                <p><strong>Submitted on:</strong> {{ event.submission.submitted_at|date:"M d, Y H:i" }}</p>
-                                                {% if event.submission.notes %}
-                                                    <p><strong>Notes:</strong> {{ event.submission.notes }}</p>
-                                                {% endif %}
-                                                {% if event.submission.file %}
-                                                    <a href="{{ event.submission.file.url }}" class="btn btn-sm btn-info" target="_blank" download>
-                                                        <i class="fas fa-download"></i> Download Submission ({{ event.submission.file.name|split:"/"|last }})
-                                                    </a>
-                                                {% endif %}
-                                            </div>
-                                        {% else %}
-                                            {% if event.due_date %}
-                                                <div class="mt-3">
-                                                    <p class="text-muted">
-                                                        <i class="fas fa-clock"></i> Due: {{ event.due_date|date:"M d, Y H:i" }}
-                                                    </p>
-                                                </div>
-                                            {% endif %}
-                                        {% endif %}
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                    {% endfor %}
-                    
-                    <div class="time-label">
-                        <span class="bg-green">{{ student.date_joined|date:"d M Y" }}</span>
-                    </div>
-                    <div>
-                        <i class="fas fa-user bg-blue"></i>
-                        <div class="timeline-item">
-                            <span class="time"><i class="fas fa-clock"></i> {{ student.date_joined|date:"H:i" }}</span>
-                            <h3 class="timeline-header">{{ student.get_full_name }} joined the dojo!</h3>
-                        </div>
-                    </div>
-
-                    <div>
-                        <i class="fas fa-clock bg-gray"></i>
-                    </div>
-                </div>
-                </div>
-              </div>
+<div class="content-wrapper">
+  <div class="container-fluid">
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="row align-items-center">
+        <div class="col-auto">
+          {% if student.profile_picture %}
+            <img src="{{ student.profile_picture.url }}" alt="Profile" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+          {% else %}
+            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 120px; height: 120px;">
+              <i class="fas fa-user fa-3x text-secondary"></i>
             </div>
-            <div class="col-12 col-md-12 col-lg-4 order-1 order-md-2">
-              <h3 class="text-primary">
-                {% if student.first_name and student.last_name %}
-                {{ student.first_name }} {{ student.last_name }}
-                {% else %}
-                    {{ student.username }}
+          {% endif %}
+        </div>
+        <div class="col">
+          <h1 class="mb-2">
+            {% if student.first_name and student.last_name %}
+              {{ student.first_name }} {{ student.last_name }}
+            {% else %}
+              {{ student.username }}
+            {% endif %}
+          </h1>
+          <p class="mb-0"><i class="fas fa-envelope mr-2"></i>{{ student.email }}</p>
+        </div>
+        <div class="col-auto">
+          <div class="action-buttons">
+            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#assessmentModal">
+              <i class="fas fa-chart-bar"></i> Assessment
+            </button>
+            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#assignmentModal">
+              <i class="fas fa-tasks"></i> Assignment
+            </button>
+            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#materialModal">
+              <i class="fas fa-book"></i> Material
+            </button>
+            <button type="button" class="btn btn-info" data-toggle="modal" data-target="#viewAssignmentsModal">
+              <i class="fas fa-tasks"></i> View All Activities
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Left Column -->
+      <div class="col-lg-4">
+        <!-- Belt Status -->
+        <div class="stat-card">
+          <div class="card-body">
+            <div class="belt-display">
+              <div class="belt-icon" style="
+                background-color: {{ student.belt }};
+                color: {% if student.belt == 'black' or student.belt == 'blue' or student.belt == 'purple' %}white{% else %}black{% endif %};">
+                {{ student.get_belt_display }} Belt
+              </div>
+              {% if user.is_staff or user.is_teacher %}
+                <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#beltModal">
+                  Change Belt Level
+                </button>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Student Information -->
+        <div class="stat-card">
+          <div class="card-body">
+            <h5 class="card-title mb-4">Personal Information</h5>
+            <ul class="info-list">
+              <li>
+                <span class="text-muted">Date Joined</span>
+                <strong>{{ student.date_joined|date:"M d, Y" }}</strong>
+              </li>
+              <li>
+                <span class="text-muted">Date of Birth</span>
+                <strong>{{ student.dob|date:"M d, Y" }}</strong>
+              </li>
+              <li>
+                <span class="text-muted">Gender</span>
+                <strong>{{ student.gender }}</strong>
+              </li>
+              <li>
+                <span class="text-muted">Address</span>
+                <strong>{{ student.address }}</strong>
+              </li>
+              <li>
+                <span class="text-muted">City</span>
+                <strong>{{ student.city }}</strong>
+              </li>
+              <li>
+                <span class="text-muted">Province</span>
+                <strong>{{ student.province }}</strong>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="col-lg-8">
+        <!-- Stats Overview -->
+        <div class="profile-stats">
+          <div class="stat-box">
+            <h4>{{ active_count }}</h4>
+            <p>Active Assignments</p>
+          </div>
+          <div class="stat-box">
+            <h4>{{ completed_count|default:"0" }}</h4>
+            <p>Completed Tasks</p>
+          </div>
+          <div class="stat-box">
+            <h4>{{ attendance_count|default:"0" }}</h4>
+            <p>Classes Attended</p>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline">
+          <h5 class="mb-4">Activity Timeline</h5>
+          {% for event in timeline_events %}
+            {% ifchanged event.created_at|date:"Y-m-d" %}
+            <div class="time-label">
+                <span class="bg-green">{{ event.created_at|date:"d M Y" }}</span>
+            </div>
+            {% endifchanged %}
+
+            <div>
+                {% if event.event_type == 'assessment' %}
+                    <i class="fas fa-chart-bar bg-yellow"></i>
+                {% elif event.event_type == 'assignment' %}
+                    <i class="fas fa-tasks bg-purple"></i>
+                {% elif event.event_type == 'material' %}
+                    <i class="fas fa-book bg-blue"></i>
                 {% endif %}
 
-              </h3>
-              {% if student.profile_picture %}
-                  <img class="img-fluid mb-3" src="{{ student.profile_picture.url }}" alt="Student Profile Picture">
-              {% endif %}
-              <div class="text-muted">
-                <p class="text-sm">Email
-                  <b class="d-block">{{ student.email }}</b>
-                </p>
-                <p class="text-sm">Date Joined
-                  <b class="d-block">{{ student.date_joined|date:"Y-m-d" }}</b>
-                </p>
-                <p class="text-sm">Date of Birth
-                  <b class="d-block">{{ student.dob|date:"Y-m-d" }}</b>
-                </p>
-                <p class="text-sm">Gender
-                  <b class="d-block">{{ student.gender }}</b>
-                </p>
-                <p class="text-sm">Address
-                  <b class="d-block">{{ student.address }}</b>
-                </p>
-                <p class="text-sm">City
-                  <b class="d-block">{{ student.city }}</b>
-                </p>
-                <p class="text-sm">Province
-                  <b class="d-block">{{ student.province }}</b>
-                </p>
-              </div>
-              <h5 class="mt-5 text-muted">Project files</h5>
-              <ul class="list-unstyled">
-                <li>
-                  <a href="" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i> Functional-requirements.docx</a>
-                </li>
-                <li>
-                  <a href="" class="btn-link text-secondary"><i class="far fa-fw fa-file-pdf"></i> UAT.pdf</a>
-                </li>
-                <li>
-                  <a href="" class="btn-link text-secondary"><i class="far fa-fw fa-envelope"></i> Email-from-flatbal.mln</a>
-                </li>
-                <li>
-                  <a href="" class="btn-link text-secondary"><i class="far fa-fw fa-image "></i> Logo.png</a>
-                </li>
-                <li>
-                  <a href="" class="btn-link text-secondary"><i class="far fa-fw fa-file-word"></i> Contract-10_12_2014.docx</a>
-                </li>
-              </ul>
-              <div class="text-center mt-5 mb-3">
-                <a href="#" class="btn btn-sm btn-primary">Add files</a>
-                <a href="#" class="btn btn-sm btn-warning">Report contact</a>
-              </div>
+                <div class="timeline-item">
+                    <span class="time"><i class="fas fa-clock"></i> {{ event.created_at|date:"H:i" }}</span>
+                    <h3 class="timeline-header">{{ event.title }}</h3>
+                    <div class="timeline-body">
+                        {{ event.content|safe }}
+                        
+                        <!-- Add this section for assignments -->
+                        {% if event.event_type == 'assignment' %}
+                            {% if event.submission %}
+                                <div class="mt-3 p-3 bg-light">
+                                    <h5>Student Submission</h5>
+                                    <p><strong>Submitted on:</strong> {{ event.submission.submitted_at|date:"M d, Y H:i" }}</p>
+                                    {% if event.submission.notes %}
+                                        <p><strong>Notes:</strong> {{ event.submission.notes }}</p>
+                                    {% endif %}
+                                    {% if event.submission.file %}
+                                        <a href="{{ event.submission.file.url }}" class="btn btn-sm btn-info" target="_blank" download>
+                                            <i class="fas fa-download"></i> Download Submission ({{ event.submission.file.name|split:"/"|last }})
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                {% if event.due_date %}
+                                    <div class="mt-3">
+                                        <p class="text-muted">
+                                            <i class="fas fa-clock"></i> Due: {{ event.due_date|date:"M d, Y H:i" }}
+                                        </p>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
             </div>
+          {% endfor %}
+          
+          <div class="time-label">
+              <span class="bg-green">{{ student.date_joined|date:"d M Y" }}</span>
+          </div>
+          <div>
+              <i class="fas fa-user bg-blue"></i>
+              <div class="timeline-item">
+                  <span class="time"><i class="fas fa-clock"></i> {{ student.date_joined|date:"H:i" }}</span>
+                  <h3 class="timeline-header">{{ student.get_full_name }} joined the dojo!</h3>
+              </div>
+          </div>
+
+          <div>
+              <i class="fas fa-clock bg-gray"></i>
           </div>
         </div>
-        <!-- /.card-body -->
       </div>
-      <!-- /.card -->
-
-    </section>
-    <!-- /.content -->
+    </div>
   </div>
+</div>
 
-  <!-- Add this modal at the end of the body -->
-  <div class="modal fade" id="beltModal" tabindex="-1" role="dialog" aria-labelledby="beltModalLabel" aria-hidden="true">
+<!-- Keep your existing modals -->
+<div class="modal fade" id="beltModal" tabindex="-1" role="dialog" aria-labelledby="beltModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -388,6 +467,218 @@
   </div>
 </div>
 
+<!-- Add this at the bottom of the file, before the other modals -->
+<div class="modal fade" id="viewAssignmentsModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        <h5 class="modal-title">
+          <i class="fas fa-tasks"></i> Student Activities
+        </h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body p-0">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#assignments" role="tab">
+              <i class="fas fa-tasks"></i> Assignments
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#assessments" role="tab">
+              <i class="fas fa-chart-bar"></i> Assessments
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#materials" role="tab">
+              <i class="fas fa-book"></i> Materials
+            </a>
+          </li>
+        </ul>
+
+        <!-- Tab content -->
+        <div class="tab-content p-3">
+          <!-- Assignments Tab -->
+          <div class="tab-pane fade show active" id="assignments" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="mb-0">Assignments</h6>
+              <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assignmentModal">
+                <i class="fas fa-plus"></i> Add Assignment
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Submission</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for event in timeline_events %}
+                  {% if event.event_type == 'assignment' %}
+                  <tr>
+                    <td>{{ event.title }}</td>
+                    <td>{{ event.due_date|date:"M d, Y H:i" }}</td>
+                    <td>
+                      {% if event.is_submitted %}
+                        <span class="badge badge-success">Submitted</span>
+                      {% elif event.is_overdue %}
+                        <span class="badge badge-danger">Overdue</span>
+                      {% else %}
+                        <span class="badge badge-warning">Pending</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if event.submission %}
+                        <a href="{{ event.submission.file.url }}" class="btn btn-sm btn-info" target="_blank">
+                          <i class="fas fa-download"></i> Download
+                          <small>({{ event.submission.file.name|get_file_extension }})</small>
+                        </a>
+                      {% else %}
+                        <span class="text-muted">No submission</span>
+                      {% endif %}
+                    </td>
+                    <td>
+                      <button class="btn btn-sm btn-primary" onclick="viewDetails('{{ event.id }}')">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  {% endif %}
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Assessments Tab -->
+          <div class="tab-pane fade" id="assessments" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="mb-0">Assessments</h6>
+              <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#assessmentModal">
+                <i class="fas fa-plus"></i> Add Assessment
+              </button>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Date</th>
+                    <th>Result</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for event in timeline_events %}
+                  {% if event.event_type == 'assessment' %}
+                  <tr>
+                    <td>{{ event.title }}</td>
+                    <td>{{ event.created_at|date:"M d, Y" }}</td>
+                    <td>{{ event.assessment_result }}</td>
+                    <td>
+                      <button class="btn btn-sm btn-primary" onclick="viewDetails('{{ event.id }}')">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  {% endif %}
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Materials Tab -->
+          <div class="tab-pane fade" id="materials" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="mb-0">Learning Materials</h6>
+              <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#materialModal">
+                <i class="fas fa-plus"></i> Add Material
+              </button>
+            </div>
+            <div class="row">
+              {% for event in timeline_events %}
+              {% if event.event_type == 'material' %}
+              <div class="col-md-6 col-lg-4">
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <h6 class="card-title">{{ event.title }}</h6>
+                    <p class="card-text small text-muted">
+                      Added on {{ event.created_at|date:"M d, Y" }}
+                    </p>
+                    <button class="btn btn-sm btn-primary" onclick="viewDetails('{{ event.id }}')">
+                      View Material
+                    </button>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add this modal after your other modals -->
+<div class="modal fade" id="eventDetailModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Event Details</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="eventEditForm" method="POST">
+          {% csrf_token %}
+          <div class="form-group">
+            <label>Title</label>
+            <input type="text" name="title" class="form-control" id="eventTitle">
+          </div>
+          <div class="form-group" id="dueDateGroup">
+            <label>Due Date</label>
+            <div class="input-group date" id="editDueDatePicker" data-target-input="nearest">
+              <input type="text" name="due_date" class="form-control datetimepicker-input" data-target="#editDueDatePicker"/>
+              <div class="input-group-append" data-target="#editDueDatePicker" data-toggle="datetimepicker">
+                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Content</label>
+            <textarea name="content" class="summernote-full" id="eventContent"></textarea>
+          </div>
+          
+          <!-- Feedback Section -->
+          <div class="feedback-section mt-4">
+            <h6 class="border-bottom pb-2">Feedback & Comments</h6>
+            <div id="feedbackList" class="mb-3">
+              <!-- Feedback items will be loaded here -->
+            </div>
+            <div class="form-group">
+              <label>Add New Feedback</label>
+              <textarea name="feedback" class="form-control" rows="3"></textarea>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-info" onclick="submitFeedback()">Add Feedback</button>
+        <button type="button" class="btn btn-primary" onclick="saveEventChanges()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% block extra_scripts %}
 {{ block.super }}
 <!-- Summernote -->
@@ -435,7 +726,136 @@ $(document).ready(function() {
         stepping: 15  // Minutes stepping interval
     });
 });
+
+toastr.options = {
+    "closeButton": true,
+    "progressBar": true,
+    "positionClass": "toast-top-right",
+    "timeOut": "3000"
+};
+
+function viewDetails(eventId) {
+    $.get(`/api/event/${eventId}/`)
+        .done(function(data) {
+            $('#eventTitle').val(data.title);
+            $('#eventContent').summernote('code', data.content);
+            
+            if (data.event_type === 'assignment') {
+                $('#dueDateGroup').show();
+                if (data.due_date) {
+                    $('#editDueDatePicker').datetimepicker('date', data.due_date);
+                }
+            } else {
+                $('#dueDateGroup').hide();
+            }
+            
+            loadFeedback(eventId);
+            
+            $('#eventEditForm').attr('data-event-id', eventId);
+            $('#eventDetailModal').modal('show');
+        })
+        .fail(function(jqXHR, textStatus, errorThrown) {
+            toastr.error('Error loading event details: ' + (jqXHR.responseJSON?.error || 'Unknown error'));
+        });
+}
+function loadFeedback(eventId) {
+    $.get(`/api/event/${eventId}/feedback/`)
+        .done(function(feedback) {
+            const feedbackHtml = feedback.map(f => `
+                <div class="feedback-item mb-3 p-3 bg-light rounded">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <strong>${f.user}</strong>
+                        <small class="text-muted">${f.created_at}</small>
+                    </div>
+                    <p class="mb-0">${f.content}</p>
+                </div>
+            `).join('');
+            $('#feedbackList').html(feedbackHtml);
+        })
+        .fail(function(jqXHR) {
+            toastr.error('Error loading feedback');
+        });
+}
+
+
+function submitFeedback() {
+    const eventId = $('#eventEditForm').attr('data-event-id');
+    const content = $('textarea[name="feedback"]').val().trim();
+    
+    if (!content) {
+        toastr.warning('Please enter feedback content');
+        return;
+    }
+
+    $.ajax({
+        url: `/api/event/${eventId}/feedback/`,
+        type: 'POST',
+        data: {
+            content: content,
+            csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val()
+        },
+        success: function(response) {
+            $('textarea[name="feedback"]').val('');
+            loadFeedback(eventId);
+            toastr.success('Feedback submitted successfully');
+        },
+        error: function(jqXHR) {
+            toastr.error('Error submitting feedback: ' + (jqXHR.responseJSON?.error || 'Unknown error'));
+        }
+    });
+}
+
+function saveEventChanges() {
+    const eventId = $('#eventEditForm').attr('data-event-id');
+    const formData = new FormData($('#eventEditForm')[0]);
+    
+    $.ajax({
+        url: `/api/event/${eventId}/`,
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            toastr.success('Changes saved successfully');
+            $('#eventDetailModal').modal('hide');
+            location.reload(); // Refresh to show updates
+        }
+    });
+}
+
+// Initialize tooltips
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip();
+  
+  // Handle tab persistence
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    localStorage.setItem('lastTab', $(e.target).attr('href'));
+  });
+  
+  // Go to last active tab
+  var lastTab = localStorage.getItem('lastTab');
+  if (lastTab) {
+    $('a[href="' + lastTab + '"]').tab('show');
+  }
+});
 </script>
+<style>
+.modal-xl {
+  max-width: 90%;
+}
+.tab-content {
+  min-height: 400px;
+}
+.table th {
+  border-top: none;
+}
+.card {
+  transition: transform 0.2s;
+}
+.card:hover {
+  transform: translateY(-5px);
+}
+</style>
 {% endblock extra_scripts %}
 {% endblock content %}
 

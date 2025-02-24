@@ -125,14 +125,22 @@ class Registration(models.Model):
 # Assignment Model
 class Assignment(models.Model):
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE)
+    student = models.ForeignKey(
+        CustomUser, 
+        on_delete=models.CASCADE, 
+        related_name='assignments',
+        null=True,  
+        blank=True  
+    )
     title = models.CharField(max_length=255)
+    due_date = models.DateTimeField(null=True, blank=True)  
     description = models.TextField()
     file = models.FileField(upload_to='assignments/')
     posted_at = models.DateTimeField(auto_now_add=True)
+    is_submitted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
-
 
 class TimelineEvent(models.Model):
     EVENT_TYPES = [
@@ -172,6 +180,55 @@ class TimelineEvent(models.Model):
     def submission(self):
         return self.submissions.first() if self.event_type == 'assignment' else None
 
+# Add after TimelineEvent model
+class EventFeedback(models.Model):
+    event = models.ForeignKey('TimelineEvent', on_delete=models.CASCADE, related_name='feedback')
+    author = models.ForeignKey(
+        'CustomUser', 
+        on_delete=models.CASCADE,
+        related_name='given_feedback',
+        null=True  # Temporarily allow null
+    )
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Feedback on {self.event.title} by {self.author.get_full_name() if self.author else 'Unknown'}"
+
+    def save(self, *args, **kwargs):
+        is_new = not self.pk  # Check if this is a new feedback
+        super().save(*args, **kwargs)
+        
+        if is_new:
+            # Create notification for student when new feedback is added
+            Notification.objects.create(
+                user=self.event.student,
+                title=f"New feedback on {self.event.title}",
+                message=f"{self.author.get_full_name()} added feedback to your {self.event.get_event_type_display().lower()}",
+                notification_type='feedback',
+                link=f'/assignments/#{self.event.id}'
+            )
+
+# Add this after EventFeedback model
+class Notification(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='notifications')
+    title = models.CharField(max_length=200)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+    link = models.CharField(max_length=200, blank=True)
+    notification_type = models.CharField(max_length=50, default='feedback')
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Notification for {self.user.username}: {self.title}"
+
 # Submission Model
 
 class Submission(models.Model):
@@ -196,3 +253,6 @@ class Submission(models.Model):
 
     def __str__(self):
         return f"{self.student.username} - {self.assignment.title}"
+
+
+

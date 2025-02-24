@@ -16,6 +16,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.db.models import Prefetch
 from datetime import datetime
+from django.http import JsonResponse
 # User Registration View
 def register(request):
     if request.method == "POST":
@@ -192,9 +193,36 @@ def report_session(request):
 def student_dashboard(request):
     if not request.user.is_student:
         return redirect('login')
-    registrations = Registration.objects.filter(student=request.user)
-    assignments = Assignment.objects.filter(unit__in=[reg.unit for reg in registrations])
-    return render(request, 'pages/index.html')
+    
+    # Get active assignments
+    active_assignments = TimelineEvent.objects.filter(
+        student=request.user,
+        event_type='assignment',
+        is_submitted=False
+    ).order_by('due_date')
+
+    # Get counts for statistics
+    active_count = active_assignments.count()
+    overdue_count = active_assignments.filter(due_date__lt=timezone.now()).count()
+    completed_count = TimelineEvent.objects.filter(
+        student=request.user,
+        event_type='assignment',
+        is_submitted=True
+    ).count()
+
+    context = {
+        'parent': 'dashboard',
+        'segment': 'dashboardv1',
+        'active_assignments': active_assignments,
+        'active_count': active_count,
+        'overdue_count': overdue_count,
+        'completed_count': completed_count
+    }
+    
+    # Add notifications to context
+    context['notifications'] = request.user.notifications.filter(is_read=False)
+    
+    return render(request, 'pages/index.html', context)
 
 
 # Student progress
@@ -297,21 +325,61 @@ def admin_student_info(request, student_id):
         ),
         id=student_id
     )
-    timeline_events = TimelineEvent.objects.filter(student=student)
-    
-    event_types = [
-        ('assessment', 'fas fa-chart-bar', 'Assessment', 'warning'),
-        ('assignment', 'fas fa-tasks', 'Assignment', 'success'),
-        ('material', 'fas fa-book', 'Material', 'info')
-    ]
+
+    # Get active assignments count (not submitted and not past due date)
+    active_count = TimelineEvent.objects.filter(
+        student=student,
+        event_type='assignment',
+        is_submitted=False,
+        due_date__gt=timezone.now()
+    ).count()
+
+    # Get completed assignments count
+    completed_count = TimelineEvent.objects.filter(
+        student=student,
+        event_type='assignment',
+        is_submitted=True
+    ).count()
+
+    # Debug prints to check the counts
+    print(f"Active assignments: {active_count}")
+    print(f"Completed assignments: {completed_count}")
     
     context = {
         'student': student,
         'timeline_events': student.timeline_events.all(),
-        'event_types': event_types,
-        'title': f'Student Info - {student.get_full_name}'
+        'event_types': [
+            ('assessment', 'fas fa-chart-bar', 'Assessment', 'warning'),
+            ('assignment', 'fas fa-tasks', 'Assignment', 'success'),
+            ('material', 'fas fa-book', 'Material', 'info')
+        ],
+        'title': f'Student Info - {student.get_full_name}',
+        'active_count': active_count,
+        'completed_count': completed_count,
+        'total_assignments': active_count + completed_count
     }
+    
     return render(request, 'pages/student_info.html', context)
+
+@login_required
+def event_detail_api(request, event_id):
+    try:
+        event = TimelineEvent.objects.get(id=event_id)
+        data = {
+            'id': event.id,
+            'title': event.title,
+            'content': event.content,
+            'event_type': event.event_type,
+            'created_at': event.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'due_date': event.due_date.strftime('%Y-%m-%d %H:%M:%S') if event.due_date else None,
+            'is_submitted': event.is_submitted
+        }
+        return JsonResponse(data)
+    except TimelineEvent.DoesNotExist:
+        return JsonResponse({'error': 'Event not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
 
 @login_required
 def change_belt(request, student_id):
@@ -339,20 +407,127 @@ def add_timeline_event(request, student_id):
         
     if request.method == 'POST':
         student = get_object_or_404(CustomUser, id=student_id)
+        event_type = request.POST.get('event_type')
+        title = request.POST.get('title')
+        
         event = TimelineEvent.objects.create(
             student=student,
-            event_type=request.POST.get('event_type'),
-            title=request.POST.get('title'),
+            event_type=event_type,
+            title=title,
             content=request.POST.get('content'),
             created_by=request.user
         )
-        if request.POST.get('event_type') == 'assignment':
+        
+        # Add due date for assignments
+        if event_type == 'assignment':
             due_date = request.POST.get('due_date')
             event.due_date = timezone.make_aware(datetime.strptime(due_date, '%Y-%m-%d %H:%M:%S'))
+        
+        # Add result for assessments
+        if event_type == 'assessment':
+            event.assessment_result = request.POST.get('assessment_result')
+        
         event.save()
-        messages.success(request, "Event added successfully")
+        
+        # Create appropriate notification based on event type
+        notification_data = {
+            'assignment': {
+                'title': 'New Assignment Posted',
+                'message': f'A new assignment "{title}" has been posted by {request.user.get_full_name()}',
+                'type': 'assignment'
+            },
+            'assessment': {
+                'title': 'New Assessment Result',
+                'message': f'Your assessment result for "{title}" has been posted',
+                'type': 'assessment'
+            },
+            'material': {
+                'title': 'New Learning Material Available',
+                'message': f'New material "{title}" has been added to your course',
+                'type': 'material'
+            }
+        }
+        
+        if event_type in notification_data:
+            data = notification_data[event_type]
+            Notification.objects.create(
+                user=student,
+                title=data['title'],
+                message=data['message'],
+                notification_type=data['type'],
+                link=f'/assignments/#{event.id}'
+            )
+        
+        messages.success(request, f"{event_type.title()} added successfully")
         
     return redirect('admin_student_info', student_id=student_id)
+
+@login_required
+def event_detail(request, event_id):
+    event = get_object_or_404(TimelineEvent, id=event_id)
+    
+    if request.method == 'POST':
+        if not (request.user.is_staff or request.user.is_teacher):
+            return JsonResponse({'error': 'Permission denied'}, status=403)
+            
+        event.title = request.POST.get('title', event.title)
+        event.content = request.POST.get('content', event.content)
+        if event.event_type == 'assignment':
+            due_date = request.POST.get('due_date')
+            if due_date:
+                event.due_date = timezone.make_aware(datetime.strptime(due_date, '%Y-%m-%d %H:%M:%S'))
+        event.save()
+        
+        return JsonResponse({'status': 'success'})
+        
+    return JsonResponse({
+        'id': event.id,
+        'title': event.title,
+        'content': event.content,
+        'event_type': event.event_type,
+        'due_date': event.due_date.isoformat() if event.due_date else None,
+    })
+
+@login_required
+def event_feedback(request, event_id):
+    event = get_object_or_404(TimelineEvent, id=event_id)
+    
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        if content:
+            feedback = EventFeedback.objects.create(
+                event=event,
+                author=request.user,
+                content=content
+            )
+            
+            # Create notification for student
+            Notification.objects.create(
+                user=event.student,
+                title=f"New feedback on {event.title}",
+                message=f"{request.user.get_full_name()} added feedback to your {event.get_event_type_display().lower()}",
+                notification_type='feedback',
+                link=f'/assignments/#{event.id}'
+            )
+            
+            return JsonResponse({
+                'status': 'success',
+                'feedback': {
+                    'id': feedback.id,
+                    'content': feedback.content,
+                    'created_at': feedback.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+                    'author': feedback.author.get_full_name()
+                }
+            })
+        return JsonResponse({'error': 'Content is required'}, status=400)
+    
+    feedback = event.feedback.select_related('author').all()
+    return JsonResponse([{
+        'id': f.id,
+        'content': f.content,
+        'created_at': f.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+        'user': f.author.get_full_name()  # Changed to use author
+    } for f in feedback], safe=False)
 
 def register_v1(request):
   if request.method == 'POST':
@@ -943,4 +1118,13 @@ def table_jsgrid(request):
     'segment': 'jsGrid'
   }
   return render(request, 'pages/tables/jsgrid.html', context)
+
+@login_required
+def dismiss_notification(request, notification_id):
+    if request.method == 'POST':
+        notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+        notification.is_read = True
+        notification.save()
+        return JsonResponse({'status': 'success'})
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 

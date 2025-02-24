@@ -161,6 +161,13 @@ urlpatterns = [
     path('accounts/password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(
         template_name='accounts/password_reset_complete.html'
     ), name='password_reset_complete'),
+
+    # API
+    path('api/event/<int:event_id>/', views.event_detail_api, name='event_detail_api'),
+    path('api/event/<int:event_id>/feedback/', views.event_feedback, name='event_feedback'),
+    path('api/notifications/<int:notification_id>/dismiss/', 
+         views.dismiss_notification, 
+         name='dismiss_notification'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

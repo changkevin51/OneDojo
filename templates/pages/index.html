@@ -1,7 +1,7 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
 
-{% block title %}AdminLTE 3 | Student Dashboard{% endblock title %}
+{% block title %}Student Dashboard{% endblock title %}
 
 {% block extrastyle %}
 
@@ -18,79 +18,320 @@
   <!-- summernote -->
   <link rel="stylesheet" href="{% static 'plugins/summernote/summernote-bs4.min.css' %}">
 
+{{ block.super }}
+<style>
+  /* Enhanced styling */
+  .stat-card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+    transition: all 0.3s ease;
+    background: white;
+  }
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0,0,0,0.08);
+  }
+  .notification-item {
+    padding: 12px 15px;
+    border-left: 4px solid transparent;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    transition: all 0.2s ease;
+  }
+  .notification-item:hover {
+    background: #fff;
+    transform: translateX(5px);
+  }
+  .notification-item.warning { border-left-color: #ffc107; }
+  .notification-item.info { border-left-color: #17a2b8; }
+  .notification-item.danger { border-left-color: #dc3545; }
+  .notification-icon {
+    margin-right: 10px;
+    font-size: 1.1em;
+  }
+  .belt-display {
+    padding: 20px;
+    border-radius: 15px;
+    background: linear-gradient(145deg, #ffffff, #f5f5f5);
+  }
+  .progress {
+    height: 8px;
+    border-radius: 4px;
+  }
+  .assignment-table th {
+    border-top: none;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    font-weight: 600;
+  }
+  .video-card {
+    border-radius: 15px;
+    overflow: hidden;
+  }
+</style>
 {% endblock extrastyle %}
 
 {% block bodyclass %}hold-transition sidebar-mini layout-fixed{% endblock bodyclass %}
 
 {% block content %}
 <div class="content-wrapper">
-  <!-- Content Header -->
-  <section class="content-header">
-    <div class="container-fluid">
-      <!-- ...existing header code if any... -->
-      <div class="row mb-2">
-        <div class="col-sm-6">
-          <h1>Student Dashboard</h1>
-        </div>
-        <div class="col-sm-6">
-          <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item active">Dashboard</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Main Content -->
-  <section class="content">
-    <div class="container-fluid">
-      <!-- Row 1: Progress, Notifications, Educational Videos -->
-      <div class="row">
-        <div class="col-lg-4 col-md-6">
-          <!-- Monthly Progress Report Card -->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">Belt Status</h3>
-              <div class="ribbon-wrapper">
-                <div class="ribbon bg-primary">Current</div>
-              </div>
-            </div>
-            <div class="card-body text-center">
-              <div class="belt-display mb-4">
-                <div class="belt-icon" style="
-                    width: 200px;
-                    height: 40px;
-                    background-color: {{ user.belt }};
-                    margin: 0 auto;
-                    border: 2px solid #333;
-                    border-radius: 5px;
-                    position: relative;
-                    box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                  <div style="
-                      position: absolute;
-                      left: 50%;
-                      top: 50%;
-                      transform: translate(-50%, -50%);
-                      color: {% if user.belt == 'black' or user.belt == 'blue' or user.belt == 'purple' %}white{% else %}black{% endif %};
-                      font-weight: bold;
-                      font-size: 1.2em;">
-                    {{ user.get_belt_display }} Belt
+  <div class="container-fluid">
+    <!-- Notifications Section -->
+    <div class="row mt-4">
+      <div class="col-12">
+        <div class="card stat-card mb-4">
+          <div class="card-header">
+            <h3 class="card-title">
+              <i class="fas fa-bell"></i> Notifications
+              {% if notifications %}
+                <span class="badge badge-danger">{{ notifications|length }}</span>
+              {% endif %}
+            </h3>
+          </div>
+          <div class="card-body p-0">
+            <div class="notifications-list">
+              {% for notification in notifications %}
+              <div class="notification-item p-3 border-bottom" id="notification-{{ notification.id }}">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h6 class="mb-1">
+                      <i class="fas 
+                          {% if notification.notification_type == 'assignment' %}fa-tasks text-primary
+                          {% elif notification.notification_type == 'assessment' %}fa-chart-bar text-warning
+                          {% elif notification.notification_type == 'material' %}fa-book text-info
+                          {% elif notification.notification_type == 'feedback' %}fa-comment text-success
+                          {% endif %}
+                      mr-2"></i>
+                      {{ notification.title }}
+                    </h6>
+                    <p class="text-muted mb-0 small">{{ notification.message }}</p>
+                    <small class="text-muted">{{ notification.created_at|timesince }} ago</small>
+                  </div>
+                  <div class="btn-group">
+                    {% if notification.link %}
+                    <a href="{{ notification.link }}" class="btn btn-sm btn-info mr-2">
+                      <i class="fas fa-eye"></i> View
+                    </a>
+                    {% endif %}
+                    <button class="btn btn-sm btn-secondary dismiss-notification" 
+                            data-notification-id="{{ notification.id }}">
+                      <i class="fas fa-times"></i>
+                    </button>
                   </div>
                 </div>
               </div>
-              <p class="mt-3">Your current rank:</p>
-              <h4 class="text-bold">{{ user.get_belt_display }} Belt</h4>
+              {% empty %}
+              <div class="p-3 text-center text-muted">
+                No new notifications
+              </div>
+              {% endfor %}
             </div>
           </div>
         </div>
-        <div class="col-lg-4 col-md-6">
-          <!-- Notifications Card -->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">Notifications</h3>
+      </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="row mt-4">
+      <!-- Belt Status -->
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="text-uppercase mb-0">Current Belt</h6>
+              <span class="badge badge-pill badge-primary">Active</span>
             </div>
-            <div class="card-body">
+            <div class="belt-display text-center">
+              <div class="belt-icon" style="
+                width: 100%;
+                height: 40px;
+                background-color: {{ user.belt }};
+                border: 2px solid #333;
+                border-radius: 5px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: {% if user.belt == 'black' or user.belt == 'blue' or user.belt == 'purple' %}white{% else %}black{% endif %};
+                font-weight: bold;">
+                {{ user.get_belt_display }} Belt
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Assignment Stats -->
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card h-100">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <h6 class="text-uppercase mb-3">Assignments</h6>
+                <div class="row align-items-center">
+                  <div class="col-auto">
+                    <h2 class="mb-0 mr-3">{{ active_count }}</h2>
+                  </div>
+                  <div class="col">
+                    <div class="progress mb-2" style="height: 5px;">
+                      <div class="progress-bar bg-warning" style="width: {{ active_count }}%"></div>
+                    </div>
+                    <small class="text-muted">Active Tasks</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress Stats -->
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card h-100">
+          <div class="card-body">
+            <h6 class="text-uppercase mb-3">Progress</h6>
+            <div class="d-flex align-items-center mb-3">
+              <h2 class="mb-0 mr-2">4/6</h2>
+              <small class="text-success">
+                <i class="fas fa-arrow-up"></i> 
+                Criterias Completed
+              </small>
+            </div>
+            <div class="progress" style="height: 5px;">
+              <div class="progress-bar bg-success" style="width: 80%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming Events -->
+      <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stat-card h-100">
+          <div class="card-body">
+            <h6 class="text-uppercase mb-3">Next Assessment</h6>
+            <div class="d-flex align-items-center">
+              <div class="display-4 mr-3">
+                <i class="far fa-calendar-alt text-info"></i>
+              </div>
+              <div>
+                <h4 class="mb-0">17 Days</h4>
+                <small class="text-muted">Until next evaluation</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="row mt-4">
+      <!-- Assignments Table -->
+      <div class="col-xl-8 col-lg-7">
+        <div class="card stat-card mb-4">
+          <div class="card-header bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <h6 class="mb-0 text-uppercase">Active Assignments</h6>
+              <a href="{% url 'assignments' %}" class="btn btn-sm btn-outline-primary">View All</a>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table assignment-table mb-0">
+                <thead>
+                    <tr>
+                      <th>Assignment</th>
+                      <th>Due Date</th>
+                      <th>Status</th>
+                      <th style="width: 150px">Progress</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for assignment in active_assignments|slice:":5" %}
+                    <tr>
+                      <td>{{ assignment.title }}</td>
+                      <td>
+                        {% if assignment.due_date %}
+                          <span class="{% if assignment.is_overdue %}text-danger{% endif %}">
+                            {{ assignment.due_date|date:"M d, Y" }}
+                          </span>
+                        {% else %}
+                          <span class="text-muted">No due date</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if assignment.is_submitted %}
+                          <span class="badge badge-success">Submitted</span>
+                        {% elif assignment.is_overdue %}
+                          <span class="badge badge-danger">Overdue</span>
+                        {% else %}
+                          <span class="badge badge-warning">In Progress</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if assignment.is_submitted %}
+                          <div class="progress progress-sm">
+                            <div class="progress-bar bg-success" style="width: 100%"></div>
+                          </div>
+                        {% else %}
+                          <div class="progress progress-sm">
+                            <div class="progress-bar bg-warning" style="width: 0%"></div>
+                          </div>
+                        {% endif %}
+                      </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                      <td colspan="4" class="text-center py-3">
+                        <span class="text-muted">No active assignments</span>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Sidebar -->
+      <div class="col-xl-4 col-lg-5">
+        <div class="card stat-card video-card mb-4">
+          <div class="card-body p-0">
+            <div class="embed-responsive embed-responsive-16by9">
+              <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/qY7V-wDHRoQ" allowfullscreen></iframe>
+            </div>
+            <div class="p-3">
+              <h6 class="mb-2">Featured Tutorial</h6>
+              <p class="text-muted small mb-0">Learn advanced techniques from our instructors</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="card-body">
+            <h6 class="text-uppercase mb-3">Recent Activity</h6>
+            <div class="timeline small">
+              <!-- Add your recent activity items here -->
+              <div class="time-label">
+                <span class="bg-info">Today</span>
+              </div>
+              <div>
+                <i class="fas fa-user bg-primary"></i>
+                <div class="timeline-item">
+                  <span class="time"><i class="far fa-clock"></i> 2 hours ago</span>
+                  <h3 class="timeline-header no-border">Completed Python Basics</h3>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="card stat-card mb-4">
+          <div class="card-body">
+            <h6 class="text-uppercase mb-3">Recent Notifications</h6>
+            <div class="notification-list">
               <ul class="list-unstyled">
                 <li><i class="fas fa-bell text-warning"></i> Belt evaluation scheduled on 25th</li>
                 <li><i class="fas fa-bell text-info"></i> New feedback available</li>
@@ -99,316 +340,10 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-4 col-md-12">
-          <!-- Educational Videos & Links Card -->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">Educational Videos &amp; Links</h3>
-            </div>
-            <div class="card-body">
-              <p>Watch videos to enhance your skills:</p>
-              <div class="embed-responsive embed-responsive-16by9 mb-2">
-                <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/qY7V-wDHRoQ" allowfullscreen></iframe>
-              </div>
-              <a href="#" class="btn btn-primary btn-block">More Resources</a>
-            </div>
-          </div>
-        </div>
       </div>
-      <!-- Row 2: Messaging and Calendar -->
-      
-      <div class="card" style="width: 700px; margin: 35px auto;">
-
-
-        <div class="card-header">
-        
-          <h3 class="card-title">Progress Report</h3>
-          <div class="card-tools">
-            <!-- Buttons, labels, and many other things can be placed here! -->
-            <!-- Here is a label for example -->
-            <span class="badge badge-primary">Updated!</span>
-          </div>
-          <!-- /.card-tools -->
-        </div>
-        <!-- /.card-header -->
-        <div class="card-body">
-          <div class="info-box bg-gradient-warning">
-            <span class="info-box-icon"><i class="far fa-calendar-alt"></i></span>
-            <div class="info-box-content">
-              <span class="info-box-text">Days until next assessment</span>
-              <span class="info-box-number">37</span>
-              <div class="progress">
-                <div class="progress-bar" style="width: 70%"></div>
-              </div>
-              <span class="progress-description">
-                Current mark: 70%
-              </span>
-            </div>
-            
-              <a href="{% url 'student_progress' %}" class="small-box-footer">
-                More info <i class="fas fa-arrow-circle-right"></i>
-              </a>
-            
-          </div>
-
-          <div class="small-box bg-gradient-success">
-            <div class="inner">
-              <h3>44</h3>
-              <p>Classes attended</p>
-            </div>
-            <div class="icon">
-              <i class="fas fa-user-plus"></i>
-            </div>
-            <a href="{% url 'student_progress' %}" class="small-box-footer">
-              More info <i class="fas fa-arrow-circle-right"></i>
-            </a>
-          </div>
-
-        </div>
-        <!-- /.card-body -->
-        <div class="card-footer">
-          The footer of the card
-        </div>
-        <!-- /.card-footer -->
-      </div>
-      <!-- /.card -->
-
-
-      <div class="row">
-        <div class="col-md-6">
-          <!-- Messaging System Card -->
-          <div class="card card-danger direct-chat direct-chat-danger">
-            <div class="card-header">
-              <h3 class="card-title">Direct Chat</h3>
-              <div class="card-tools">
-                <span data-toggle="tooltip" title="3 New Messages" class="badge badge-light">3</span>
-                <button type="button" class="btn btn-tool" data-widget="collapse">
-                  <i class="fas fa-minus"></i>
-                </button>
-                <button type="button" class="btn btn-tool" data-toggle="tooltip" title="Contacts" data-widget="chat-pane-toggle">
-                  <i class="fas fa-comments"></i>
-                </button>
-                <button type="button" class="btn btn-tool" data-widget="remove"><i class="fas fa-times"></i>
-                </button>
-              </div>
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-              <!-- Conversations are loaded here -->
-              <div class="direct-chat-messages">
-                <!-- Message. Default to the left -->
-                <div class="direct-chat-msg">
-                  <div class="direct-chat-infos clearfix">
-                    <span class="direct-chat-name float-left">Alexander Pierce</span>
-                    <span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
-                  </div>
-                  <!-- /.direct-chat-infos -->
-                  <img class="direct-chat-img" src="/docs/3.0/assets/img/user1-128x128.jpg" alt="message user image">
-                  <!-- /.direct-chat-img -->
-                  <div class="direct-chat-text">
-                    Is this template really for free? That's unbelievable!
-                  </div>
-                  <!-- /.direct-chat-text -->
-                </div>
-                <!-- /.direct-chat-msg -->
-                <!-- Message to the right -->
-                <div class="direct-chat-msg right">
-                  <div class="direct-chat-infos clearfix">
-                    <span class="direct-chat-name float-right">Sarah Bullock</span>
-                    <span class="direct-chat-timestamp float-left">23 Jan 2:05 pm</span>
-                  </div>
-                  <!-- /.direct-chat-infos -->
-                  <img class="direct-chat-img" src="/docs/3.0/assets/img/user3-128x128.jpg" alt="message user image">
-                  <!-- /.direct-chat-img -->
-                  <div class="direct-chat-text">
-                    You better believe it!
-                  </div>
-                  <!-- /.direct-chat-text -->
-                </div>
-                <!-- /.direct-chat-msg -->
-                <!-- Message. Default to the left -->
-                <div class="direct-chat-msg">
-                  <div class="direct-chat-infos clearfix">
-                    <span class="direct-chat-name float-left">Alexander Pierce</span>
-                    <span class="direct-chat-timestamp float-right">23 Jan 5:37 pm</span>
-                  </div>
-                  <!-- /.direct-chat-infos -->
-                  <img class="direct-chat-img" src="/docs/3.0/assets/img/user1-128x128.jpg" alt="message user image">
-                  <!-- /.direct-chat-img -->
-                  <div class="direct-chat-text">
-                    Working with AdminLTE on a great new app! Wanna join?
-                  </div>
-                  <!-- /.direct-chat-text -->
-                </div>
-                <!-- /.direct-chat-msg -->
-                <!-- Message to the right -->
-                <div class="direct-chat-msg right">
-                  <div class="direct-chat-infos clearfix">
-                    <span class="direct-chat-name float-right">Sarah Bullock</span>
-                    <span class="direct-chat-timestamp float-left">23 Jan 6:10 pm</span>
-                  </div>
-                  <!-- /.direct-chat-infos -->
-                  <img class="direct-chat-img" src="/docs/3.0/assets/img/user3-128x128.jpg" alt="message user image">
-                  <!-- /.direct-chat-img -->
-                  <div class="direct-chat-text">
-                    I would love to.
-                  </div>
-                  <!-- /.direct-chat-text -->
-                </div>
-                <!-- /.direct-chat-msg -->
-              </div>
-              <!--/.direct-chat-messages-->
-              <!-- Contacts are loaded here -->
-              <div class="direct-chat-contacts">
-                <ul class="contacts-list">
-                  <li>
-                    <a href="#">
-                      <img class="contacts-list-img" src="/docs/3.0/assets/img/user1-128x128.jpg">
-                      <div class="contacts-list-info">
-                        <span class="contacts-list-name">
-                          Count Dracula
-                          <small class="contacts-list-date float-right">2/28/2015</small>
-                        </span>
-                        <span class="contacts-list-msg">How have you been? I was...</span>
-                      </div>
-                      <!-- /.contacts-list-info -->
-                    </a>
-                  </li>
-                  <!-- End Contact Item -->
-                  <li>
-                    <a href="#">
-                      <img class="contacts-list-img" src="/docs/3.0/assets/img/user7-128x128.jpg">
-                      <div class="contacts-list-info">
-                        <span class="contacts-list-name">
-                          Sarah Doe
-                          <small class="contacts-list-date float-right">2/23/2015</small>
-                        </span>
-                        <span class="contacts-list-msg">I will be waiting for...</span>
-                      </div>
-                      <!-- /.contacts-list-info -->
-                    </a>
-                  </li>
-                  <!-- End Contact Item -->
-                  <li>
-                    <a href="#">
-                      <img class="contacts-list-img" src="/docs/3.0/assets/img/user3-128x128.jpg">
-                      <div class="contacts-list-info">
-                        <span class="contacts-list-name">
-                          Nadia Jolie
-                          <small class="contacts-list-date float-right">2/20/2015</small>
-                        </span>
-                        <span class="contacts-list-msg">I'll call you back at...</span>
-                      </div>
-                      <!-- /.contacts-list-info -->
-                    </a>
-                  </li>
-                  <!-- End Contact Item -->
-                  <li>
-                    <a href="#">
-                      <img class="contacts-list-img" src="/docs/3.0/assets/img/user5-128x128.jpg">
-                      <div class="contacts-list-info">
-                        <span class="contacts-list-name">
-                          Nora S. Vans
-                          <small class="contacts-list-date float-right">2/10/2015</small>
-                        </span>
-                        <span class="contacts-list-msg">Where is your new...</span>
-                      </div>
-                      <!-- /.contacts-list-info -->
-                    </a>
-                  </li>
-                  <!-- End Contact Item -->
-                  <li>
-                    <a href="#">
-                      <img class="contacts-list-img" src="/docs/3.0/assets/img/user6-128x128.jpg">
-                      <div class="contacts-list-info">
-                        <span class="contacts-list-name">
-                          John K.
-                          <small class="contacts-list-date float-right">1/27/2015</small>
-                        </span>
-                        <span class="contacts-list-msg">Can I take a look at...</span>
-                      </div>
-                      <!-- /.contacts-list-info -->
-                    </a>
-                  </li>
-                  <!-- End Contact Item -->
-                  <li>
-                    <a href="#">
-                      <img class="contacts-list-img" src="/docs/3.0/assets/img/user8-128x128.jpg">
-                      <div class="contacts-list-info">
-                        <span class="contacts-list-name">
-                          Kenneth M.
-                          <small class="contacts-list-date float-right">1/4/2015</small>
-                        </span>
-                        <span class="contacts-list-msg">Never mind I found...</span>
-                      </div>
-                      <!-- /.contacts-list-info -->
-                    </a>
-                  </li>
-                  <!-- End Contact Item -->
-                </ul>
-                <!-- /.contacts-list -->
-              </div>
-              <!-- /.direct-chat-pane -->
-            </div>
-            <!-- /.card-body -->
-            <div class="card-footer">
-              <form action="#" method="post">
-                <div class="input-group">
-                  <input type="text" name="message" placeholder="Type Message ..." class="form-control">
-                  <span class="input-group-append">
-                    <button type="button" class="btn btn-primary">Send</button>
-                  </span>
-                </div>
-              </form>
-            </div>
-            <!-- /.card-footer-->
-          </div>
-          <!--/.direct-chat -->
-          Outline Direct Chat
-          <!-- Dojo Calendar Card -->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">Dojo Calendar</h3>
-              <div class="card-tools">
-                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                  <i class="fas fa-minus"></i>
-                </button>
-              </div>
-            </div>
-            <div class="card-body">
-              <!-- Calendar widget placeholder -->
-              <div id="calendar" style="width: 100%"></div>
-            </div>
-          </div>
-          <!-- Dojo PLACEHOLDER Card -->
-          <div class="card">
-            <div class="card-header">
-              <h3 class="card-title">Default Card Example</h3>
-              <div class="card-tools">
-                <!-- Buttons, labels, and many other things can be placed here! -->
-                <!-- Here is a label for example -->
-                <span class="badge badge-primary">Label</span>
-              </div>
-              <!-- /.card-tools -->
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-              The body of the card
-            </div>
-            <!-- /.card-body -->
-            <div class="card-footer">
-              The footer of the card
-            </div>
-            <!-- /.card-footer -->
-          </div>
-          <!-- /.card -->  
-        </div>
-      </div>
-      <!-- ...existing content if any... -->
     </div>
-  </section>
+  </div>
 </div>
-
 {% endblock content %}
 
 {% block extra_scripts %}
@@ -447,6 +382,23 @@
   $('#calendar').datetimepicker({
     format: 'L'
   });
+</script>
+{{ block.super }}
+<script>
+$(document).ready(function() {
+    $('.dismiss-notification').click(function() {
+        const notificationId = $(this).data('notification-id');
+        $.post('/api/notifications/' + notificationId + '/dismiss/', {
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        })
+        .done(function() {
+            $('#notification-' + notificationId).fadeOut();
+        })
+        .fail(function() {
+            toastr.error('Failed to dismiss notification');
+        });
+    });
+});
 </script>
 {% endblock extra_scripts %}
 

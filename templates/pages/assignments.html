@@ -134,6 +134,61 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Assignments with Feedback -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-info card-outline">
+                        <div class="card-header">
+                            <h3 class="card-title">Assignments with Feedback</h3>
+                        </div>
+                        <div class="card-body">
+                            {% for assignment in completed_assignments %}
+                            {% if assignment.feedback.exists %}
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">{{ assignment.title }}</h3>
+                                    <div class="card-tools">
+                                        <span class="badge badge-info">
+                                            Feedback Available
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="submission-details mb-3">
+                                        <h5>Your Submission</h5>
+                                        <p>{{ assignment.submission_notes }}</p>
+                                        {% if assignment.submission_file %}
+                                        <a href="{{ assignment.submission_file.url }}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-download"></i> Download Submission
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="feedback-section">
+                                        <h5>Feedback</h5>
+                                        {% for feedback in assignment.feedback.all %}
+                                        <div class="feedback-item mb-3 p-3 bg-light rounded">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <strong>{{ feedback.author.get_full_name }}</strong>
+                                                <small class="text-muted">{{ feedback.created_at|date:"M d, Y H:i" }}</small>
+                                            </div>
+                                            <p class="mb-0">{{ feedback.content }}</p>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% empty %}
+                            <div class="alert alert-info">
+                                No assignments with feedback yet.
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 </div>
