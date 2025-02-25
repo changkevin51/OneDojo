@@ -7,3 +7,4 @@ django-allauth==0.58.1
 psycopg2-binary>=2.9.9
 python-dotenv
 django-debug-toolbar>=4.3.0
+Pillow

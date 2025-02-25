@@ -258,7 +258,13 @@ def view_assignment(request):
     }
     return render(request, 'pages/assignments.html', context)
 
+@login_required
+def view_assessment(request):
+    if not request.user.is_student:
+        return redirect('login')
+    return render(request, 'pages/assessments.html')
 
+  
 # Teacher Dashboard
 @login_required
 def teacher_dashboard(request):

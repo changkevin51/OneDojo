@@ -40,6 +40,8 @@ urlpatterns = [
     # Assignment Views
     path('assignments/', views.view_assignment, name='assignments'),
 
+    # Assessment Views
+    path('assessments/', views.view_assessment, name='assessments'),
     
 
     # View Student views
