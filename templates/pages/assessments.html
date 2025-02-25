@@ -1,30 +1,183 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
 
-{% block title %}AdminLTE 3 | Assignments{% endblock title %}
-{%block content%}
-<div class="content-wrapper">
-  <div class="card">
-    <div class="card-header">
-      <h3 class="card-title">Default Card Example</h3>
-      <div class="card-tools">
-        <!-- Buttons, labels, and many other things can be placed here! -->
-        <!-- Here is a label for example -->
-        <span class="badge badge-primary">Label</span>
-      </div>
-      <!-- /.card-tools -->
-    </div>
-    <!-- /.card-header -->
-    <div class="card-body">
-      The body of the card
-    </div>
-    <!-- /.card-body -->
-    <div class="card-footer">
-      The footer of the card
-    </div>
-    <!-- /.card-footer -->
-  </div>
-  <!-- /.card -->
-</div>
+{% block title %}My Assessments{% endblock title %}
 
-{% endblock content %}
+{% block content %}
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Assessment History</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <!-- The time line -->
+                    <div class="timeline">
+                        {% regroup timeline_events|dictsortreversed:"created_at" by created_at|date:"F Y" as events_by_month %}
+                        {% for month in events_by_month %}
+                            {% if month.list|dictsortreversed:"created_at"|first %}
+                            <div class="time-label">
+                                <span class="bg-gradient-info">{{ month.grouper }}</span>
+                            </div>
+                            {% endif %}
+
+                            {% for event in month.list %}
+                            {% if event.event_type == 'assessment' %}
+                            <div>
+                                <i class="fas fa-chart-bar bg-warning"></i>
+                                <div class="timeline-item">
+                                    <span class="time">
+                                        <i class="fas fa-clock"></i> 
+                                        {{ event.created_at|date:"d M Y, H:i" }}
+                                    </span>
+                                    <h3 class="timeline-header">
+                                        <strong>{{ event.title }}</strong>
+                                        {% if event.assessment_result %}
+                                        <span class="badge badge-success ml-2">
+                                            Result: {{ event.assessment_result }}
+                                        </span>
+                                        {% endif %}
+                                    </h3>
+
+                                    <div class="timeline-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="card card-outline card-warning mb-0">
+                                                    <div class="card-body">
+                                                        {{ event.content|safe }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {% if event.feedback.exists %}
+                                    <div class="timeline-footer">
+                                        <div class="card">
+                                            <div class="card-header bg-light">
+                                                <h3 class="card-title">
+                                                    <i class="fas fa-comments"></i> Instructor Feedback
+                                                </h3>
+                                            </div>
+                                            <div class="card-body p-0">
+                                                {% for feedback in event.feedback.all %}
+                                                <div class="feedback-item p-3 {% if not forloop.last %}border-bottom{% endif %}">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <strong class="text-primary">
+                                                            {{ feedback.author.get_full_name }}
+                                                        </strong>
+                                                        <small class="text-muted">
+                                                            {{ feedback.created_at|date:"M d, Y H:i" }}
+                                                        </small>
+                                                    </div>
+                                                    <p class="mb-0">{{ feedback.content }}</p>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                        
+                        <div>
+                            <i class="fas fa-clock bg-gray"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+{{ block.super }}
+<style>
+.timeline {
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.timeline:before {
+    background: #dee2e6;
+    border-radius: 0.25rem;
+    bottom: 0;
+    content: '';
+    left: 31px;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    width: 4px;
+}
+
+.timeline > div > .timeline-item {
+    margin-left: 60px;
+    margin-right: 15px;
+    margin-top: 0;
+    padding: 1rem;
+    position: relative;
+    box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+    border-radius: .5rem;
+}
+
+.time-label {
+    margin-bottom: 1rem;
+}
+
+.time-label > span {
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-weight: 600;
+}
+
+.timeline-item .time {
+    color: #999;
+    float: right;
+    font-size: 12px;
+    padding: 10px;
+}
+
+.timeline-item .timeline-header {
+    border-bottom: 1px solid #f4f4f4;
+    color: #555;
+    font-size: 16px;
+    line-height: 1.1;
+    margin: 0;
+    padding: 10px;
+}
+
+.timeline-item .timeline-body {
+    padding: 10px;
+}
+
+.timeline-footer {
+    padding: 10px;
+}
+
+.feedback-item {
+    background-color: #f8f9fa;
+    transition: background-color 0.3s;
+}
+
+.feedback-item:hover {
+    background-color: #f2f4f6;
+}
+
+.card-outline.card-warning {
+    border-top: 3px solid #ffc107;
+}
+</style>
+{% endblock %}

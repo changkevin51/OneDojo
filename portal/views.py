@@ -240,6 +240,7 @@ def view_assignment(request):
     if not request.user.is_student:
         return redirect('login')
     
+    # Get assignments data
     active_assignments = TimelineEvent.objects.filter(
         student=request.user,
         event_type='assignment',
@@ -252,9 +253,18 @@ def view_assignment(request):
         is_submitted=True
     ).order_by('-submission_date')
     
+    # Get all timeline events for the timeline view
+    timeline_events = TimelineEvent.objects.filter(
+        student=request.user
+    ).prefetch_related(
+        'feedback',
+        'feedback__author'
+    ).order_by('-created_at')
+    
     context = {
         'active_assignments': active_assignments,
-        'completed_assignments': completed_assignments
+        'completed_assignments': completed_assignments,
+        'timeline_events': timeline_events
     }
     return render(request, 'pages/assignments.html', context)
 
@@ -262,7 +272,20 @@ def view_assignment(request):
 def view_assessment(request):
     if not request.user.is_student:
         return redirect('login')
-    return render(request, 'pages/assessments.html')
+    
+    # Get all timeline events filtered by assessment type
+    timeline_events = TimelineEvent.objects.filter(
+        student=request.user
+    ).prefetch_related(
+        'feedback',
+        'feedback__author'
+    ).order_by('-created_at')
+    
+    context = {
+        'timeline_events': timeline_events,
+    }
+    
+    return render(request, 'pages/assessments.html', context)
 
   
 # Teacher Dashboard

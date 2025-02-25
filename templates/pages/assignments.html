@@ -1,190 +1,289 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
 
-{% block title %}My Assignments{% endblock title %}
+{% block title %}My Activities{% endblock title %}
 
 {% block content %}
 <div class="content-wrapper">
+    <!-- Content Header -->
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>My Assignments</h1>
+                    <h1>My Activities</h1>
                 </div>
             </div>
+            <!-- Add tab navigation -->
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" data-toggle="tab" href="#assignments" role="tab">
+                        <i class="fas fa-tasks"></i> Assignments
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-toggle="tab" href="#assessments" role="tab">
+                        <i class="fas fa-chart-bar"></i> Assessments
+                    </a>
+                </li>
+            </ul>
         </div>
     </section>
 
     <section class="content">
         <div class="container-fluid">
-            <!-- Active Assignments -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="card card-primary card-outline">
-                        <div class="card-header">
-                            <h3 class="card-title">Active Assignments</h3>
-                        </div>
-                        <div class="card-body">
-                            {% for assignment in active_assignments %}
-                            <div class="assignment-card mb-4">
-                                <div class="card {% if assignment.is_overdue %}card-danger{% else %}card-info{% endif %}">
-                                    <div class="card-header">
-                                        <h3 class="card-title">{{ assignment.title }}</h3>
-                                        <div class="card-tools">
-                                            <span class="badge {% if assignment.is_overdue %}badge-danger{% else %}badge-info{% endif %}">
-                                                {% if assignment.due_date %}
-                                                    Due: {{ assignment.due_date|date:"F d, Y g:i A" }}
-                                                {% else %}
-                                                    No due date set
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="card-body">
-                                        {{ assignment.content|safe }}
-                                    </div>
-                                    <div class="card-footer">
-                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#submitModal{{ assignment.id }}">
-                                            Submit Assignment
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Submit Modal -->
-                            <div class="modal fade" id="submitModal{{ assignment.id }}">
-                                <div class="modal-dialog modal-lg">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h4 class="modal-title">Submit Assignment: {{ assignment.title }}</h4>
-                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                        </div>
-                                        <form method="POST" action="{% url 'submit_assignment' event_id=assignment.id %}" enctype="multipart/form-data">
-                                            {% csrf_token %}
-                                            <div class="modal-body">
-                                                <div class="form-group">
-                                                    <label>Submission Notes</label>
-                                                    <textarea name="notes" class="form-control" rows="4"></textarea>
-                                                </div>
-                                                <div class="form-group">
-                                                  <label>Upload File</label>
-                                                  <div class="custom-file">
-                                                      <input type="file" name="submission_file" class="custom-file-input">
-                                                      <label class="custom-file-label">Choose file (optional)</label>
-                                                  </div>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                <button type="submit" class="btn btn-primary">Submit</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                            {% empty %}
-                            <div class="alert alert-info">
-                                No active assignments at this time.
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Completed Assignments -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="card card-success card-outline">
-                        <div class="card-header">
-                            <h3 class="card-title">Completed Assignments</h3>
-                        </div>
-                        <div class="card-body">
-                            {% for assignment in completed_assignments %}
-                            <div class="card card-success collapsed-card">
+            <div class="tab-content">
+                <!-- Assignments Tab -->
+                <div class="tab-pane fade show active" id="assignments" role="tabpanel">
+                    <!-- Active Assignments -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-primary card-outline">
                                 <div class="card-header">
-                                    <h3 class="card-title">{{ assignment.title }}</h3>
-                                    <div class="card-tools">
-                                        <span class="badge badge-success">
-                                            Submitted: {{ assignment.submission_date|date:"M d, Y H:i" }}
-                                        </span>
-                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                            <i class="fas fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div class="card-body" style="display: none;">
-                                    {{ assignment.content|safe }}
-                                    <hr>
-                                    <h5>Your Submission</h5>
-                                    <p>{{ assignment.submission_notes }}</p>
-                                    {% if assignment.submission_file %}
-                                    <a href="{{ assignment.submission_file.url }}" class="btn btn-sm btn-info">
-                                        <i class="fas fa-download"></i> Download Submission
-                                    </a>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            {% empty %}
-                            <div class="alert alert-info">
-                                No completed assignments yet.
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Assignments with Feedback -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="card card-info card-outline">
-                        <div class="card-header">
-                            <h3 class="card-title">Assignments with Feedback</h3>
-                        </div>
-                        <div class="card-body">
-                            {% for assignment in completed_assignments %}
-                            {% if assignment.feedback.exists %}
-                            <div class="card">
-                                <div class="card-header">
-                                    <h3 class="card-title">{{ assignment.title }}</h3>
-                                    <div class="card-tools">
-                                        <span class="badge badge-info">
-                                            Feedback Available
-                                        </span>
-                                    </div>
+                                    <h3 class="card-title">Active Assignments</h3>
                                 </div>
                                 <div class="card-body">
-                                    <div class="submission-details mb-3">
-                                        <h5>Your Submission</h5>
-                                        <p>{{ assignment.submission_notes }}</p>
-                                        {% if assignment.submission_file %}
-                                        <a href="{{ assignment.submission_file.url }}" class="btn btn-sm btn-info">
-                                            <i class="fas fa-download"></i> Download Submission
-                                        </a>
-                                        {% endif %}
-                                    </div>
-                                    
-                                    <div class="feedback-section">
-                                        <h5>Feedback</h5>
-                                        {% for feedback in assignment.feedback.all %}
-                                        <div class="feedback-item mb-3 p-3 bg-light rounded">
-                                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                                <strong>{{ feedback.author.get_full_name }}</strong>
-                                                <small class="text-muted">{{ feedback.created_at|date:"M d, Y H:i" }}</small>
+                                    {% for assignment in active_assignments %}
+                                    <div class="assignment-card mb-4">
+                                        <div class="card {% if assignment.is_overdue %}card-danger{% else %}card-info{% endif %}">
+                                            <div class="card-header">
+                                                <h3 class="card-title">{{ assignment.title }}</h3>
+                                                <div class="card-tools">
+                                                    <span class="badge {% if assignment.is_overdue %}badge-danger{% else %}badge-info{% endif %}">
+                                                        {% if assignment.due_date %}
+                                                            Due: {{ assignment.due_date|date:"F d, Y g:i A" }}
+                                                        {% else %}
+                                                            No due date set
+                                                        {% endif %}
+                                                    </span>
+                                                </div>
                                             </div>
-                                            <p class="mb-0">{{ feedback.content }}</p>
+                                            <div class="card-body">
+                                                {{ assignment.content|safe }}
+                                            </div>
+                                            <div class="card-footer">
+                                                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#submitModal{{ assignment.id }}">
+                                                    Submit Assignment
+                                                </button>
+                                            </div>
                                         </div>
-                                        {% endfor %}
                                     </div>
+
+                                    <!-- Submit Modal -->
+                                    <div class="modal fade" id="submitModal{{ assignment.id }}">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title">Submit Assignment: {{ assignment.title }}</h4>
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                </div>
+                                                <form method="POST" action="{% url 'submit_assignment' event_id=assignment.id %}" enctype="multipart/form-data">
+                                                    {% csrf_token %}
+                                                    <div class="modal-body">
+                                                        <div class="form-group">
+                                                            <label>Submission Notes</label>
+                                                            <textarea name="notes" class="form-control" rows="4"></textarea>
+                                                        </div>
+                                                        <div class="form-group">
+                                                          <label>Upload File</label>
+                                                          <div class="custom-file">
+                                                              <input type="file" name="submission_file" class="custom-file-input">
+                                                              <label class="custom-file-label">Choose file (optional)</label>
+                                                          </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% empty %}
+                                    <div class="alert alert-info">
+                                        No active assignments at this time.
+                                    </div>
+                                    {% endfor %}
                                 </div>
                             </div>
-                            {% endif %}
-                            {% empty %}
-                            <div class="alert alert-info">
-                                No assignments with feedback yet.
+                        </div>
+                    </div>
+
+                    <!-- Completed Assignments -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-success card-outline">
+                                <div class="card-header">
+                                    <h3 class="card-title">Completed Assignments</h3>
+                                </div>
+                                <div class="card-body">
+                                    {% for assignment in completed_assignments %}
+                                    <div class="card card-success collapsed-card">
+                                        <div class="card-header">
+                                            <h3 class="card-title">{{ assignment.title }}</h3>
+                                            <div class="card-tools">
+                                                <span class="badge badge-success">
+                                                    Submitted: {{ assignment.submission_date|date:"M d, Y H:i" }}
+                                                </span>
+                                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="card-body" style="display: none;">
+                                            {{ assignment.content|safe }}
+                                            <hr>
+                                            <h5>Your Submission</h5>
+                                            <p>{{ assignment.submission_notes }}</p>
+                                            {% if assignment.submission_file %}
+                                            <a href="{{ assignment.submission_file.url }}" class="btn btn-sm btn-info">
+                                                <i class="fas fa-download"></i> Download Submission
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% empty %}
+                                    <div class="alert alert-info">
+                                        No completed assignments yet.
+                                    </div>
+                                    {% endfor %}
+                                </div>
                             </div>
-                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Assignments with Feedback -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-info card-outline">
+                                <div class="card-header">
+                                    <h3 class="card-title">Assignments with Feedback</h3>
+                                </div>
+                                <div class="card-body">
+                                    {% for assignment in completed_assignments %}
+                                    {% if assignment.feedback.exists %}
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="card-title">{{ assignment.title }}</h3>
+                                            <div class="card-tools">
+                                                <span class="badge badge-info">
+                                                    Feedback Available
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="submission-details mb-3">
+                                                <h5>Your Submission</h5>
+                                                <p>{{ assignment.submission_notes }}</p>
+                                                {% if assignment.submission_file %}
+                                                <a href="{{ assignment.submission_file.url }}" class="btn btn-sm btn-info">
+                                                    <i class="fas fa-download"></i> Download Submission
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            <div class="feedback-section">
+                                                <h5>Feedback</h5>
+                                                {% for feedback in assignment.feedback.all %}
+                                                <div class="feedback-item mb-3 p-3 bg-light rounded">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <strong>{{ feedback.author.get_full_name }}</strong>
+                                                        <small class="text-muted">{{ feedback.created_at|date:"M d, Y H:i" }}</small>
+                                                    </div>
+                                                    <p class="mb-0">{{ feedback.content }}</p>
+                                                </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    {% empty %}
+                                    <div class="alert alert-info">
+                                        No assignments with feedback yet.
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Assessments Tab -->
+                <div class="tab-pane fade" id="assessments" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <!-- The time line -->
+                            <div class="timeline">
+                                {% regroup timeline_events|dictsortreversed:"created_at" by created_at|date:"F Y" as events_by_month %}
+                                {% for month in events_by_month %}
+                                    {% if month.list|dictsortreversed:"created_at"|first %}
+                                    <div class="time-label">
+                                        <span class="bg-gradient-info">{{ month.grouper }}</span>
+                                    </div>
+                                    {% endif %}
+
+                                    {% for event in month.list %}
+                                    {% if event.event_type == 'assessment' %}
+                                    <div>
+                                        <i class="fas fa-chart-bar bg-warning"></i>
+                                        <div class="timeline-item">
+                                            <span class="time">
+                                                <i class="fas fa-clock"></i> 
+                                                {{ event.created_at|date:"d M Y, H:i" }}
+                                            </span>
+                                            <h3 class="timeline-header">
+                                                <strong>{{ event.title }}</strong>
+                                                {% if event.assessment_result %}
+                                                <span class="badge badge-success ml-2">
+                                                    Result: {{ event.assessment_result }}
+                                                </span>
+                                                {% endif %}
+                                            </h3>
+
+                                            <div class="timeline-body">
+                                                <div class="card card-outline card-warning mb-0">
+                                                    <div class="card-body">
+                                                        {{ event.content|safe }}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {% if event.feedback.exists %}
+                                            <div class="timeline-footer">
+                                                <div class="card">
+                                                    <div class="card-header bg-light">
+                                                        <h3 class="card-title">
+                                                            <i class="fas fa-comments"></i> Instructor Feedback
+                                                        </h3>
+                                                    </div>
+                                                    <div class="card-body p-0">
+                                                        {% for feedback in event.feedback.all %}
+                                                        <div class="feedback-item p-3 {% if not forloop.last %}border-bottom{% endif %}">
+                                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                                <strong class="text-primary">
+                                                                    {{ feedback.author.get_full_name }}
+                                                                </strong>
+                                                                <small class="text-muted">
+                                                                    {{ feedback.created_at|date:"M d, Y H:i" }}
+                                                                </small>
+                                                            </div>
+                                                            <p class="mb-0">{{ feedback.content }}</p>
+                                                        </div>
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                {% endfor %}
+                                
+                                <div>
+                                    <i class="fas fa-clock bg-gray"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -192,7 +291,7 @@
         </div>
     </section>
 </div>
-{% endblock content %}
+{% endblock %}
 
 {% block extra_scripts %}
 {{ block.super }}
@@ -200,6 +299,95 @@
 $(document).ready(function() {
     // Initialize custom file input
     bsCustomFileInput.init();
+    
+    // Handle tab persistence and URL hash
+    let hash = window.location.hash;
+    if (hash) {
+        $('.nav-tabs a[href="' + hash + '"]').tab('show');
+    }
+
+    // Store the active tab
+    $('.nav-tabs a').on('shown.bs.tab', function(e) {
+        window.location.hash = e.target.hash;
+    });
 });
 </script>
+
+<style>
+/* Existing styles */
+/* ...existing styles... */
+
+/* Add timeline specific styles */
+.timeline {
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.timeline:before {
+    background: #dee2e6;
+    border-radius: 0.25rem;
+    bottom: 0;
+    content: '';
+    left: 31px;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    width: 4px;
+}
+
+.timeline > div > .timeline-item {
+    margin-left: 60px;
+    margin-right: 15px;
+    margin-top: 0;
+    padding: 1rem;
+    position: relative;
+    box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+    border-radius: .5rem;
+}
+
+.time-label {
+    margin-bottom: 1rem;
+}
+
+.time-label > span {
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-weight: 600;
+}
+
+/* Navigation tabs styling */
+.nav-tabs {
+    border-bottom: 2px solid #dee2e6;
+    margin-bottom: 20px;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    font-weight: 500;
+    padding: 10px 20px;
+    color: #6c757d;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: transparent;
+    color: #007bff;
+}
+
+.nav-tabs .nav-link.active {
+    border-bottom: 2px solid #007bff;
+    color: #007bff;
+}
+
+.nav-tabs .nav-link i {
+    margin-right: 5px;
+}
+
+.tab-content {
+    padding-top: 20px;
+}
+</style>
 {% endblock extra_scripts %}
