@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="{% static 'plugins/daterangepicker/daterangepicker.css' %}">
   <!-- summernote -->
   <link rel="stylesheet" href="{% static 'plugins/summernote/summernote-bs4.min.css' %}">
-
+  <link rel="stylesheet" href="{% static 'plugins/fullcalendar/main.css' %}">
 {{ block.super }}
 <style>
   /* Enhanced styling */
@@ -70,7 +70,81 @@
     border-radius: 15px;
     overflow: hidden;
   }
-</style>
+  .external-event {
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+
+  .external-event:hover {
+    transform: translateX(5px);
+  }
+
+  #calendar {
+    min-height: 500px;
+    background: #fff;
+  }
+
+  .fc .fc-toolbar {
+    margin-bottom: 1rem;
+  }
+
+  .fc .fc-button {
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+
+  .fc .fc-button:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+  }
+
+  .fc-event {
+    border-radius: 3px;
+    padding: 3px 5px;
+  }
+
+  .fc-day-today {
+    background-color: #f8f9fa !important;
+  }
+  .col-xl-8 .card-body {
+  padding: 1.25rem;
+  }
+
+  #calendar {
+    min-height: 500px;
+    background: #fff;
+    margin: -0.5rem;  /* Compensate for fullcalendar's internal padding */
+  }
+
+  .card-header h6 {
+    margin-bottom: 0;
+    font-weight: 600;
+  }
+
+  #external-events {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .video-card {
+  border-radius: 15px;
+  overflow: hidden;
+  height: 100%;
+  max-height: 400px;
+  }
+
+  .video-card .embed-responsive {
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+  }
+
+  .video-card .card-body {
+    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  }
+  </style>
 {% endblock extrastyle %}
 
 {% block bodyclass %}hold-transition sidebar-mini layout-fixed{% endblock bodyclass %}
@@ -228,8 +302,9 @@
 
     <!-- Main Content Area -->
     <div class="row mt-4">
-      <!-- Assignments Table -->
+      <!-- Left Column -->
       <div class="col-xl-8 col-lg-7">
+        <!-- Assignments Table -->
         <div class="card stat-card mb-4">
           <div class="card-header bg-white">
             <div class="d-flex justify-content-between align-items-center">
@@ -294,10 +369,55 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Right Sidebar -->
+        <!-- Calendar Section -->
+        <div class="card stat-card mb-4">
+          <div class="card-header bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <h6 class="mb-0 text-uppercase">Schedule</h6>
+              <div class="btn-group">
+                <button type="button" class="btn btn-sm btn-outline-primary" id="add-event-btn">
+                  <i class="fas fa-plus"></i> Add Event
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <!-- Calendar Sidebar -->
+              <div class="col-md-3">
+                <div class="mb-3">
+                  <div class="card">
+                    <div class="card-header">
+                      <h6 class="card-title mb-0">Event Types</h6>
+                    </div>
+                    <div class="card-body">
+                      <div id="external-events" class="mb-3">
+                        <div class="external-event bg-info">Class</div>
+                        <div class="external-event bg-warning">Assignment</div>
+                        <div class="external-event bg-success">Assessment</div>
+                        <div class="external-event bg-danger">Exam</div>
+                      </div>
+                      <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="drop-remove">
+                        <label class="custom-control-label" for="drop-remove">Remove after drop</label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- Calendar -->
+              <div class="col-md-9">
+                <div id="calendar"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Column -->
       <div class="col-xl-4 col-lg-5">
+        <!-- Video Card -->
         <div class="card stat-card video-card mb-4">
           <div class="card-body p-0">
             <div class="embed-responsive embed-responsive-16by9">
@@ -310,6 +430,7 @@
           </div>
         </div>
 
+        <!-- Recent Activity -->
         <div class="card stat-card">
           <div class="card-body">
             <h6 class="text-uppercase mb-3">Recent Activity</h6>
@@ -322,7 +443,7 @@
                 <i class="fas fa-user bg-primary"></i>
                 <div class="timeline-item">
                   <span class="time"><i class="far fa-clock"></i> 2 hours ago</span>
-                  <h3 class="timeline-header no-border">Completed Python Basics</h3>
+                  <h3 class="timeline-header no-border">Promoted to Purple Belt!</h3>
                 </div>
               </div>
             </div>
@@ -378,9 +499,7 @@
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     <script src="{% static 'dist/js/pages/dashboard.js' %}"></script>
   
-<!-- ...existing extra scripts... -->
 <script>
-  // Initialize calendar widget
   $('#calendar').datetimepicker({
     format: 'L'
   });
@@ -400,6 +519,49 @@ $(document).ready(function() {
             toastr.error('Failed to dismiss notification');
         });
     });
+});
+</script>
+<script src="{% static 'plugins/fullcalendar/main.js' %}"></script>
+<script>
+$(function() {
+  /* Initialize draggable events */
+  function initEvents(ele) {
+    ele.each(function() {
+      var eventObject = {
+        title: $.trim($(this).text())
+      };
+      $(this).data('eventObject', eventObject);
+      $(this).draggable({
+        zIndex: 1070,
+        revert: true,
+        revertDuration: 0
+      });
+    });
+  }
+
+  initEvents($('#external-events div.external-event'));
+
+  /* Initialize calendar */
+  var Calendar = FullCalendar.Calendar;
+  var calendarEl = document.getElementById('calendar');
+  var calendar = new Calendar(calendarEl, {
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay'
+    },
+    themeSystem: 'bootstrap',
+    events: [], // You can populate this with your events data
+    editable: true,
+    droppable: true,
+    drop: function(info) {
+      if ($('#drop-remove').is(':checked')) {
+        $(info.draggedEl).remove();
+      }
+    }
+  });
+
+  calendar.render();
 });
 </script>
 {% endblock extra_scripts %}
