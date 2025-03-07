@@ -958,10 +958,15 @@ function viewSubmission(eventId) {
             toastr.error('Failed to load submission details');
         });
 }
-// Update the feedback submission to work with both modals
 function submitFeedback() {
-    const modal = $('.modal.show'); // Get the currently visible modal
-    const eventId = modal.attr('data-event-id');
+    const modal = $('.modal.show');  // Get currently visible modal
+    const eventId = modal.find('form').attr('data-event-id') || modal.attr('data-event-id');
+    
+    if (!eventId) {
+        toastr.error('Could not determine event ID');
+        return;
+    }
+    
     const feedbackTextarea = modal.find('textarea[name="feedback"]');
     const content = feedbackTextarea.val().trim();
     
