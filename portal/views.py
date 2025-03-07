@@ -47,8 +47,8 @@ def register(request):
     return render(request, 'auth/register.html')
 
 
-# User Login View
-
+def login_redirect_view(request):
+    return redirect('/')
 
 def user_login(request):
   if request.method == "POST":
@@ -73,7 +73,6 @@ def user_login(request):
     else:
       messages.error(request, "Invalid username or password.")
       print(f"Failed login attempt for username: {username}")
-      return redirect('login')
   
   return render(request, 'auth/login.html')
 
@@ -287,7 +286,17 @@ def view_assessment(request):
     
     return render(request, 'pages/assessments.html', context)
 
-  
+
+# Progress Report
+
+@login_required
+def progress_report(request):
+    if not request.user.is_student:
+        return redirect('login')
+    
+    return render(request, 'pages/progress.html')
+
+
 # Teacher Dashboard
 @login_required
 def teacher_dashboard(request):

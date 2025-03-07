@@ -5,8 +5,10 @@ from django.urls import path, include
 from . import views
 
 from django.contrib.auth import views as auth_views
+from django.views.generic import RedirectView
 
 urlpatterns = [
+    path('accounts/login/', RedirectView.as_view(url='/', permanent=True)),
     # Authentication
     path('', views.user_login, name='login'),
     path('', views.user_logout, name='logout'),
@@ -42,6 +44,9 @@ urlpatterns = [
 
     # Assessment Views
     path('assessments/', views.view_assessment, name='assessments'),
+
+    # Progress report views
+    path('progress/', views.progress_report, name='progress_report'),
     
 
     # View Student views
@@ -148,7 +153,7 @@ urlpatterns = [
 
     # Authentication
     path('accounts/register/', views.register, name='register'),
-    # path('accounts/login/', views.UserLoginView.as_view(), name='login'),
+    path('login/', views.UserLoginView.as_view(), name='login'),
     path('', views.user_logout_view, name='logout'),
     path('accounts/password-change/', views.UserPasswordChangeView.as_view(), name='password_change'),
     path('accounts/password-change-done/', auth_views.PasswordChangeDoneView.as_view(

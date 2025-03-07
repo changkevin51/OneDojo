@@ -2,12 +2,15 @@
 
 <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
     <!-- Dashboard Section -->
-    <li class="nav-item {% if request.resolver_match.url_name == 'student_dashboard' %}menu-open{% endif %}">
-        <a href="{% url 'student_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'student_dashboard' %}active{% endif %}">
+    <li class="nav-item {% if request.path == '/admin/' or request.resolver_match.url_name == 'student_dashboard' %}menu-open{% endif %}">
+        <a href="{% if request.user.is_staff %}{% url 'admin:index' %}{% else %}{% url 'student_dashboard' %}{% endif %}" 
+           class="nav-link {% if request.path == '/admin/' or request.resolver_match.url_name == 'student_dashboard' %}active bg-primary text-white{% endif %}">
             <i class="nav-icon fas fa-tachometer-alt"></i>
             <p>Dashboard</p>
         </a>
     </li>
+    
+    
 
     <!-- Calendar Section -->
     <li class="nav-item {% if request.resolver_match.url_name == 'examples_calendar' %}menu-open{% endif %}">
@@ -17,21 +20,51 @@
         </a>
     </li>
 
-    <!-- Assignments Section -->
-    <li class="nav-item {% if request.resolver_match.url_name == 'assignments' %}menu-open{% endif %}">
-        <a href="{% url 'assignments' %}" class="nav-link {% if request.resolver_match.url_name == 'assignments' %}active{% endif %}">
-            <i class="nav-icon fas fa-tasks"></i>
-            <p>Assignments</p>
-        </a>
-    </li>
+    {% if not request.user.is_staff %}  <!-- Hide for admins -->
+        <!-- Assignments Section -->
+        <li class="nav-item {% if request.resolver_match.url_name == 'assignments' %}menu-open{% endif %}">
+            <a href="{% url 'assignments' %}" class="nav-link {% if request.resolver_match.url_name == 'assignments' %}active{% endif %}">
+                <i class="nav-icon fas fa-tasks"></i>
+                <p>Assignments</p>
+            </a>
+        </li>
 
-    <!-- Assessments Section -->
-    <li class="nav-item {% if request.resolver_match.url_name == 'assessments' %}menu-open{% endif %}">
-        <a href="{% url 'assessments' %}" class="nav-link {% if request.resolver_match.url_name == 'assessments' %}active{% endif %}">
-            <i class="nav-icon fas fa-chart-bar"></i>
-            <p>Assessments</p>
-        </a>
-    </li>
+        <!-- Assessments Section -->
+        <li class="nav-item {% if request.resolver_match.url_name == 'assessments' %}menu-open{% endif %}">
+            <a href="{% url 'assessments' %}" class="nav-link {% if request.resolver_match.url_name == 'assessments' %}active{% endif %}">
+                <i class="nav-icon fas fa-chart-bar"></i>
+                <p>Assessments</p>
+            </a>
+        </li>
+
+        <!-- Progress Report Section -->
+        <li class="nav-item {% if request.resolver_match.url_name == 'progress_report' %}menu-open{% endif %}">
+            <a href="{% url 'progress_report' %}" class="nav-link {% if request.resolver_match.url_name == 'progress_report' %}active{% endif %}">
+                <i class="nav-icon fas fa-chart-line"></i>
+                <p>Progress Report</p>
+            </a>
+        </li>
+    {% else %}  <!-- Show only for admins -->
+        <!-- Admin Pages -->
+        <li class="nav-item">
+            <a href="{% url 'admin:portal_customuser_changelist' %}" class="nav-link">
+                <i class="nav-icon fas fa-users"></i>
+                <p>Users</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'admin:portal_session_changelist' %}" class="nav-link">
+                <i class="nav-icon fas fa-calendar-check"></i>
+                <p>Sessions</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{% url 'admin:portal_unit_changelist' %}" class="nav-link">
+                <i class="nav-icon fas fa-chalkboard-teacher"></i>
+                <p>Classes</p>
+            </a>
+        </li>
+    {% endif %}
 
     <!-- Logout Option -->
     {% if request.user.is_authenticated %}

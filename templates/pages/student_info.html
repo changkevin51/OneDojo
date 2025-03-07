@@ -229,14 +229,17 @@
         </div>
         <div class="col-auto">
           <div class="action-buttons">
+            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#materialModal">
+              <i class="fas fa-chart-bar"></i> Progress Report
+            </button>
             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#assessmentModal">
-              <i class="fas fa-chart-bar"></i> Assessment
+              <i class="fas fa-chart-bar"></i> Assessments
             </button>
             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#assignmentModal">
-              <i class="fas fa-tasks"></i> Assignment
+              <i class="fas fa-tasks"></i> Assignments
             </button>
             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#materialModal">
-              <i class="fas fa-book"></i> Material
+              <i class="fas fa-book"></i> Materials
             </button>
             <button type="button" class="btn btn-info" data-toggle="modal" data-target="#viewAssignmentsModal">
               <i class="fas fa-tasks"></i> View All Activities
@@ -270,8 +273,12 @@
         <!-- Student Information -->
         <div class="stat-card">
           <div class="card-body">
-            <h5 class="card-title mb-4">Personal Information</h5>
+            <h5 class="card-title mb-4"> &nbsp;&nbsp;&nbsp;Personal Information</h5>
+            <br>
+            
             <ul class="info-list">
+              <li>
+              </li>
               <li>
                 <span class="text-muted">Date Joined</span>
                 <strong>{{ student.date_joined|date:"M d, Y" }}</strong>
