@@ -364,6 +364,10 @@
                                         <a href="{{ event.submission.file.url }}" class="btn btn-sm btn-info" target="_blank" download>
                                             <i class="fas fa-download"></i> Download Submission ({{ event.submission.file.name|split:"/"|last }})
                                         </a>
+                                        <a href="{{ event.submission.file.url }}" class="btn btn-sm btn-success" target="_blank">
+                                          <i class="fas fa-eye"></i> Preview Submission (PDF)
+                                      </a>
+                                        <h1 class="btn btn-sm btn-info" target="_blank" download></h1class>></h1>
                                     {% endif %}
                                 </div>
                             {% else %}
@@ -432,6 +436,8 @@
     </div>
   </div>
 
+
+
 <!-- Assessment Modal -->
 <div class="modal fade" id="assessmentModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-lg">
@@ -454,8 +460,11 @@
           </div>
           <div class="form-group">
             <label>Comments</label>
-            <textarea name="content" class="summernote-basic"></textarea>
+            <textarea name="content" class="summernote-full"></textarea>
           </div>
+          <button type="button" class="btn btn-info mt-2" data-toggle="modal" data-target="#feedbackModal">
+            Use Pre-generated Feedback
+          </button>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -465,6 +474,48 @@
     </div>
   </div>
 </div>
+
+<!-- Pre-generated Feedback Modal -->
+<div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        <h5 class="modal-title"><i class="fas fa-comments"></i> Select Pre-generated Feedback</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group">
+          <li class="list-group-item">
+            <button class="btn btn-light btn-block insert-feedback" data-feedback="Great effort! Keep improving.">
+              Great effort! Keep improving.
+            </button>
+          </li>
+          <li class="list-group-item">
+            <button class="btn btn-light btn-block insert-feedback" data-feedback="Well done! Consider focusing on details.">
+              Well done! Consider focusing on details.
+            </button>
+          </li>
+          <li class="list-group-item">
+            <button class="btn btn-light btn-block insert-feedback" data-feedback="Good progress! Work on consistency.">
+              Good progress! Work on consistency.
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    $('.insert-feedback').click(function() {
+      var feedback = $(this).data('feedback');
+      $('.summernote-full').summernote('editor.insertText', feedback);
+      $('#feedbackModal').modal('hide');
+    });
+  });
+</script>
+
 
 <!-- Assignment Modal -->
 <div class="modal fade" id="assignmentModal" tabindex="-1" role="dialog">
