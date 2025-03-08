@@ -321,8 +321,14 @@
             <p>Completed Tasks</p>
           </div>
           <div class="stat-box">
-            <h4>{{ attendance_count|default:"0" }}</h4>
+            <h4>{{ attendance_count|default:"0" }} / {{ total_classes|default:"0" }}</h4>
             <p>Classes Attended</p>
+            {% if attendance_stats %}
+            <div class="progress mt-2" style="height: 5px;">
+              <div class="progress-bar bg-success" role="progressbar" style="width: {{ attendance_stats.attendance_rate }}%" aria-valuenow="{{ attendance_stats.attendance_rate }}" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <small class="text-muted">{{ attendance_stats.attendance_rate }}% attendance rate</small>
+            {% endif %}
           </div>
         </div>
 
@@ -863,6 +869,108 @@
   </div>
 </div>
 
+<!-- After the timelineModal, add this modal for showing attendance details -->
+<div class="modal fade" id="attendanceModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary">
+        <h5 class="modal-title"><i class="fas fa-clipboard-check"></i> Attendance Records</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="attendance-overview mb-4">
+          <div class="row">
+            <div class="col-md-4 text-center">
+              <div class="attendance-stat">
+                <h3 class="text-success">{{ attendance_stats.present }}</h3>
+                <p>Present</p>
+              </div>
+            </div>
+            <div class="col-md-4 text-center">
+              <div class="attendance-stat">
+                <h3 class="text-warning">{{ attendance_stats.late }}</h3>
+                <p>Late</p>
+              </div>
+            </div>
+            <div class="col-md-4 text-center">
+              <div class="attendance-stat">
+                <h3 class="text-danger">{{ attendance_stats.absent }}</h3>
+                <p>Absent</p>
+              </div>
+            </div>
+          </div>
+          <div class="progress mt-3">
+            <div class="progress-bar bg-success" role="progressbar" 
+                 style="width: {{ attendance_stats.present|default:0|floatformat:1 }}%" 
+                 aria-valuenow="{{ attendance_stats.present|default:0|floatformat:1 }}" 
+                 aria-valuemin="0" aria-valuemax="100">
+                 {{ attendance_stats.present|default:0 }} Present
+            </div>
+            <div class="progress-bar bg-warning" role="progressbar" 
+                 style="width: {{ attendance_stats.late|default:0|floatformat:1 }}%" 
+                 aria-valuenow="{{ attendance_stats.late|default:0|floatformat:1 }}" 
+                 aria-valuemin="0" aria-valuemax="100">
+                 {{ attendance_stats.late|default:0 }} Late
+            </div>
+            <div class="progress-bar bg-danger" role="progressbar" 
+                 style="width: {{ attendance_stats.absent|default:0|floatformat:1 }}%" 
+                 aria-valuenow="{{ attendance_stats.absent|default:0|floatformat:1 }}" 
+                 aria-valuemin="0" aria-valuemax="100">
+                 {{ attendance_stats.absent|default:0 }} Absent
+            </div>
+          </div>
+          <p class="text-center mt-2">
+            <strong>Attendance Rate: {{ attendance_stats.attendance_rate|default:0 }}%</strong>
+          </p>
+        </div>
+        
+        <h6 class="border-bottom pb-2">Recent Attendance</h6>
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Class</th>
+              <th>Status</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for attendance in student.attendances.all|slice:":10" %}
+            <tr>
+              <td>{{ attendance.date|date:"M d, Y" }}</td>
+              <td>{{ attendance.unit.name }}</td>
+              <td>
+                {% if attendance.status == 'present' %}
+                <span class="badge badge-success">Present</span>
+                {% elif attendance.status == 'late' %}
+                <span class="badge badge-warning">Late</span>
+                {% elif attendance.status == 'absent' %}
+                <span class="badge badge-danger">Absent</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if attendance.notes %}
+                {{ attendance.notes }}
+                {% else %}
+                <span class="text-muted">No notes</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="text-center">No attendance records found.</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% block extra_scripts %}
 {{ block.super }}
 <!-- Summernote -->
@@ -998,10 +1106,8 @@ function viewSubmission(eventId) {
                 $('#submissionFile').empty();
             }
             
-            // Load feedback
             loadFeedback(eventId, 'submissionFeedbackList');
             
-            // Show modal
             $('#submissionDetailModal').modal('show');
         })
         .fail(function(jqXHR) {
@@ -1079,25 +1185,29 @@ function saveEventChanges() {
         success: function(response) {
             toastr.success('Changes saved successfully');
             $('#eventDetailModal').modal('hide');
-            location.reload(); // Refresh to show updates
+            location.reload(); 
         }
     });
 }
 
-// Initialize tooltips
 $(function () {
   $('[data-toggle="tooltip"]').tooltip();
   
-  // Handle tab persistence
   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
     localStorage.setItem('lastTab', $(e.target).attr('href'));
   });
   
-  // Go to last active tab
   var lastTab = localStorage.getItem('lastTab');
   if (lastTab) {
     $('a[href="' + lastTab + '"]').tab('show');
   }
+});
+
+// Make the stats box for classes attended clickable
+$(document).ready(function() {
+  $('.stat-box:contains("Classes Attended")').css('cursor', 'pointer').click(function() {
+    $('#attendanceModal').modal('show');
+  });
 });
 </script>
 <style>

@@ -380,10 +380,11 @@ def admin_student_info(request, student_id):
         event_type='assignment',
         is_submitted=True
     ).count()
-
-    # Debug prints to check the counts
-    print(f"Active assignments: {active_count}")
-    print(f"Completed assignments: {completed_count}")
+    
+    # Get attendance stats
+    attendance_stats = Attendance.get_attendance_stats(student_id)
+    attendance_count = attendance_stats['present'] + attendance_stats['late']
+    total_classes = attendance_stats['total']
     
     context = {
         'student': student,
@@ -397,6 +398,9 @@ def admin_student_info(request, student_id):
         'active_count': active_count,
         'completed_count': completed_count,
         'total_assignments': active_count + completed_count,
+        'attendance_count': attendance_count,
+        'total_classes': total_classes,
+        'attendance_stats': attendance_stats,
         'now': timezone.now(),
     }
     
@@ -1168,4 +1172,202 @@ def dismiss_notification(request, notification_id):
         notification.save()
         return JsonResponse({'status': 'success'})
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@login_required
+def take_attendance(request, unit_id):
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+        
+    unit = get_object_or_404(Unit, id=unit_id)
+    registrations = Registration.objects.filter(unit=unit).select_related('student')
+    
+    context = {
+        'unit': unit,
+        'registrations': registrations,
+        'today': timezone.now().date(),
+    }
+    
+    return render(request, 'pages/take_attendance.html', context)
+
+@login_required
+def save_attendance(request):
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+        
+    if request.method == "POST":
+        unit_id = request.POST.get('unit_id')
+        unit = get_object_or_404(Unit, id=unit_id)
+        attendance_date = request.POST.get('attendance_date')
+        
+        student_records = {}
+        for key, value in request.POST.items():
+            if key.startswith('student_'):
+                student_id = key.replace('student_', '')
+                notes = request.POST.get(f'notes_{student_id}', '')
+                student_records[student_id] = {'status': value, 'notes': notes}
+        
+        attendance_count = 0
+        for student_id, data in student_records.items():
+            try:
+                student = CustomUser.objects.get(id=student_id)
+                
+                attendance, created = Attendance.objects.update_or_create(
+                    student=student,
+                    unit=unit,
+                    date=attendance_date,
+                    defaults={
+                        'status': data['status'],
+                        'notes': data['notes'],
+                        'marked_by': request.user
+                    }
+                )
+                attendance_count += 1
+                
+                if created:
+                    status_text = dict(Attendance.ATTENDANCE_STATUS).get(data['status'], data['status'])
+                    title = f"Attendance Marked: {status_text}"
+                    TimelineEvent.objects.create(
+                        student=student,
+                        event_type='join',  # Using 'join' type for attendance
+                        title=title,
+                        content=f"Attendance for {unit.name} on {attendance_date}: {status_text}",
+                        created_by=request.user
+                    )
+                
+            except CustomUser.DoesNotExist:
+                continue
+                
+        messages.success(request, f"Attendance saved successfully for {attendance_count} students.")
+        return redirect('admin_student_list', unit_id=unit_id)
+    
+    messages.error(request, "Invalid request method")
+    return redirect('dashboardv1')
+
+@login_required
+def attendance_list(request):
+    """Main attendance dashboard listing all units and recent attendance records"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+        
+    if request.user.is_staff and not request.user.is_teacher:
+        units = Unit.objects.all().order_by('name')
+    else:
+        units = Unit.objects.filter(teacher=request.user).order_by('name')
+    
+    recent_attendance = Attendance.objects.select_related(
+        'student', 'unit', 'marked_by'
+    ).order_by('-date', '-created_at')[:30]
+    
+    attendance_by_day = {}
+    for attendance in recent_attendance:
+        day_key = str(attendance.date)
+        if day_key not in attendance_by_day:
+            attendance_by_day[day_key] = {
+                'date': attendance.date,
+                'units': {}
+            }
+        
+        unit_key = attendance.unit.id
+        if unit_key not in attendance_by_day[day_key]['units']:
+            attendance_by_day[day_key]['units'][unit_key] = {
+                'unit': attendance.unit,
+                'present': 0,
+                'absent': 0,
+                'late': 0,
+                'total': 0,
+            }
+        
+        attendance_by_day[day_key]['units'][unit_key][attendance.status] += 1
+        attendance_by_day[day_key]['units'][unit_key]['total'] += 1
+    
+    context = {
+        'units': units,
+        'recent_attendance': recent_attendance,
+        'attendance_by_day': attendance_by_day,
+        'parent': 'attendance',
+        'segment': 'attendance_list',
+        'title': 'Attendance Records',
+    }
+    
+    return render(request, 'pages/attendance_list.html', context)
+
+@login_required
+def attendance_records(request, unit_id):
+    """Detailed attendance records for a specific unit"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+        
+    unit = get_object_or_404(Unit, id=unit_id)
+    
+    # Get all dates with attendance records for this unit
+    attendance_dates = Attendance.objects.filter(
+        unit=unit
+    ).values('date').distinct().order_by('-date')
+    
+    attendance_data = {}
+    for date_obj in attendance_dates:
+        date = date_obj['date']
+        records = Attendance.objects.filter(
+            unit=unit, 
+            date=date
+        ).select_related('student')
+        
+        attendance_data[str(date)] = {
+            'date': date,
+            'records': records,
+            'summary': {
+                'present': records.filter(status='present').count(),
+                'absent': records.filter(status='absent').count(),
+                'late': records.filter(status='late').count(),
+                'total': records.count(),
+            }
+        }
+    
+    context = {
+        'unit': unit,
+        'attendance_data': attendance_data,
+        'parent': 'attendance',
+        'segment': 'attendance_records',
+        'title': f'Attendance Records: {unit.name}',
+    }
+    
+    return render(request, 'pages/attendance_records.html', context)
+
+@login_required
+def edit_attendance(request, attendance_id):
+    """Edit a specific attendance record"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+        
+    attendance = get_object_or_404(Attendance, id=attendance_id)
+    
+    if request.method == "POST":
+        status = request.POST.get('status')
+        notes = request.POST.get('notes', '')
+        
+        if status in dict(Attendance.ATTENDANCE_STATUS).keys():
+            attendance.status = status
+            attendance.notes = notes
+            attendance.marked_by = request.user
+            attendance.save()
+            
+            messages.success(request, "Attendance record updated successfully")
+            return redirect('attendance_records', unit_id=attendance.unit.id)
+        else:
+            messages.error(request, "Invalid status selected")
+    
+    context = {
+        'attendance': attendance,
+        'statuses': Attendance.ATTENDANCE_STATUS,
+        'parent': 'attendance',
+        'segment': 'edit_attendance',
+        'title': f'Edit Attendance: {attendance.student.get_full_name()}',
+    }
+    
+    return render(request, 'pages/edit_attendance.html', context)
 

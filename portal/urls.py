@@ -36,6 +36,13 @@ urlpatterns = [
     path('student_list/<int:unit_id>/', views.admin_student_list, name='admin_student_list'),
     path('student/<int:student_id>/', views.admin_student_info, name='admin_student_info'),
 
+    # Attendance URLs
+    path('attendance/<int:unit_id>/take/', views.take_attendance, name='take_attendance'),
+    path('attendance/save/', views.save_attendance, name='save_attendance'),
+    path('attendance/list/', views.attendance_list, name='attendance_list'),
+    path('attendance/<int:unit_id>/records/', views.attendance_records, name='attendance_records'),
+    path('attendance/<int:attendance_id>/edit/', views.edit_attendance, name='edit_attendance'),
+
     path('student/<int:student_id>/change-belt/', views.change_belt, name='change_belt'),
     path('student/<int:student_id>/add-event/', views.add_timeline_event, name='add_timeline_event'),
 

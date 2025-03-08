@@ -1,0 +1,117 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %} Edit Attendance Record {% endblock title %}
+
+{% block content %}
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Edit Attendance Record</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboardv1' %}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'attendance_list' %}">Attendance</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'attendance_records' attendance.unit.id %}">{{ attendance.unit.name }}</a></li>
+                        <li class="breadcrumb-item active">Edit</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Edit Attendance Record</h3>
+                        </div>
+                        <div class="card-body">
+                            <form method="post" action="{% url 'edit_attendance' attendance.id %}">
+                                {% csrf_token %}
+                                
+                                <div class="form-group">
+                                    <label>Student</label>
+                                    <input type="text" class="form-control" value="{{ attendance.student.get_full_name }}" readonly>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Class</label>
+                                    <input type="text" class="form-control" value="{{ attendance.unit.name }}" readonly>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Date</label>
+                                    <input type="text" class="form-control" value="{{ attendance.date|date:'Y-m-d' }}" readonly>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Status</label>
+                                    <select name="status" class="form-control">
+                                        {% for value, label in statuses %}
+                                        <option value="{{ value }}" {% if attendance.status == value %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Notes</label>
+                                    <textarea name="notes" class="form-control" rows="3">{{ attendance.notes }}</textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                    <a href="{% url 'attendance_records' attendance.unit.id %}" class="btn btn-default">Cancel</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Attendance History</h3>
+                        </div>
+                        <div class="card-body p-0">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for record in attendance.student.attendances.all|slice:":10" %}
+                                    <tr>
+                                        <td>{{ record.date|date:"Y-m-d" }}</td>
+                                        <td>
+                                            {% if record.status == 'present' %}
+                                            <span class="badge badge-success">Present</span>
+                                            {% elif record.status == 'late' %}
+                                            <span class="badge badge-warning">Late</span>
+                                            {% elif record.status == 'absent' %}
+                                            <span class="badge badge-danger">Absent</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="2" class="text-center">No previous attendance records.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock content %}

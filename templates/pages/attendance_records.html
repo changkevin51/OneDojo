@@ -1,0 +1,139 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %} {{ unit.name }} - Attendance Records {% endblock title %}
+
+{% block content %}
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>{{ unit.name }} - Attendance Records</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboardv1' %}">Home</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'attendance_list' %}">Attendance</a></li>
+                        <li class="breadcrumb-item active">{{ unit.name }}</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row mb-4">
+                <div class="col-md-8">
+                    <div class="d-flex align-items-center">
+                        <h2 class="mb-0 mr-3">Attendance Records</h2>
+                        <a href="{% url 'admin_student_list' unit.id %}" class="btn btn-primary">
+                            <i class="fas fa-clipboard-check mr-1"></i> Take Attendance
+                        </a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="float-right">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-outline-primary dropdown-toggle" data-toggle="dropdown">
+                                <i class="fas fa-file-export mr-1"></i> Export
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="#">Export as CSV</a>
+                                <a class="dropdown-item" href="#">Export as PDF</a>
+                                <a class="dropdown-item" href="#">Export as Excel</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% for date, data in attendance_data.items %}
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="far fa-calendar-alt mr-2"></i>
+                            {{ data.date|date:"l, F d, Y" }}
+                        </h5>
+                        <div class="attendance-summary">
+                            <span class="badge badge-success mr-1">{{ data.summary.present }} Present</span>
+                            <span class="badge badge-warning mr-1">{{ data.summary.late }} Late</span>
+                            <span class="badge badge-danger mr-1">{{ data.summary.absent }} Absent</span>
+                            <span class="badge badge-secondary">{{ data.summary.total }} Total</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px">#</th>
+                                    <th>Student</th>
+                                    <th style="width: 150px">Status</th>
+                                    <th>Notes</th>
+                                    <th style="width: 150px">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in data.records %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>
+                                        <a href="{% url 'admin_student_info' student_id=record.student.id %}">
+                                            {{ record.student.get_full_name|default:record.student.username }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {% if record.status == 'present' %}
+                                        <span class="badge badge-success">Present</span>
+                                        {% elif record.status == 'late' %}
+                                        <span class="badge badge-warning">Late</span>
+                                        {% elif record.status == 'absent' %}
+                                        <span class="badge badge-danger">Absent</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if record.notes %}
+                                        {{ record.notes }}
+                                        {% else %}
+                                        <span class="text-muted">No notes</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'edit_attendance' record.id %}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle mr-2"></i>
+                No attendance records found for this class.
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock content %}
+
+{% block stylesheets %}
+{{ block.super }}
+<style>
+    .badge {
+        padding: 0.5em 0.8em;
+        font-weight: 500;
+    }
+    .attendance-summary .badge {
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock stylesheets %}

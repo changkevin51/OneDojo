@@ -1,0 +1,137 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %} Attendance Records {% endblock title %}
+
+{% block content %}
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Attendance Records</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboardv1' %}">Home</a></li>
+                        <li class="breadcrumb-item active">Attendance</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Classes</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                {% for unit in units %}
+                                <div class="col-md-4 col-lg-3">
+                                    <div class="card unit-card mb-4">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ unit.name }}</h5>
+                                            <p class="card-text text-muted">{{ unit.code }}</p>
+                                            <div class="d-flex justify-content-between">
+                                                <a href="{% url 'admin_student_list' unit.id %}" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-users"></i> Students
+                                                </a>
+                                                <a href="{% url 'attendance_records' unit.id %}" class="btn btn-sm btn-outline-success">
+                                                    <i class="fas fa-clipboard-check"></i> Attendance
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="col-12">
+                                    <div class="alert alert-info">
+                                        No classes available. Please create a class first.
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Recent Attendance Records</h3>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-striped mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Class</th>
+                                            <th>Records</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for date, data in attendance_by_day.items %}
+                                            {% for unit_id, unit_data in data.units.items %}
+                                            <tr>
+                                                <td>{{ data.date|date:"M d, Y (D)" }}</td>
+                                                <td>{{ unit_data.unit.name }}</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="badge badge-success mr-2">{{ unit_data.present }} Present</div>
+                                                        <div class="badge badge-warning mr-2">{{ unit_data.late }} Late</div>
+                                                        <div class="badge badge-danger mr-2">{{ unit_data.absent }} Absent</div>
+                                                        <div class="badge badge-secondary">{{ unit_data.total }} Total</div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <a href="{% url 'attendance_records' unit_data.unit.id %}?date={{ data.date|date:'Y-m-d' }}" class="btn btn-sm btn-info">
+                                                        <i class="fas fa-eye"></i> View Details
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        {% empty %}
+                                        <tr>
+                                            <td colspan="4" class="text-center">No attendance records found.</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock content %}
+
+{% block stylesheets %}
+{{ block.super }}
+<style>
+    .unit-card {
+        transition: all 0.3s ease;
+        border-radius: 10px;
+    }
+    
+    .unit-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .badge {
+        padding: 0.5em 0.8em;
+        font-weight: 500;
+    }
+</style>
+{% endblock stylesheets %}

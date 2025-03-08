@@ -64,6 +64,12 @@
                 <p>Classes</p>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="{% url 'attendance_list' %}" class="nav-link {% if 'attendance' in segment %}active{% endif %}">
+                <i class="nav-icon fas fa-clipboard-check"></i>
+                <p>Attendance</p>
+            </a>
+        </li>
     {% endif %}
 
     <!-- Logout Option -->

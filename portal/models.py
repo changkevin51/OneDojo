@@ -253,5 +253,66 @@ class Submission(models.Model):
     def __str__(self):
         return f"{self.student.username} - {self.assignment.title}"
 
+class Attendance(models.Model):
+    ATTENDANCE_STATUS = [
+        ('present', 'Present'),
+        ('absent', 'Absent'),
+        ('late', 'Late'),
+    ]
+    
+    student = models.ForeignKey(
+        CustomUser, 
+        on_delete=models.CASCADE, 
+        related_name='attendances',
+        limit_choices_to={'is_student': True}
+    )
+    unit = models.ForeignKey(
+        Unit, 
+        on_delete=models.CASCADE,
+        related_name='attendances'
+    )
+    date = models.DateField(default=timezone.now)
+    status = models.CharField(
+        max_length=10,
+        choices=ATTENDANCE_STATUS,
+        default='present'
+    )
+    notes = models.TextField(blank=True, null=True)
+    marked_by = models.ForeignKey(
+        CustomUser,
+        on_delete=models.SET_NULL,
+        related_name='marked_attendances',
+        null=True,
+        limit_choices_to={'is_teacher': True}
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ['student', 'unit', 'date']
+        ordering = ['-date', 'unit']
+        
+    def __str__(self):
+        return f"{self.student.get_full_name()} - {self.unit.name} - {self.date} - {self.get_status_display()}"
+    
+    @classmethod
+    def get_attendance_stats(cls, student_id, unit_id=None):
+        """Get attendance statistics for a student, optionally filtered by unit"""
+        query = cls.objects.filter(student_id=student_id)
+        if unit_id:
+            query = query.filter(unit_id=unit_id)
+        
+        total_classes = query.count()
+        present_count = query.filter(status='present').count()
+        absent_count = query.filter(status='absent').count()
+        late_count = query.filter(status='late').count()
+        
+        return {
+            'total': total_classes,
+            'present': present_count,
+            'absent': absent_count,
+            'late': late_count,
+            'attendance_rate': round((present_count + late_count) / total_classes * 100, 1) if total_classes else 0
+        }
+
 
 
