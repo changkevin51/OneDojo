@@ -1371,3 +1371,112 @@ def edit_attendance(request, attendance_id):
     
     return render(request, 'pages/edit_attendance.html', context)
 
+@login_required
+def manage_feedback_templates(request):
+    """View all feedback templates and add new ones"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+    
+    templates = FeedbackTemplate.objects.filter(created_by=request.user).order_by('category', 'title')
+    
+    if request.method == "POST":
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        category = request.POST.get('category')
+        
+        if title and content:
+            FeedbackTemplate.objects.create(
+                title=title,
+                content=content,
+                category=category,
+                created_by=request.user
+            )
+            messages.success(request, "Feedback template created successfully")
+            return redirect('manage_feedback_templates')
+        else:
+            messages.error(request, "Title and content are required")
+    
+    context = {
+        'templates': templates,
+        'categories': FeedbackTemplate.CATEGORY_CHOICES,
+        'title': 'Manage Feedback Templates',
+        'parent': 'settings',
+        'segment': 'feedback_templates',
+    }
+    
+    return render(request, 'pages/manage_feedback_templates.html', context)
+
+@login_required
+def edit_feedback_template(request, template_id):
+    """Edit an existing feedback template"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+    
+    template = get_object_or_404(FeedbackTemplate, id=template_id, created_by=request.user)
+    
+    if request.method == "POST":
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        category = request.POST.get('category')
+        
+        if title and content:
+            template.title = title
+            template.content = content
+            template.category = category
+            template.save()
+            messages.success(request, "Feedback template updated successfully")
+            return redirect('manage_feedback_templates')
+        else:
+            messages.error(request, "Title and content are required")
+    
+    context = {
+        'template': template,
+        'categories': FeedbackTemplate.CATEGORY_CHOICES,
+        'title': 'Edit Feedback Template',
+        'parent': 'settings',
+        'segment': 'feedback_templates',
+    }
+    
+    return render(request, 'pages/edit_feedback_template.html', context)
+
+@login_required
+def delete_feedback_template(request, template_id):
+    """Delete a feedback template"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+    
+    template = get_object_or_404(FeedbackTemplate, id=template_id, created_by=request.user)
+    
+    if request.method == "POST":
+        template.delete()
+        messages.success(request, "Feedback template deleted successfully")
+        return redirect('manage_feedback_templates')
+    
+    return redirect('manage_feedback_templates')
+
+@login_required
+def get_feedback_templates(request):
+    """API to get all feedback templates for the current user"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        return JsonResponse({'error': 'Permission denied'}, status=403)
+    
+    templates = FeedbackTemplate.objects.filter(created_by=request.user).order_by('category', 'title')
+    
+    templates_by_category = {}
+    for template in templates:
+        category_name = dict(FeedbackTemplate.CATEGORY_CHOICES).get(template.category, 'Other')
+        
+        if category_name not in templates_by_category:
+            templates_by_category[category_name] = []
+            
+        templates_by_category[category_name].append({
+            'id': template.id,
+            'title': template.title,
+            'content': template.content,
+        })
+    
+    return JsonResponse({'categories': templates_by_category})
+

@@ -296,7 +296,7 @@ class Attendance(models.Model):
     
     @classmethod
     def get_attendance_stats(cls, student_id, unit_id=None):
-        """Get attendance statistics for a student, optionally filtered by unit"""
+        """Get attendance statistics for a student, filtered by unit"""
         query = cls.objects.filter(student_id=student_id)
         if unit_id:
             query = query.filter(unit_id=unit_id)
@@ -313,6 +313,32 @@ class Attendance(models.Model):
             'late': late_count,
             'attendance_rate': round((present_count + late_count) / total_classes * 100, 1) if total_classes else 0
         }
+
+class FeedbackTemplate(models.Model):
+    CATEGORY_CHOICES = [
+        ('positive', 'Positive Feedback'),
+        ('improvement', 'Needs Improvement'),
+        ('technical', 'Technical Skills'),
+        ('behavioral', 'Behavioral Skills'),
+        ('general', 'General Comments'),
+    ]
+    
+    title = models.CharField(max_length=100)
+    content = models.TextField()
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='general')
+    created_by = models.ForeignKey(
+        CustomUser, 
+        on_delete=models.CASCADE, 
+        related_name='feedback_templates'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['category', 'title']
+        
+    def __str__(self):
+        return self.title
 
 
 

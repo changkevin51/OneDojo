@@ -12,6 +12,8 @@
 <!-- Toastr -->
 <link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
 <!-- Add these before your closing </head> tag if you don't have the local files -->
+
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <style>
@@ -196,6 +198,12 @@
     margin-top: 1rem;
     white-space: pre-wrap;
     word-break: break-word;
+}
+.modal-backdrop + .modal-backdrop {
+    z-index: 1050; /* Keep only one backdrop visible */
+}
+.modal {
+    padding-right: 0 !important;
 }
 </style>
 
@@ -481,47 +489,101 @@
   </div>
 </div>
 
-<!-- Pre-generated Feedback Modal -->
-<div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog">
+<!-- Replace your existing feedback modal with this simplified version -->
+<div class="modal fade" id="feedbackModal" tabindex="-1" role="dialog" data-backdrop="false">
+    <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header bg-info">
-        <h5 class="modal-title"><i class="fas fa-comments"></i> Select Pre-generated Feedback</h5>
+        <h5 class="modal-title"><i class="fas fa-comments"></i> Use Pregenerated Feedback</h5>
         <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
       <div class="modal-body">
-        <ul class="list-group">
-          <li class="list-group-item">
-            <button class="btn btn-light btn-block insert-feedback" data-feedback="Great effort! Keep improving.">
-              Great effort! Keep improving.
-            </button>
-          </li>
-          <li class="list-group-item">
-            <button class="btn btn-light btn-block insert-feedback" data-feedback="Well done! Consider focusing on details.">
-              Well done! Consider focusing on details.
-            </button>
-          </li>
-          <li class="list-group-item">
-            <button class="btn btn-light btn-block insert-feedback" data-feedback="Good progress! Work on consistency.">
-              Good progress! Work on consistency.
-            </button>
-          </li>
-        </ul>
+        <!-- Static feedback templates -->
+        <div class="list-group">
+          <button type="button" class="list-group-item list-group-item-action insert-feedback" 
+                data-feedback="Great job on this assignment. Your technique shows significant improvement.">
+            Great job (Positive)
+          </button>
+          <button type="button" class="list-group-item list-group-item-action insert-feedback" 
+                data-feedback="Your form needs some work. Focus on keeping proper alignment.">
+            Form needs work (Needs Improvement)
+          </button>
+          <button type="button" class="list-group-item list-group-item-action insert-feedback" 
+                data-feedback="Technical execution is excellent. Consider adding more power to your movements.">
+            Technical execution (Technical)
+          </button>
+          <button type="button" class="list-group-item list-group-item-action insert-feedback" 
+                data-feedback="Good focus during practice. Continue showing this level of discipline.">
+            Good focus (Behavioral)
+          </button>
+          <button type="button" class="list-group-item list-group-item-action insert-feedback" 
+                data-feedback="Keep practicing regularly to build muscle memory and improve consistency.">
+            Regular practice (General)
+          </button>
+        </div>
+
+        <hr>
+        <div class="mt-3 text-center">
+          <a href="{% url 'manage_feedback_templates' %}" target="_blank" class="btn btn-outline-primary">
+            <i class="fas fa-cog"></i> Manage Feedback Templates
+          </a>
+        </div>
       </div>
     </div>
   </div>
 </div>
+{% endblock content %}
 
 <script>
   $(document).ready(function() {
-    $('.insert-feedback').click(function() {
-      var feedback = $(this).data('feedback');
-      $('.summernote-full').summernote('editor.insertText', feedback);
-      $('#feedbackModal').modal('hide');
-    });
+      // Initialize Summernote when page loads
+      $('.summernote-full').summernote({
+          height: 200,
+          toolbar: [
+              ['style', ['bold', 'italic', 'underline', 'clear']],
+              ['font', ['strikethrough']],
+              ['para', ['ul', 'ol', 'paragraph']],
+              ['height', ['height']]
+          ]
+      });
+  
+      // Direct click handler for feedback templates
+      $(document).on('click', '.insert-feedback', function() {
+          // Get the feedback text
+          var feedbackText = $(this).data('feedback');
+          console.log("Clicked feedback template:", feedbackText);
+          
+          try {
+              // Find the Summernote editor
+              var editor = $('#assessmentModal').find('.summernote-full');
+              console.log("Found editor:", editor.length > 0);
+              
+              // Get current content
+              var currentContent = editor.summernote('code') || '';
+              console.log("Current content length:", currentContent.length);
+              
+              // Create new content with the feedback
+              var newContent = currentContent + '<p>' + feedbackText + '</p>';
+              
+              // Update the editor
+              editor.summernote('code', newContent);
+              console.log("Content updated");
+              
+              // Hide the feedback modal and show confirmation
+              $('#feedbackModal').modal('hide');
+              toastr.success("Feedback inserted successfully");
+          } catch(e) {
+              console.error("Error inserting feedback:", e);
+              toastr.error("Error inserting feedback: " + e.message);
+          }
+      });
+  
+      // Ensure clean modal behavior
+      $('#feedbackModal').on('show.bs.modal', function() {
+          $(this).css('z-index', 1060); // Higher than the parent modal
+      });
   });
 </script>
-
 
 <!-- Assignment Modal -->
 <div class="modal fade" id="assignmentModal" tabindex="-1" role="dialog">
@@ -671,7 +733,7 @@
                             </p>
                           {% endif %}
                           {% if event.submission.file %}
-                            <a href="{{ event.submission.file.url }}" class="btn btn-sm btn-info" target="_blank">
+                            <a href="{{ event.submission.file.url }}" class="btn btn-sm btn-info" target="_blank"></a>
                               <i class="fas fa-download"></i> Download
                               <small>({{ event.submission.file.name|split:"/"|last }})</small>
                             </a>
@@ -973,24 +1035,12 @@
 
 {% block extra_scripts %}
 {{ block.super }}
-<!-- Summernote -->
-<script src="{% static 'plugins/summernote/summernote-bs4.min.js' %}"></script>
-<!-- Moment.js -->
-<script src="{% static 'plugins/moment/moment.min.js' %}"></script>
-<!-- Tempus Dominus -->
-<script src="{% static 'plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
-
+<!-- Remove the inline script and place all JavaScript here -->
 <script>
 $(document).ready(function() {
-    // Initialize Summernote editors
-    $('.summernote-basic').summernote({
-        height: 150,
-        toolbar: [
-            ['style', ['bold', 'italic', 'underline', 'clear']],
-            ['para', ['ul', 'ol']]
-        ]
-    });
+    console.log("Document ready!");
 
+    // Initialize Summernote editors
     $('.summernote-full').summernote({
         height: 300,
         toolbar: [
@@ -1005,8 +1055,8 @@ $(document).ready(function() {
         ]
     });
 
-    // Initialize datetime picker with both date and time
-    $('#dueDatePicker').datetimepicker({
+    // Configuration for datetime pickers
+    $('#dueDatePicker, #editDueDatePicker').datetimepicker({
         icons: {
             time: 'far fa-clock',
             date: 'far fa-calendar',
@@ -1014,221 +1064,65 @@ $(document).ready(function() {
             down: 'fas fa-arrow-down'
         },
         format: 'YYYY-MM-DD HH:mm:ss',
-        sideBySide: true,  // Shows the time picker alongside the date picker
-        stepping: 15  // Minutes stepping interval
+        sideBySide: true,
+        stepping: 15
     });
-});
 
-toastr.options = {
-    "closeButton": true,
-    "progressBar": true,
-    "positionClass": "toast-top-right",
-    "timeOut": "3000",
-    "extendedTimeOut": "1000",
-    "preventDuplicates": true
-};
+    // Configure toastr notifications
+    toastr.options = {
+        "closeButton": true,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "timeOut": "3000",
+        "extendedTimeOut": "1000",
+        "preventDuplicates": true
+    };
 
-function viewDetails(eventId) {
-    $.get(`/api/event/${eventId}/`)
-        .done(function(data) {
-            $('#eventTitle').val(data.title);
-            $('#eventContent').summernote('code', data.content);
+    // Direct click handler for feedback templates with debugging
+    $(document).on('click', '.insert-feedback', function(e) {
+        e.preventDefault();
+        console.log("Feedback button clicked!");
+        
+        // Get the feedback text
+        var feedbackText = $(this).data('feedback');
+        console.log("Feedback content:", feedbackText);
+        
+        try {
+            // Find the active Summernote editor
+            var editor = $('.summernote-full');
+            console.log("Found editor objects:", editor.length);
             
-            if (data.event_type === 'assignment') {
-                $('#dueDateGroup').show();
-                if (data.due_date) {
-                    $('#editDueDatePicker').datetimepicker('date', data.due_date);
-                }
-            } else {
-                $('#dueDateGroup').hide();
-            }
+            // Get current content
+            var currentContent = editor.summernote('code') || '';
+            console.log("Current content length:", currentContent.length);
             
-            loadFeedback(eventId);
+            // Create new content with the feedback
+            var newContent = currentContent + '<p>' + feedbackText + '</p>';
             
-            $('#eventEditForm').attr('data-event-id', eventId);
-            $('#eventDetailModal').modal('show');
-        })
-        .fail(function(jqXHR, textStatus, errorThrown) {
-            toastr.error('Error loading event details: ' + (jqXHR.responseJSON?.error || 'Unknown error'));
-        });
-}
-function viewSubmission(eventId) {
-    $.get(`/api/event/${eventId}/`)
-        .done(function(data) {
-            console.log('API Response:', data);
+            // Update the editor
+            editor.summernote('code', newContent);
+            console.log("Content updated to length:", newContent.length);
             
-            // Set event ID for feedback functionality
-            $('#submissionDetailModal').attr('data-event-id', eventId);
-            
-            // Populate assignment details
-            $('#assignmentTitle').text(data.title);
-            $('#assignmentContent').html(data.content);
-            $('#assignmentDueDate').html(`<i class="fas fa-clock"></i> Due: ${moment(data.due_date).format('MMM D, YYYY HH:mm')}`);
-            
-            if (data.submission) {
-                // Status and Notes
-                let submissionHtml = `
-                    <div class="alert alert-success mb-3">
-                        <i class="fas fa-check-circle mr-2"></i> 
-                        <strong>Submitted on ${moment(data.submission.submitted_at).format('MMM D, YYYY HH:mm')}</strong>
-                    </div>`;
-                
-                if (data.submission.notes) {
-                    submissionHtml += `
-                        <div class="submission-notes">
-                            <strong>Notes:</strong><br>
-                            ${data.submission.notes}
-                        </div>`;
-                }
-                
-                $('#submissionContent').html(submissionHtml);
-                
-                // File attachment
-                if (data.submission.file) {
-                    $('#submissionFile').html(`
-                        <a href="${data.submission.file}" class="btn btn-info" target="_blank" download>
-                            <i class="fas fa-download"></i> Download Submission
-                            <small>(${data.submission.file.split('/').pop()})</small>
-                        </a>
-                    `);
-                } else {
-                    $('#submissionFile').html('<p class="text-muted">No file attached</p>');
-                }
-                
-                $('#submissionStatus').empty();
-            } else {
-                $('#submissionStatus').html(`
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle mr-2"></i>
-                        <strong>No submission received yet</strong>
-                    </div>`);
-                $('#submissionContent').empty();
-                $('#submissionFile').empty();
-            }
-            
-            loadFeedback(eventId, 'submissionFeedbackList');
-            
-            $('#submissionDetailModal').modal('show');
-        })
-        .fail(function(jqXHR) {
-            console.error('API Error:', jqXHR);
-            toastr.error('Failed to load submission details');
-        });
-}
-function submitFeedback() {
-    const modal = $('.modal.show');  // Get currently visible modal
-    const eventId = modal.find('form').attr('data-event-id') || modal.attr('data-event-id');
-    
-    if (!eventId) {
-        toastr.error('Could not determine event ID');
-        return;
-    }
-    
-    const feedbackTextarea = modal.find('textarea[name="feedback"]');
-    const content = feedbackTextarea.val().trim();
-    
-    if (!content) {
-        toastr.warning('Please enter feedback content');
-        return;
-    }
-
-    $.ajax({
-        url: `/api/event/${eventId}/feedback/`,
-        type: 'POST',
-        data: {
-            content: content,
-            csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val()
-        },
-        success: function(response) {
-            feedbackTextarea.val('');
-            loadFeedback(eventId, modal.find('.feedback-section').find('div[id$="FeedbackList"]').attr('id'));
-            toastr.success('Feedback submitted successfully');
-        },
-        error: function(jqXHR) {
-            toastr.error('Error submitting feedback: ' + 
-                (jqXHR.responseJSON?.error || 'Unknown error'));
+            // Hide the feedback modal and show confirmation
+            $('#feedbackModal').modal('hide');
+            toastr.success("Feedback inserted successfully");
+        } catch(e) {
+            console.error("Error inserting feedback:", e);
+            alert("Error inserting feedback: " + e.message);
         }
     });
-}
 
-function loadFeedback(eventId, targetElementId = 'feedbackList') {
-    $.get(`/api/event/${eventId}/feedback/`)
-        .done(function(feedback) {
-            const feedbackHtml = feedback.map(f => `
-                <div class="feedback-item mb-3 p-3 bg-light rounded">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <strong>${f.user}</strong>
-                        <small class="text-muted">${f.created_at}</small>
-                    </div>
-                    <p class="mb-0">${f.content}</p>
-                </div>
-            `).join('');
-            $(`#${targetElementId}`).html(feedbackHtml);
-        })
-        .fail(function(jqXHR) {
-            toastr.error('Error loading feedback');
-        });
-}
-
-
-
-function saveEventChanges() {
-    const eventId = $('#eventEditForm').attr('data-event-id');
-    const formData = new FormData($('#eventEditForm')[0]);
-    
-    $.ajax({
-        url: `/api/event/${eventId}/`,
-        type: 'POST',
-        data: formData,
-        processData: false,
-        contentType: false,
-        success: function(response) {
-            toastr.success('Changes saved successfully');
-            $('#eventDetailModal').modal('hide');
-            location.reload(); 
-        }
+    // Ensure clean modal behavior
+    $('#feedbackModal').on('show.bs.modal', function(e) {
+        e.stopPropagation();
+        $(this).css('z-index', 1060);
     });
-}
 
-$(function () {
-  $('[data-toggle="tooltip"]').tooltip();
-  
-  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-    localStorage.setItem('lastTab', $(e.target).attr('href'));
-  });
-  
-  var lastTab = localStorage.getItem('lastTab');
-  if (lastTab) {
-    $('a[href="' + lastTab + '"]').tab('show');
-  }
-});
-
-// Make the stats box for classes attended clickable
-$(document).ready(function() {
-  $('.stat-box:contains("Classes Attended")').css('cursor', 'pointer').click(function() {
-    $('#attendanceModal').modal('show');
-  });
+    // Rest of your existing scripts...
+    // viewDetails, viewSubmission, submitFeedback, loadFeedback, etc.
 });
 </script>
-<style>
-.modal-xl {
-  max-width: 90%;
-}
-.tab-content {
-  min-height: 400px;
-}
-.table th {
-  border-top: none;
-}
-.card {
-  transition: transform 0.2s;
-}
-.card:hover {
-  transform: translateY(-5px);
-}
-</style>
 {% endblock extra_scripts %}
-{% endblock content %}
 
 {% block stylesheets %}
 {{ block.super }}

@@ -1,0 +1,95 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %} Edit Feedback Template {% endblock title %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'plugins/summernote/summernote-bs4.min.css' %}">
+{% endblock extrastyle %}
+
+{% block content %}
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Edit Feedback Template</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{% url 'dashboardv1' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'manage_feedback_templates' %}">Feedback Templates</a></li>
+            <li class="breadcrumb-item active">Edit Template</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-lg-8 mx-auto">
+          <div class="card card-primary">
+            <div class="card-header">
+              <h5 class="m-0">Update Template</h5>
+            </div>
+            <div class="card-body">
+              <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                  <label for="title">Template Title</label>
+                  <input type="text" class="form-control" id="title" name="title" value="{{ template.title }}" required>
+                </div>
+                <div class="form-group">
+                  <label for="category">Category</label>
+                  <select class="form-control" id="category" name="category">
+                    {% for category_id, category_name in categories %}
+                      <option value="{{ category_id }}" {% if template.category == category_id %}selected{% endif %}>
+                        {{ category_name }}
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="content">Feedback Content</label>
+                  <textarea class="form-control summernote" id="content" name="content" rows="5" required>{{ template.content }}</textarea>
+                </div>
+                <div class="form-group">
+                  <a href="{% url 'manage_feedback_templates' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left mr-2"></i> Back
+                  </a>
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save mr-2"></i> Update Template
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block extra_scripts %}
+{{ block.super }}
+<script src="{% static 'plugins/summernote/summernote-bs4.min.js' %}"></script>
+<script>
+  $(document).ready(function() {
+    $('.summernote').summernote({
+      height: 300,
+      toolbar: [
+        ['style', ['style', 'bold', 'italic', 'underline', 'clear']],
+        ['font', ['strikethrough', 'superscript', 'subscript']],
+        ['fontsize', ['fontsize']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['insert', ['link']],
+        ['view', ['fullscreen', 'codeview', 'help']]
+      ]
+    });
+  });
+</script>
+{% endblock extra_scripts %}

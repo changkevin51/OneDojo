@@ -182,6 +182,12 @@ urlpatterns = [
     path('api/notifications/<int:notification_id>/dismiss/', 
          views.dismiss_notification, 
          name='dismiss_notification'),
+
+    # Feedback Template Management
+    path('feedback-templates/', views.manage_feedback_templates, name='manage_feedback_templates'),
+    path('feedback-templates/edit/<int:template_id>/', views.edit_feedback_template, name='edit_feedback_template'),
+    path('feedback-templates/delete/<int:template_id>/', views.delete_feedback_template, name='delete_feedback_template'),
+    path('api/feedback-templates/', views.get_feedback_templates, name='get_feedback_templates'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

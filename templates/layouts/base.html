@@ -6,6 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>AdminLTE 3 | {% block title %}{% endblock title %}</title>
 
+  <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'admin/js/jquery.init.js' %}"></script>
+
+
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Theme style -->
@@ -14,11 +18,14 @@
   <link rel="stylesheet" href="{% static 'plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+  <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 
-  <!-- Add these in the head section -->
+
   <link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}">
   <link rel="stylesheet" type="text/css" href="{% static 'admin/css/widgets.css' %}">
   <link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
+  <link href="{% static 'plugins/summernote/summernote-bs4.min.css' %}" rel="stylesheet">
+
   {{ form.media }}
   {% block extrastyle %}{% endblock extrastyle %}
 </head>
@@ -65,6 +72,7 @@
 
   {% block javascript %}
     <!-- Add these before closing body tag -->
+
     <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'admin/js/jquery.init.js' %}"></script>
     <script type="text/javascript" src="{% static 'admin/js/core.js' %}"></script>
@@ -74,6 +82,9 @@
     <script type="text/javascript" src="{% static 'admin/js/prepopulate.js' %}"></script>
     <script type="text/javascript" src="{% static 'admin/js/vendor/xregexp/xregexp.min.js' %}"></script>
     <script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
+    <script src="{% static 'plugins/summernote/summernote-bs4.min.js' %}"></script>
+
+
   {% endblock %}
 </body>
 </html>
