@@ -49,32 +49,31 @@ def register(request):
 
 def login_redirect_view(request):
     return redirect('/')
-
 def user_login(request):
-  if request.method == "POST":
-    username = request.POST.get('username')
-    password = request.POST.get('password')
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
-    print(f"Attempting login with username: {username}")
+        print(f"Attempting login with username: {username}")
 
-    user = authenticate(request, username=username, password=password)
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            print(f"User {username} logged in successfully.")
+            
+            if user.is_student:
+                return redirect('student_dashboard')
+            elif user.is_teacher:
+                return redirect('teacher_dashboard')
+            else:
+                messages.error(request, "Invalid user role.")
+                return redirect('login')
+        else:
+            print(f"Failed login attempt for username: {username}")
+            return render(request, "auth/login.html", {"error_message": "Invalid username or password"})
     
-    if user is not None:
-      login(request, user)
-      print(f"User {username} logged in successfully.")
-      
-      if user.is_student:
-        return redirect('student_dashboard')
-      elif user.is_teacher:
-        return redirect('teacher_dashboard')
-      else:
-        messages.error(request, "Invalid user role.")
-        return redirect('login')
-    else:
-      messages.error(request, "Invalid username or password.")
-      print(f"Failed login attempt for username: {username}")
-  
-  return render(request, 'auth/login.html')
+    return render(request, 'auth/login.html')
 
 @login_required
 def user_logout(request):
