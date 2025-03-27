@@ -1,0 +1,208 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %} Manage Belt Criteria {% endblock title %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  .criteria-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    transition: all 0.3s;
+  }
+  
+  .criteria-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+  }
+  
+  .belt-header {
+    padding: 15px 20px;
+    border-radius: 10px 10px 0 0;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .criteria-list {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+  
+  .criteria-item {
+    border-left: 4px solid transparent;
+    transition: all 0.2s;
+  }
+  
+  .criteria-item:hover {
+    border-left-color: #007bff;
+    background-color: rgba(0,123,255,0.05);
+  }
+  
+  .criteria-actions {
+    opacity: 0.4;
+    transition: opacity 0.2s;
+  }
+  
+  .criteria-item:hover .criteria-actions {
+    opacity: 1;
+  }
+</style>
+{% endblock extrastyle %}
+
+{% block content %}
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Manage Belt Criteria</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{% url 'dashboardv1' %}">Home</a></li>
+            <li class="breadcrumb-item active">Belt Criteria</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Add Criteria Form -->
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Add New Criteria</h3>
+            </div>
+            <div class="card-body">
+              <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_criteria">
+                
+                <div class="form-group">
+                  <label for="belt">Belt Level</label>
+                  <select class="form-control" id="belt" name="belt" required>
+                    <option value="all">All Belt Levels</option>
+                    {% for value, label in belt_choices %}
+                      <option value="{{ value }}">{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="title">Title (1-2 words)</label>
+                  <input type="text" class="form-control" id="title" name="title" 
+                         placeholder="e.g., Knowledge Test" maxlength="50" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="description">Description</label>
+                  <textarea class="form-control" id="description" name="description" rows="3" 
+                            placeholder="e.g., Pass knowledge test with over 80%" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                  <label for="order">Display Order</label>
+                  <input type="number" class="form-control" id="order" name="order" 
+                         value="0" min="0" step="1">
+                  <small class="text-muted">Lower numbers appear first</small>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-plus-circle mr-2"></i>Add Criteria
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Criteria List -->
+        <div class="col-md-8">
+          <!-- Global Criteria -->
+          {% if all_belts_criteria %}
+          <div class="criteria-card">
+            <div class="belt-header bg-primary">
+              <i class="fas fa-globe mr-2"></i> Global Criteria (All Belts)
+            </div>
+            <div class="card-body p-0">
+              <ul class="list-group list-group-flush criteria-list">
+                {% for criteria in all_belts_criteria %}
+                  <li class="list-group-item criteria-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div>
+                        <h5 class="mb-1">{{ criteria.title }}</h5>
+                        <p class="mb-1 text-muted">{{ criteria.description }}</p>
+                        <small class="text-muted">Order: {{ criteria.order }}</small>
+                      </div>
+                      <div class="criteria-actions">
+                        <a href="{% url 'edit_belt_criteria' criteria.id %}" class="btn btn-sm btn-info mr-1">
+                          <i class="fas fa-edit"></i>
+                        </a>
+                        <form method="POST" class="d-inline" 
+                              onsubmit="return confirm('Are you sure you want to delete this criteria?');">
+                          {% csrf_token %}
+                          <input type="hidden" name="action" value="delete_criteria">
+                          <input type="hidden" name="criteria_id" value="{{ criteria.id }}">
+                          <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i>
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+          {% endif %}
+          
+          <!-- Belt-specific Criteria -->
+          {% for belt_code, belt_data in criteria_by_belt.items %}
+            <div class="criteria-card">
+              <div class="belt-header" style="background-color: {{ belt_code }}; color: {% if belt_code == 'black' or belt_code == 'blue' or belt_code == 'purple' %}white{% else %}black{% endif %};">
+                {{ belt_data.name }} Belt Criteria
+              </div>
+              <div class="card-body p-0">
+                <ul class="list-group list-group-flush criteria-list">
+                  {% for criteria in belt_data.criteria %}
+                    <li class="list-group-item criteria-item">
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                          <h5 class="mb-1">{{ criteria.title }}</h5>
+                          <p class="mb-1 text-muted">{{ criteria.description }}</p>
+                          <small class="text-muted">Order: {{ criteria.order }}</small>
+                        </div>
+                        <div class="criteria-actions">
+                          <a href="{% url 'edit_belt_criteria' criteria.id %}" class="btn btn-sm btn-info mr-1">
+                            <i class="fas fa-edit"></i>
+                          </a>
+                          <form method="POST" class="d-inline" 
+                                onsubmit="return confirm('Are you sure you want to delete this criteria?');">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete_criteria">
+                            <input type="hidden" name="criteria_id" value="{{ criteria.id }}">
+                            <button type="submit" class="btn btn-sm btn-danger">
+                              <i class="fas fa-trash"></i>
+                            </button>
+                          </form>
+                        </div>
+                      </div>
+                    </li>
+                  {% empty %}
+                    <li class="list-group-item text-center text-muted">
+                      No criteria defined for {{ belt_data.name }} belt yet
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock content %}

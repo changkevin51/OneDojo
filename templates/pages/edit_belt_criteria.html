@@ -1,0 +1,89 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% block title %} Edit Belt Criteria {% endblock title %}
+
+{% block content %}
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Edit Belt Criteria</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{% url 'dashboardv1' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'manage_belt_criteria' %}">Belt Criteria</a></li>
+            <li class="breadcrumb-item active">Edit</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-6 mx-auto">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Edit Criteria</h3>
+            </div>
+            <div class="card-body">
+              <form method="POST">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                  <label for="belt">Belt Level</label>
+                  <select class="form-control" id="belt" name="belt" required>
+                    {% for value, label in belt_choices %}
+                      <option value="{{ value }}" {% if criteria.belt == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                
+                <div class="form-group">
+                  <label for="title">Title (1-2 words)</label>
+                  <input type="text" class="form-control" id="title" name="title" 
+                         value="{{ criteria.title }}" maxlength="50" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="description">Description</label>
+                  <textarea class="form-control" id="description" name="description" rows="3" required>{{ criteria.description }}</textarea>
+                </div>
+                
+                <div class="form-group">
+                  <label for="order">Display Order</label>
+                  <input type="number" class="form-control" id="order" name="order" 
+                         value="{{ criteria.order }}" min="0" step="1">
+                  <small class="text-muted">Lower numbers appear first</small>
+                </div>
+                
+                <div class="form-group">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="all_belts" name="all_belts" 
+                           {% if criteria.all_belts %}checked{% endif %}>
+                    <label class="custom-control-label" for="all_belts">
+                      Apply to all belt levels
+                    </label>
+                  </div>
+                </div>
+                
+                <div class="form-group text-center">
+                  <a href="{% url 'manage_belt_criteria' %}" class="btn btn-secondary mr-2">
+                    <i class="fas fa-arrow-left mr-1"></i> Cancel
+                  </a>
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save mr-1"></i> Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock content %}

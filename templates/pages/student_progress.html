@@ -1,40 +1,230 @@
 {% extends 'layouts/base.html' %}
 {% load static %}
 
-{% block title %}AdminLTE 3 | Assignments{% endblock title %}
+{% block title %}Student Progress{% endblock title %}
 
-
-{%block content%}
-    <div class="content-wrapper">
-        <div class="container-fluid">
-            <div class="card card-info">
-                <div class="card-header">
-                  <h3 class="card-title">Line Chart</h3>
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  .progress-card {
+    transition: all 0.3s;
+    border: none;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+  }
   
-                  <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                      <i class="fas fa-minus"></i>
-                    </button>
-                    <button type="button" class="btn btn-tool" data-card-widget="remove">
-                      <i class="fas fa-times"></i>
-                    </button>
-                  </div>
-                </div>
-                <div class="card-body">
-                  <div class="chart">
-                    <canvas id="lineChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                  </div>
-                </div>
-                <!-- /.card-body -->
-              </div>
-              <!-- /.card -->
-    <div class="col-6 col-md-3 text-center">
-    <input type="text" class="knob" value="60" data-skin="tron" data-thickness="0.2" data-width="120"
-            data-height="120" data-fgColor="#f56954">
+  .progress-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  }
+  
+  .progress-header {
+    position: relative;
+    padding: 25px;
+    color: white;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
 
-    <div class="knob-label">data-width="120"</div>
-    </div>
-    <!-- ./col -->          
+  .progress-header .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.1;
+    background-image: url('{% static "img/pattern.png" %}');
+  }
+
+  .progress-header .content {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .progress-body {
+    padding: 25px;
+    background-color: white;
+  }
+  
+  .progress-section {
+    margin-bottom: 25px;
+    position: relative;
+    padding-left: 20px;
+  }
+  
+  .progress-section:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    border-radius: 2px;
+  }
+  
+  .strengths-section:before {
+    background-color: #28a745;
+  }
+  
+  .growth-section:before {
+    background-color: #ffc107;
+  }
+  
+  .next-steps-section:before {
+    background-color: #17a2b8;
+  }
+  
+  .stats-card {
+    background-color: white;
+    border-radius: 15px;
+    padding: 20px;
+    height: 100%;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+  }
+  
+  .stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  }
+  
+
+  
+  .timeline-badge {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 50px;
+    font-size: 22px;
+    color: white;
+    margin-right: 15px;
+  }
+  
+  .no-reports {
+    padding: 50px;
+    text-align: center;
+    background-color: #f8f9fa;
+    border-radius: 15px;
+    margin-bottom: 30px;
+  }
+
+  @media (max-width: 768px) {
+    .progress-header {
+      padding: 15px;
+    }
+    
+    .progress-body {
+      padding: 15px;
+    }
+  }
+
+</style>
+{% endblock extrastyle %}
+
+{% block bodyclass %}hold-transition sidebar-mini{% endblock bodyclass %}
+
+{% block content %}
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">My Progress</h1>
         </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{% url 'student_dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item active">Progress</li>
+          </ol>
+        </div>
+      </div>
     </div>
-{%endblock content%}
+  </div>
+
+  <section class="content">
+    <div class="container-fluid">
+      <!-- Stats Overview -->
+      <div class="row">
+        <div class="col-md-4">
+          <div class="stats-card">
+            <h4>Assignment Completion</h4>
+            <div class="progress mt-3 mb-1" style="height: 20px;">
+              <div class="progress-bar bg-success progress-bar-striped" role="progressbar" 
+                   style="width: {{ completion_rate }}%;" 
+                   aria-valuenow="{{ completion_rate }}" aria-valuemin="0" aria-valuemax="100">
+                {{ completion_rate }}%
+              </div>
+            </div>
+            <p class="text-muted mt-2">{{ completed_assignments }} of {{ total_assignments }} assignments completed</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stats-card">
+            <h4>Attendance</h4>
+            <div class="progress mt-3 mb-1" style="height: 20px;">
+              <div class="progress-bar bg-primary progress-bar-striped" role="progressbar" 
+                   style="width: {{ attendance_stats.attendance_rate }}%;" 
+                   aria-valuenow="{{ attendance_stats.attendance_rate }}" aria-valuemin="0" aria-valuemax="100">
+                {{ attendance_stats.attendance_rate }}%
+              </div>
+            </div>
+            <p class="text-muted mt-2">{{ attendance_stats.present }} of {{ attendance_stats.total }} classes attended</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stats-card">
+            <h4>Current Belt</h4>
+            <div class="d-flex align-items-center justify-content-center mt-3" style="height: 50px;">
+              <div style="width: 100%; height: 40px; border-radius: 20px; background-color: {{ request.user.belt }}; 
+                         color: {% if request.user.belt == 'black' or request.user.belt == 'blue' or request.user.belt == 'purple' %}white{% else %}black{% endif %}; 
+                         display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                {{ request.user.get_belt_display }} Belt
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Progress Reports -->
+      <h3 class="mt-4 mb-4">Progress Reports</h3>
+      
+      {% if progress_reports %}
+        {% for report in progress_reports %}
+          <div class="progress-card" id="{{ report.id }}">
+            <div class="progress-header">
+              <div class="overlay"></div>
+              <div class="content">
+                <div class="d-flex justify-content-between align-items-center">
+                  <h3 class="mb-0">{{ report.title }}</h3>
+                  <span><i class="far fa-calendar-alt mr-2"></i>{{ report.created_at|date:"F j, Y" }}</span>
+                </div>
+                <p class="mb-0 mt-2">
+                  <i class="fas fa-user mr-2"></i>By: {{ report.created_by.get_full_name }}
+                </p>
+              </div>
+            </div>
+            <div class="progress-body">
+              {{ report.content|safe }}
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="no-reports">
+          <i class="far fa-chart-bar fa-4x text-muted mb-3"></i>
+          <h4>No Progress Reports Yet</h4>
+          <p class="text-muted">Your instructor has not posted any progress reports yet. Check back later.</p>
+        </div>
+      {% endif %}
+
+      
+    </div>
+  </section>
+</div>
+{% endblock content %}
+
+{% block extra_scripts %}
+
+
+{% endblock extra_scripts %}

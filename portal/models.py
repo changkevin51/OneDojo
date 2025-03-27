@@ -340,5 +340,47 @@ class FeedbackTemplate(models.Model):
     def __str__(self):
         return self.title
 
+class BeltCriteria(models.Model):
+    belt = models.CharField(max_length=10, choices=CustomUser.BELT_CHOICES)
+    title = models.CharField(max_length=50)
+    description = models.TextField()
+    all_belts = models.BooleanField(default=False, help_text="Apply this criteria to all belt levels")
+    order = models.PositiveIntegerField(default=0)
+    created_by = models.ForeignKey(
+        CustomUser, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        related_name='created_criteria'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['order', 'title']
+        verbose_name_plural = "Belt Criteria"
+        
+    def __str__(self):
+        return f"{self.title} - {self.get_belt_display()}"
+    
+    def get_belt_display(self):
+        for value, label in CustomUser.BELT_CHOICES:
+            if value == self.belt:
+                return label
+        return self.belt
+
+class StudentCriteriaProgress(models.Model):
+    student = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='criteria_progress')
+    criteria = models.ForeignKey(BeltCriteria, on_delete=models.CASCADE)
+    completed = models.BooleanField(default=False)
+    completed_date = models.DateTimeField(null=True, blank=True)
+    completed_by = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='marked_criteria')
+    notes = models.TextField(blank=True, null=True)
+    
+    class Meta:
+        unique_together = ['student', 'criteria']
+        
+    def __str__(self):
+        status = 'Completed' if self.completed else 'Incomplete'
+        return f"{self.student.username} - {self.criteria.title} - {status}"
+
 
 

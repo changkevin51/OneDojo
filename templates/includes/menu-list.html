@@ -26,6 +26,7 @@
             <a href="{% url 'assignments' %}" class="nav-link {% if request.resolver_match.url_name == 'assignments' %}active{% endif %}">
                 <i class="nav-icon fas fa-tasks"></i>
                 <p>Assignments</p>
+
             </a>
         </li>
 
@@ -38,10 +39,17 @@
         </li>
 
         <!-- Progress Report Section -->
-        <li class="nav-item {% if request.resolver_match.url_name == 'progress_report' %}menu-open{% endif %}">
-            <a href="{% url 'progress_report' %}" class="nav-link {% if request.resolver_match.url_name == 'progress_report' %}active{% endif %}">
+        <li class="nav-item {% if request.resolver_match.url_name == 'student_progress' %}menu-open{% endif %}">
+            <a href="{% url 'student_progress' %}" class="nav-link {% if request.resolver_match.url_name == 'student_progress' %}active{% endif %}">
                 <i class="nav-icon fas fa-chart-line"></i>
                 <p>Progress Report</p>
+            </a>
+        </li>
+
+        <li class="nav-item {% if request.resolver_match.url_name == 'student_criteria' %}menu-open{% endif %}">
+            <a href="{% url 'student_criteria' %}" class="nav-link {% if request.resolver_match.url_name == 'student_criteria' %}active{% endif %}">
+                <i class="nav-icon fas fa-list-alt"></i>
+                <p>Belt Criteria</p>
             </a>
         </li>
     {% else %}  <!-- Show only for admins -->
@@ -70,6 +78,15 @@
                 <p>Attendance</p>
             </a>
         </li>
+
+        <li class="nav-item">
+            <a href="{% url 'manage_belt_criteria' %}" class="nav-link">
+                <i class="nav-icon fas fa-list-alt"></i>
+                <p>Belt Criteria</p>
+            </a>
+        </li>
+
+        
     {% endif %}
 
     <!-- Logout Option -->

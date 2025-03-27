@@ -229,7 +229,7 @@
         </div>
         <div class="col-auto">
           <div class="action-buttons">
-            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#materialModal">
+            <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#progressReportModal">
               <i class="fas fa-chart-bar"></i> Progress Report
             </button>
             <button type="button" class="btn btn-light" data-toggle="modal" data-target="#assessmentModal">
@@ -266,6 +266,30 @@
                   Change Belt Level
                 </button>
               {% endif %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Belt Criteria Card -->
+        <div class="stat-card mt-4">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="card-title">Belt Criteria</h5>
+              <span class="badge badge-info" id="criteriaProgress">0%</span>
+            </div>
+            
+            <div class="progress mb-3" style="height: 10px;">
+              <div class="progress-bar bg-info" id="criteriaProgressBar" role="progressbar" 
+                   style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            
+            <div id="criteriaList" class="mb-3">
+              <div class="text-center py-3">
+                <div class="spinner-border text-info" role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+                <p class="mt-2">Loading criteria...</p>
+              </div>
             </div>
           </div>
         </div>
@@ -773,7 +797,6 @@
   </div>
 </div>
 
-<!-- Add this modal after your other modals -->
 <div class="modal fade" id="eventDetailModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -966,6 +989,89 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Progress Report Modal -->
+<div class="modal fade" id="progressReportModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-warning">
+        <h5 class="modal-title"><i class="fas fa-chart-line"></i> Student Progress Report</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <form method="POST" action="{% url 'add_timeline_event' student.id %}">
+        {% csrf_token %}
+        <div class="modal-body">
+          <div class="form-group">
+            <label><i class="fas fa-star text-success mr-2"></i>Strengths</label>
+            <textarea name="strengths" class="summernote-full" placeholder="What is the student doing well?"></textarea>
+          </div>
+          
+          <div class="form-group mt-4">
+            <label><i class="fas fa-exclamation-circle text-warning mr-2"></i>Areas for Growth</label>
+            <textarea name="growth_areas" class="summernote-full" placeholder="What can the student improve on?"></textarea>
+          </div>
+          
+          <div class="form-group mt-4">
+            <label><i class="fas fa-route text-info mr-2"></i>Next Steps</label>
+            <textarea name="next_steps" class="summernote-full" placeholder="How can the student improve? What should they focus on next?"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-warning"><i class="fas fa-save mr-2"></i>Save Progress Report</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Add this at the end of the student_info.html, just before the extra_scripts block -->
+<div class="modal fade" id="criteriaModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Update Criteria Status</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="criteriaForm">
+          <input type="hidden" id="criteriaId" name="criteria_id">
+          
+          <div class="form-group">
+            <label>Title</label>
+            <p id="criteriaTitle" class="font-weight-bold"></p>
+          </div>
+          
+          <div class="form-group">
+            <label>Description</label>
+            <p id="criteriaDescription"></p>
+          </div>
+          
+          <div class="form-group">
+            <label>Status</label>
+            <div class="custom-control custom-switch">
+              <input type="checkbox" class="custom-control-input" id="criteriaStatus">
+              <label class="custom-control-label" for="criteriaStatus">
+                <span id="statusLabel">Not Completed</span>
+              </label>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="criteriaNotes">Notes</label>
+            <textarea class="form-control" id="criteriaNotes" name="notes" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="saveCriteriaBtn">Save changes</button>
       </div>
     </div>
   </div>
@@ -1209,24 +1315,119 @@ $(document).ready(function() {
     $('#attendanceModal').modal('show');
   });
 });
+
+// Load criteria data when the page loads
+$(document).ready(function() {
+  loadStudentCriteria();
+  
+  // Setup event handler for the criteria status toggle
+  $('#criteriaStatus').change(function() {
+    if ($(this).is(':checked')) {
+      $('#statusLabel').text('Completed');
+    } else {
+      $('#statusLabel').text('Not Completed');
+    }
+  });
+  
+  // Setup event handler for the save button
+  $('#saveCriteriaBtn').click(function() {
+    updateCriteriaStatus();
+  });
+});
+
+function loadStudentCriteria() {
+  $.ajax({
+    url: '/api/student/{{ student.id }}/criteria/',
+    method: 'GET',
+    success: function(data) {
+      displayCriteria(data);
+    },
+    error: function(xhr) {
+      console.error('Error loading criteria:', xhr.responseText);
+      $('#criteriaList').html('<div class="alert alert-danger">Error loading criteria</div>');
+    }
+  });
+}
+
+function displayCriteria(data) {
+  // Update progress bar
+  $('#criteriaProgress').text(data.progress_percent + '%');
+  $('#criteriaProgressBar').css('width', data.progress_percent + '%').attr('aria-valuenow', data.progress_percent);
+  
+  // If no criteria, show message
+  if (data.criteria.length === 0) {
+    $('#criteriaList').html('<p class="text-muted text-center">No criteria defined for this belt level</p>');
+    return;
+  }
+  
+  // Build criteria list HTML
+  var html = '<ul class="list-group list-group-flush">';
+  
+  data.criteria.forEach(function(criteria) {
+    var statusClass = criteria.completed ? 'text-success' : 'text-muted';
+    var statusIcon = criteria.completed ? 'fa-check-circle' : 'fa-circle';
+    
+    html += `
+      <li class="list-group-item px-0 py-2 border-bottom">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <i class="fas ${statusIcon} ${statusClass} mr-2"></i>
+            <span>${criteria.title}</span>
+          </div>
+          <button class="btn btn-sm btn-outline-info" onclick="openCriteriaModal(${criteria.id}, '${criteria.title}', '${criteria.description.replace(/'/g, "\\'")}', ${criteria.completed}, '${criteria.notes.replace(/'/g, "\\'")}')">
+            <i class="fas fa-edit"></i>
+          </button>
+        </div>
+      </li>
+    `;
+  });
+  
+  html += '</ul>';
+  $('#criteriaList').html(html);
+}
+
+function openCriteriaModal(id, title, description, completed, notes) {
+  $('#criteriaId').val(id);
+  $('#criteriaTitle').text(title);
+  $('#criteriaDescription').text(description);
+  $('#criteriaStatus').prop('checked', completed);
+  $('#criteriaNotes').val(notes);
+  
+  if (completed) {
+    $('#statusLabel').text('Completed');
+  } else {
+    $('#statusLabel').text('Not Completed');
+  }
+  
+  $('#criteriaModal').modal('show');
+}
+
+function updateCriteriaStatus() {
+  var criteriaId = $('#criteriaId').val();
+  var completed = $('#criteriaStatus').is(':checked');
+  var notes = $('#criteriaNotes').val();
+  
+  $.ajax({
+    url: '/api/student/{{ student.id }}/criteria/update/',
+    method: 'POST',
+    data: {
+      criteria_id: criteriaId,
+      completed: completed,
+      notes: notes,
+      csrfmiddlewaretoken: $('[name=csrfmiddlewaretoken]').val()
+    },
+    success: function(data) {
+      $('#criteriaModal').modal('hide');
+      loadStudentCriteria();
+      toastr.success('Criteria updated successfully');
+    },
+    error: function(xhr) {
+      console.error('Error updating criteria:', xhr.responseText);
+      toastr.error('Error updating criteria');
+    }
+  });
+}
 </script>
-<style>
-.modal-xl {
-  max-width: 90%;
-}
-.tab-content {
-  min-height: 400px;
-}
-.table th {
-  border-top: none;
-}
-.card {
-  transition: transform 0.2s;
-}
-.card:hover {
-  transform: translateY(-5px);
-}
-</style>
 {% endblock extra_scripts %}
 {% endblock content %}
 

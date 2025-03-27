@@ -53,8 +53,11 @@ urlpatterns = [
     path('assessments/', views.view_assessment, name='assessments'),
 
     # Progress report views
-    path('progress/', views.progress_report, name='progress_report'),
-    
+    # path('progress/', views.progress_report, name='progress_report'),
+    path('student_progress/', views.student_progress, name='student_progress'),
+
+    path('student_criteria/', views.student_criteria, name='student_criteria'),
+
 
     # View Student views
 
@@ -188,6 +191,12 @@ urlpatterns = [
     path('feedback-templates/edit/<int:template_id>/', views.edit_feedback_template, name='edit_feedback_template'),
     path('feedback-templates/delete/<int:template_id>/', views.delete_feedback_template, name='delete_feedback_template'),
     path('api/feedback-templates/', views.get_feedback_templates, name='get_feedback_templates'),
+
+    # Belt Criteria URLs
+    path('belt-criteria/', views.manage_belt_criteria, name='manage_belt_criteria'),
+    path('belt-criteria/<int:criteria_id>/edit/', views.edit_belt_criteria, name='edit_belt_criteria'),
+    path('api/student/<int:student_id>/criteria/', views.get_student_criteria, name='get_student_criteria'),
+    path('api/student/<int:student_id>/criteria/update/', views.update_student_criteria, name='update_student_criteria'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

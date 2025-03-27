@@ -1,0 +1,276 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Belt Criteria Progress{% endblock title %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+  .progress-achievement {
+    height: 40px !important;
+    background-color: #f5f5f5;
+    border-radius: 20px;
+    overflow: visible !important;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,.2);
+  }
+  
+  .progress-achievement .progress-bar {
+    position: relative;
+    border-radius: 20px;
+    transition: width 1.5s ease;
+    overflow: visible !important;
+  }
+  
+  .progress-value {
+    position: absolute;
+    right: 15px;
+    color: white;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0,0,0,.3);
+    line-height: 40px;
+  }
+  
+  .criteria-marker {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    z-index: 10;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,.2);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+  }
+  
+  .criteria-marker.completed {
+    animation: pulse 2s infinite;
+    box-shadow: 0 0 0 rgba(204,169,44, 0.4);
+  }
+  
+  .criteria-marker:hover {
+    transform: translate(-50%, -50%) scale(1.2);
+    z-index: 20;
+  }
+  
+  .criteria-label {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
+    white-space: nowrap;
+    font-weight: bold;
+    color: #555;
+  }
+  
+  .criteria-legend {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+  
+  .criteria-badge {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    border: 2px solid #ddd;
+    border-radius: 20px;
+    margin: 5px;
+    transition: all 0.3s ease;
+  }
+  
+  .criteria-badge.completed {
+    background-color: rgba(0,128,0,0.1);
+  }
+  
+  .criteria-badge i {
+    margin-right: 5px;
+  }
+  
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+  }
+  
+  .achievement-progress-container {
+    position: relative;
+    margin: 50px 20px;
+  }
+  
+  .current-belt-display {
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 15px;
+    vertical-align: middle;
+  }
+  
+  .belt-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
+</style>
+{% endblock extrastyle %}
+
+{% block bodyclass %}hold-transition sidebar-mini{% endblock bodyclass %}
+
+{% block content %}
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Belt Criteria</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{% url 'student_dashboard' %}">Home</a></li>
+            <li class="breadcrumb-item active">Belt Criteria</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="content">
+    <div class="container-fluid">
+      <!-- Achievement Progress -->
+      <div class="card">
+        <div class="card-header d-flex align-items-center">
+          <h3 class="card-title">Belt Criteria Progress</h3>
+          <!-- Current Belt Display -->
+          <div class="current-belt-display ms-auto" style="background-color: white; color: #333; border: 2px solid {{ request.user.belt }};">
+            <div class="belt-icon" style="background-color: {{ request.user.belt }}; color: {% if request.user.belt == 'black' or request.user.belt == 'blue' or request.user.belt == 'purple' %}white{% else %}black{% endif %};">
+              <i class="fas fa-award"></i>
+            </div>
+            <span>Current: {{ request.user.get_belt_display }} Belt</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <h4 class="mb-4">Your Belt Journey: {{ student_progress_value }}% Complete</h4>
+          
+          <!-- Progress Container -->
+          <div class="achievement-progress-container mb-5">
+            
+            <!-- Main Progress Bar -->
+            <div class="progress progress-achievement position-relative" style="height: 40px;">
+              <div class="progress-bar" role="progressbar" 
+                   style="width: {{ student_progress_value }}%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);" 
+                   aria-valuenow="{{ student_progress_value }}" aria-valuemin="0" aria-valuemax="100">
+                <span class="progress-value">{{ student_progress_value }}%</span>
+              </div>
+              
+              <!-- Criteria Markers -->
+              {% for criteria in criteria_list %}
+                <div class="criteria-marker {% if criteria.completed %}completed{% endif %}" 
+                     style="left: {{ criteria.threshold }}%; background-color: {{ criteria.color }};" 
+                     data-toggle="tooltip" data-placement="top" 
+                     title="{{ criteria.title }}: {{ criteria.description }}">
+                  {{ forloop.counter }}
+                  <div class="criteria-label">{{ criteria.title }}</div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+          
+          <!-- Progress Details -->
+          <div class="row mt-5">
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-header bg-light">
+                  <h5 class="mb-0">Current Focus Areas</h5>
+                </div>
+                <div class="card-body">
+                  <ul class="list-group list-group-flush">
+                    {% for criteria in incomplete_criteria %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                          <strong>{{ criteria.title }}</strong>
+                          <p class="mb-0 text-muted">{{ criteria.description }}</p>
+                        </div>
+                        <span class="badge badge-primary badge-pill">In Progress</span>
+                      </li>
+                    {% empty %}
+                      <li class="list-group-item text-center">
+                        <em>You have completed all criteria!</em>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-header bg-light">
+                  <h5 class="mb-0">Achievements</h5>
+                </div>
+                <div class="card-body">
+                  <ul class="list-group list-group-flush">
+                    {% for criteria in completed_criteria %}
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                          <strong>{{ criteria.title }}</strong>
+                          <p class="mb-0 text-muted">{{ criteria.description }}</p>
+                        </div>
+                        <span class="badge badge-success badge-pill">
+                          <i class="fas fa-check"></i> Completed
+                        </span>
+                      </li>
+                    {% empty %}
+                      <li class="list-group-item text-center">
+                        <em>No achievements yet. Keep training!</em>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock content %}
+
+{% block extra_scripts %}
+{{ block.super }}
+<script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
+
+<script>
+  $(function () {
+    // Initialize tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+    
+    // animation to the progress bar when page loads
+    $('.progress-bar').css('width', '0%').animate({
+      width: '{{ student_progress_value }}%'
+    }, 1500);
+  });
+</script>
+{% endblock extra_scripts %}

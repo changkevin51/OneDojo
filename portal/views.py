@@ -230,7 +230,119 @@ def student_dashboard(request):
 def student_progress(request):
     if not request.user.is_student:
         return redirect('login')
-    return render(request, 'pages/student_progress.html')
+    
+    progress_reports = TimelineEvent.objects.filter(
+        student=request.user,
+        event_type='progress_report'
+    ).order_by('-created_at')
+    
+    completed_assignments = TimelineEvent.objects.filter(
+        student=request.user,
+        event_type='assignment',
+        is_submitted=True
+    ).count()
+    
+    total_assignments = TimelineEvent.objects.filter(
+        student=request.user,
+        event_type='assignment'
+    ).count()
+    
+    completion_rate = 0
+    if total_assignments > 0:
+        completion_rate = (completed_assignments / total_assignments) * 100
+    
+    attendance_stats = Attendance.get_attendance_stats(request.user.id)
+    
+    # Get assessment scores over time for chart
+    achievement_criteria = [
+      {"name": "Basics", "description": "Fundamental techniques", "threshold": 20, "color": "#4CAF50"},
+      {"name": "Forms", "description": "Basic forms mastery", "threshold": 40, "color": "#2196F3"},
+      {"name": "Sparring", "description": "Controlled sparring", "threshold": 60, "color": "#FF9800"},
+      {"name": "Advanced", "description": "Advanced techniques", "threshold": 80, "color": "#9C27B0"},
+      {"name": "Mastery", "description": "Complete belt level mastery", "threshold": 100, "color": "#F44336"}
+    ]
+
+    student_progress_value = 65 
+
+    for criteria in achievement_criteria:
+        criteria['achieved'] = student_progress_value >= criteria['threshold']
+    
+    context = {
+        'progress_reports': progress_reports,
+        'completion_rate': round(completion_rate),
+        'completed_assignments': completed_assignments,
+        'total_assignments': total_assignments,
+        'attendance_stats': attendance_stats,
+        
+        # Replace assessment_data with our new criteria-based data
+        'achievement_criteria': achievement_criteria,
+        'student_progress_value': student_progress_value,
+        'parent': 'progress',
+        'segment': 'student_progress',
+        'now': timezone.now(),
+    }
+    
+    return render(request, 'pages/student_progress.html', context)
+
+# student criterias
+
+@login_required
+def student_criteria(request):
+    if not request.user.is_student:
+        return redirect('login')
+    
+    progress_reports = TimelineEvent.objects.filter(
+        student=request.user,
+        event_type='progress_report'
+    ).order_by('-created_at')
+    
+    completed_assignments = TimelineEvent.objects.filter(
+        student=request.user,
+        event_type='assignment',
+        is_submitted=True
+    ).count()
+    
+    total_assignments = TimelineEvent.objects.filter(
+        student=request.user,
+        event_type='assignment'
+    ).count()
+    
+    completion_rate = 0
+    if total_assignments > 0:
+        completion_rate = (completed_assignments / total_assignments) * 100
+    
+    attendance_stats = Attendance.get_attendance_stats(request.user.id)
+    
+    # Get assessment scores over time for chart
+    achievement_criteria = [
+      {"name": "Basics", "description": "Fundamental techniques", "threshold": 20, "color": "#4CAF50"},
+      {"name": "Forms", "description": "Basic forms mastery", "threshold": 40, "color": "#2196F3"},
+      {"name": "Sparring", "description": "Controlled sparring", "threshold": 60, "color": "#FF9800"},
+      {"name": "Advanced", "description": "Advanced techniques", "threshold": 80, "color": "#9C27B0"},
+      {"name": "Mastery", "description": "Complete belt level mastery", "threshold": 100, "color": "#F44336"}
+    ]
+
+    student_progress_value = 65 
+
+    for criteria in achievement_criteria:
+        criteria['achieved'] = student_progress_value >= criteria['threshold']
+    
+    context = {
+        'progress_reports': progress_reports,
+        'completion_rate': round(completion_rate),
+        'completed_assignments': completed_assignments,
+        'total_assignments': total_assignments,
+        'attendance_stats': attendance_stats,
+        
+        # Replace assessment_data with our new criteria-based data
+        'achievement_criteria': achievement_criteria,
+        'student_progress_value': student_progress_value,
+        'parent': 'progress',
+        'segment': 'student_progress',
+        'now': timezone.now(),
+    }
+    
+    return render(request, 'pages/student_criteria.html', context)
 
 # student assignments
 @login_required
@@ -293,7 +405,7 @@ def progress_report(request):
     if not request.user.is_student:
         return redirect('login')
     
-    return render(request, 'pages/progress.html')
+    return render(request, 'pages/student_progress.html')
 
 
 # Teacher Dashboard
@@ -454,6 +566,56 @@ def add_timeline_event(request, student_id):
         event_type = request.POST.get('event_type')
         title = request.POST.get('title')
         
+        # Handle progress report type
+        if 'strengths' in request.POST:  # This indicates a progress report submission
+            event_type = 'progress_report'
+            title = f"Progress Report - {timezone.now().strftime('%B %Y')}"
+            
+            # Combine the different sections into structured content
+            strengths = request.POST.get('strengths', '')
+            growth_areas = request.POST.get('growth_areas', '')
+            next_steps = request.POST.get('next_steps', '')
+            
+            content = f"""
+            <div class="progress-report-content">
+                <div class="strengths-section">
+                    <h4><i class="fas fa-star text-success mr-2"></i>Strengths</h4>
+                    {strengths}
+                </div>
+                
+                <div class="growth-section mt-4">
+                    <h4><i class="fas fa-exclamation-circle text-warning mr-2"></i>Areas for Growth</h4>
+                    {growth_areas}
+                </div>
+                
+                <div class="next-steps-section mt-4">
+                    <h4><i class="fas fa-route text-info mr-2"></i>Next Steps</h4>
+                    {next_steps}
+                </div>
+            </div>
+            """
+            
+            event = TimelineEvent.objects.create(
+                student=student,
+                event_type=event_type,
+                title=title,
+                content=content,
+                created_by=request.user
+            )
+            
+            # Create notification for progress report
+            Notification.objects.create(
+                user=student,
+                title="New Progress Report Available",
+                message=f"Your instructor {request.user.get_full_name()} has posted a new progress report",
+                notification_type='progress_report',
+                link=f'/student_progress/#{event.id}'
+            )
+            
+            messages.success(request, "Progress report added successfully")
+            return redirect('admin_student_info', student_id=student_id)
+        
+        # Handle other event types (existing code)
         event = TimelineEvent.objects.create(
             student=student,
             event_type=event_type,
@@ -1478,4 +1640,329 @@ def get_feedback_templates(request):
         })
     
     return JsonResponse({'categories': templates_by_category})
+
+@login_required
+def manage_belt_criteria(request):
+    """View for instructors to manage criteria for different belt levels"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+    
+    belt_choices = dict(CustomUser.BELT_CHOICES)
+    criteria_by_belt = {}
+    
+    for belt_value, belt_name in CustomUser.BELT_CHOICES:
+        criteria_by_belt[belt_value] = {
+            'name': belt_name,
+            'criteria': BeltCriteria.objects.filter(belt=belt_value).order_by('order', 'title')
+        }
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        
+        if action == 'add_criteria':
+            belt = request.POST.get('belt')
+            title = request.POST.get('title')
+            description = request.POST.get('description')
+            order = request.POST.get('order', 0)
+            
+            try:
+                order = int(order)
+            except (ValueError, TypeError):
+                order = 0
+                
+            if not title:
+                messages.error(request, "Title is required")
+                return redirect('manage_belt_criteria')
+            
+            # Handle "All Belt Levels" option
+            if belt == 'all':
+                # Create the same criteria for each belt
+                for belt_value, _ in CustomUser.BELT_CHOICES:
+                    BeltCriteria.objects.create(
+                        belt=belt_value,
+                        title=title,
+                        description=description,
+                        all_belts=False,  # No longer using this field
+                        order=order,
+                        created_by=request.user
+                    )
+                messages.success(request, f"Criteria '{title}' added to all belt levels")
+            else:
+                # Create for a single belt
+                BeltCriteria.objects.create(
+                    belt=belt,
+                    title=title,
+                    description=description,
+                    all_belts=False,  # No longer using this field
+                    order=order,
+                    created_by=request.user
+                )
+                messages.success(request, f"Criteria '{title}' added successfully")
+                
+            return redirect('manage_belt_criteria')
+            
+        elif action == 'delete_criteria':
+            criteria_id = request.POST.get('criteria_id')
+            try:
+                criteria = BeltCriteria.objects.get(id=criteria_id)
+                title = criteria.title
+                criteria.delete()
+                messages.success(request, f"Criteria '{title}' deleted successfully")
+            except BeltCriteria.DoesNotExist:
+                messages.error(request, "Criteria not found")
+                
+            return redirect('manage_belt_criteria')
+    
+    context = {
+        'criteria_by_belt': criteria_by_belt,
+        'belt_choices': CustomUser.BELT_CHOICES,
+        'parent': 'settings',
+        'segment': 'belt_criteria',
+        'title': 'Manage Belt Criteria'
+    }
+    
+    return render(request, 'pages/manage_belt_criteria.html', context)
+
+@login_required
+def edit_belt_criteria(request, criteria_id):
+    """View to edit a specific belt criteria"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+        
+    criteria = get_object_or_404(BeltCriteria, id=criteria_id)
+    
+    if request.method == 'POST':
+        criteria.belt = request.POST.get('belt', criteria.belt)
+        criteria.title = request.POST.get('title', criteria.title)
+        criteria.description = request.POST.get('description', criteria.description)
+        criteria.all_belts = request.POST.get('all_belts') == 'on'
+        
+        try:
+            criteria.order = int(request.POST.get('order', criteria.order))
+        except (ValueError, TypeError):
+            pass  # Keep the existing order
+            
+        criteria.save()
+        messages.success(request, f"Criteria '{criteria.title}' updated successfully")
+        return redirect('manage_belt_criteria')
+    
+    context = {
+        'criteria': criteria,
+        'belt_choices': CustomUser.BELT_CHOICES,
+        'parent': 'settings',
+        'segment': 'belt_criteria',
+        'title': 'Edit Belt Criteria'
+    }
+    
+    return render(request, 'pages/edit_belt_criteria.html', context)
+
+@login_required
+def update_student_criteria(request, student_id):
+    """API endpoint to update a student's criteria completion status"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        return JsonResponse({'error': 'Permission denied'}, status=403)
+        
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=400)
+        
+    student = get_object_or_404(CustomUser, id=student_id)
+    criteria_id = request.POST.get('criteria_id')
+    completed = request.POST.get('completed') == 'true'
+    notes = request.POST.get('notes', '')
+    
+    criteria = get_object_or_404(BeltCriteria, id=criteria_id)
+    
+    progress, created = StudentCriteriaProgress.objects.update_or_create(
+        student=student,
+        criteria=criteria,
+        defaults={
+            'completed': completed,
+            'completed_date': timezone.now() if completed else None,
+            'completed_by': request.user if completed else None,
+            'notes': notes
+        }
+    )
+    
+    # Calculate overall progress percentage
+    belt_criteria_count = BeltCriteria.objects.filter(
+        models.Q(belt=student.belt) | models.Q(all_belts=True)
+    ).count()
+    
+    completed_count = StudentCriteriaProgress.objects.filter(
+        student=student,
+        criteria__in=BeltCriteria.objects.filter(
+            models.Q(belt=student.belt) | models.Q(all_belts=True)
+        ),
+        completed=True
+    ).count()
+    
+    progress_percent = 0
+    if belt_criteria_count > 0:
+        progress_percent = int((completed_count / belt_criteria_count) * 100)
+    
+    return JsonResponse({
+        'success': True,
+        'completed': progress.completed,
+        'progress_percent': progress_percent
+    })
+
+@login_required
+def get_student_criteria(request, student_id):
+    """API endpoint to get a student's criteria and progress"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        return JsonResponse({'error': 'Permission denied'}, status=403)
+        
+    student = get_object_or_404(CustomUser, id=student_id)
+    
+    # Get all criteria for the student's current belt plus global criteria
+    belt_criteria = BeltCriteria.objects.filter(
+        models.Q(belt=student.belt) | models.Q(all_belts=True)
+    ).order_by('order', 'title')
+    
+    # Get the student's progress on these criteria
+    progress_map = {
+        p.criteria_id: p for p in StudentCriteriaProgress.objects.filter(
+            student=student,
+            criteria__in=belt_criteria
+        )
+    }
+    
+    # Format the response data
+    criteria_data = []
+    completed_count = 0
+    total_count = len(belt_criteria)
+    
+    for criteria in belt_criteria:
+        progress = progress_map.get(criteria.id)
+        completed = progress and progress.completed
+        
+        if completed:
+            completed_count += 1
+            
+        criteria_data.append({
+            'id': criteria.id,
+            'title': criteria.title,
+            'description': criteria.description,
+            'completed': completed,
+            'notes': progress.notes if progress else '',
+            'completed_date': progress.completed_date.strftime('%Y-%m-%d %H:%M:%S') if progress and progress.completed_date else None,
+            'completed_by': progress.completed_by.get_full_name() if progress and progress.completed_by else None
+        })
+    
+    # Calculate progress percentage
+    progress_percent = 0
+    if total_count > 0:
+        progress_percent = int((completed_count / total_count) * 100)
+    
+    return JsonResponse({
+        'criteria': criteria_data,
+        'progress_percent': progress_percent,
+        'belt': student.belt,
+        'belt_name': student.get_belt_display()
+    })
+
+@login_required
+def student_criteria(request):
+    if not request.user.is_student:
+        return redirect('login')
+    
+    # Get progress reports and other stats (same as before)
+    progress_reports = TimelineEvent.objects.filter(
+        student=request.user,
+        event_type='progress_report'
+    ).order_by('-created_at')
+    
+    completed_assignments = TimelineEvent.objects.filter(
+        student=request.user,
+        event_type='assignment',
+        is_submitted=True
+    ).count()
+    
+    total_assignments = TimelineEvent.objects.filter(
+        student=request.user,
+        event_type='assignment'
+    ).count()
+    
+    completion_rate = 0
+    if total_assignments > 0:
+        completion_rate = (completed_assignments / total_assignments) * 100
+    
+    attendance_stats = Attendance.get_attendance_stats(request.user.id)
+    
+    # Get the criteria for the student's current belt plus global criteria
+    belt_criteria = BeltCriteria.objects.filter(
+        models.Q(belt=request.user.belt) | models.Q(all_belts=True)
+    ).order_by('order', 'title')
+    
+    # Get the student's progress on these criteria
+    progress_map = {
+        p.criteria_id: p for p in StudentCriteriaProgress.objects.filter(
+            student=request.user,
+            criteria__in=belt_criteria
+        )
+    }
+    
+    # Format criteria for the template
+    criteria_list = []
+    completed_criteria = []
+    incomplete_criteria = []
+    completed_count = 0
+    
+    for criteria in belt_criteria:
+        progress = progress_map.get(criteria.id)
+        completed = progress and progress.completed
+        
+        criteria_info = {
+            'id': criteria.id,
+            'title': criteria.title,
+            'description': criteria.description,
+            'completed': completed,
+            'notes': progress.notes if progress else '',
+            'completed_date': progress.completed_date if progress and progress.completed_date else None,
+            'threshold': 0  # Will be calculated below
+        }
+        
+        if completed:
+            completed_count += 1
+            completed_criteria.append(criteria_info)
+        else:
+            incomplete_criteria.append(criteria_info)
+            
+        criteria_list.append(criteria_info)
+    
+    # Calculate progress percentage and thresholds for display
+    total_count = len(belt_criteria)
+    progress_percent = 0
+    
+    if total_count > 0:
+        progress_percent = int((completed_count / total_count) * 100)
+        
+        # Calculate threshold positions (evenly distribute across progress bar)
+        for i, criteria in enumerate(criteria_list):
+            criteria['threshold'] = int((i + 1) * (100 / total_count))
+            criteria['color'] = f"hsl({120 * (i / total_count)}, 80%, 45%)"
+    
+    context = {
+        'progress_reports': progress_reports,
+        'completion_rate': round(completion_rate),
+        'completed_assignments': completed_assignments,
+        'total_assignments': total_assignments,
+        'attendance_stats': attendance_stats,
+        
+        # Criteria data
+        'criteria_list': criteria_list,
+        'completed_criteria': completed_criteria,
+        'incomplete_criteria': incomplete_criteria,
+        'student_progress_value': progress_percent,
+        'total_criteria': total_count,
+        'completed_criteria_count': completed_count,
+        
+        'parent': 'progress',
+        'segment': 'student_criteria',
+        'now': timezone.now(),
+    }
+    
+    return render(request, 'pages/student_criteria.html', context)
 
