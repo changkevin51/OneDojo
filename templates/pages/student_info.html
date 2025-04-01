@@ -999,17 +999,35 @@
         <div class="modal-body">
           <div class="form-group">
             <label><i class="fas fa-star text-success mr-2"></i>Strengths</label>
-            <textarea name="strengths" class="summernote-full" placeholder="What is the student doing well?"></textarea>
+            <div class="d-flex mb-2">
+              <button type="button" class="btn btn-sm btn-info ml-auto" 
+                     data-toggle="modal" data-target="#feedbackTemplatesModal" data-editor="strengths" data-category="strengths">
+                <i class="fas fa-lightbulb mr-1"></i> Use Templates
+              </button>
+            </div>
+            <textarea name="strengths" class="summernote-full" id="strengths-editor" placeholder="What is the student doing well?"></textarea>
           </div>
           
           <div class="form-group mt-4">
             <label><i class="fas fa-exclamation-circle text-warning mr-2"></i>Areas for Growth</label>
-            <textarea name="growth_areas" class="summernote-full" placeholder="What can the student improve on?"></textarea>
+            <div class="d-flex mb-2">
+              <button type="button" class="btn btn-sm btn-info ml-auto" 
+                     data-toggle="modal" data-target="#feedbackTemplatesModal" data-editor="growth_areas" data-category="growth">
+                <i class="fas fa-lightbulb mr-1"></i> Use Templates
+              </button>
+            </div>
+            <textarea name="growth_areas" class="summernote-full" id="growth_areas-editor" placeholder="What can the student improve on?"></textarea>
           </div>
           
           <div class="form-group mt-4">
             <label><i class="fas fa-route text-info mr-2"></i>Next Steps</label>
-            <textarea name="next_steps" class="summernote-full" placeholder="How can the student improve? What should they focus on next?"></textarea>
+            <div class="d-flex mb-2">
+              <button type="button" class="btn btn-sm btn-info ml-auto" 
+                     data-toggle="modal" data-target="#feedbackTemplatesModal" data-editor="next_steps" data-category="next_steps">
+                <i class="fas fa-lightbulb mr-1"></i> Use Templates
+              </button>
+            </div>
+            <textarea name="next_steps" class="summernote-full" id="next_steps-editor" placeholder="How can the student improve? What should they focus on next?"></textarea>
           </div>
         </div>
         <div class="modal-footer">
@@ -1017,6 +1035,33 @@
           <button type="submit" class="btn btn-warning"><i class="fas fa-save mr-2"></i>Save Progress Report</button>
         </div>
       </form>
+    </div>
+  </div>
+</div>
+
+<!-- Feedback Templates Modal -->
+<div class="modal fade" id="feedbackTemplatesModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        <h5 class="modal-title"><i class="fas fa-comments"></i> Select Feedback Template</h5>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="templates-loading text-center py-4">
+          <div class="spinner-border text-info"></div>
+          <p class="mt-2">Loading templates...</p>
+        </div>
+        <div class="templates-container">
+          <!-- Templates will be loaded here -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a href="{% url 'manage_feedback_templates' %}" class="btn btn-outline-info mr-auto" target="_blank">
+          <i class="fas fa-edit"></i> Edit Templates
+        </a>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1102,7 +1147,46 @@ $(document).ready(function() {
         ]
     });
 
-    // Initialize datetime picker with both date and time
+    $('#progressReportModal').on('shown.bs.modal', function() {
+      // Destroy all existing instances first
+      $('#progressReportModal .summernote-full').each(function() {
+        if ($(this).summernote) {
+          $(this).summernote('destroy');
+        }
+      });
+      
+      // Initialize each textarea with explicit configuration
+      $('#progressReportModal textarea[name="strengths"]').summernote({
+        height: 150,
+        toolbar: [
+          ['style', ['bold', 'italic', 'underline', 'clear']],
+          ['font', ['strikethrough']],
+          ['para', ['ul', 'ol']],
+          ['view', ['fullscreen']]
+        ]
+      });
+      
+      $('#progressReportModal textarea[name="growth_areas"]').summernote({
+        height: 150,
+        toolbar: [
+          ['style', ['bold', 'italic', 'underline', 'clear']],
+          ['font', ['strikethrough']],
+          ['para', ['ul', 'ol']],
+          ['view', ['fullscreen']]
+        ]
+      });
+      
+      $('#progressReportModal textarea[name="next_steps"]').summernote({
+        height: 150,
+        toolbar: [
+          ['style', ['bold', 'italic', 'underline', 'clear']],
+          ['font', ['strikethrough']],
+          ['para', ['ul', 'ol']],
+          ['view', ['fullscreen']]
+        ]
+      });
+    });
+
     $('#dueDatePicker').datetimepicker({
         icons: {
             time: 'far fa-clock',
@@ -1438,6 +1522,135 @@ $(document).ready(function() {
     stepping: 15
   });
 });
+
+// Template insertion functionality
+let currentEditor = '';
+let currentCategory = '';
+
+// When a template button is clicked, store which editor to insert into
+$('button[data-toggle="modal"][data-target="#feedbackTemplatesModal"]').click(function() {
+  currentEditor = $(this).data('editor');
+  currentCategory = $(this).data('category');
+  
+  // Load templates for the selected category
+  loadFeedbackTemplatesByCategory(currentCategory);
+  
+  // Prevent the modal from closing when clicking buttons inside it
+  $('#feedbackTemplatesModal').on('click', '.template-item', function(e) {
+    e.stopPropagation();
+  });
+});
+
+// Function to load feedback templates via AJAX for a specific category
+function loadFeedbackTemplatesByCategory(category) {
+  $('.templates-loading').show();
+  $('.templates-container').empty();
+  
+  $.ajax({
+    url: '/api/feedback-templates/',
+    method: 'GET',
+    success: function(data) {
+      $('.templates-loading').hide();
+      
+      // Filter templates by category
+      const templates = data.categories[getCategoryDisplayName(category)] || [];
+      populateTemplates(templates);
+    },
+    error: function() {
+      $('.templates-loading').hide();
+      $('.templates-container').html('<div class="alert alert-danger">Failed to load templates</div>');
+      toastr.error('Failed to load feedback templates');
+    }
+  });
+}
+
+// Get the display name for a category
+function getCategoryDisplayName(category) {
+  const categoryMap = {
+    'strengths': 'Strengths',
+    'growth': 'Areas for Growth',
+    'next_steps': 'Next Steps'
+  };
+  return categoryMap[category] || category;
+}
+
+// Populate templates in the container
+function populateTemplates(templates) {
+  const container = $('.templates-container');
+  
+  if (!templates.length) {
+    container.html('<div class="alert alert-info">No templates found. Click "Edit Templates" to add some.</div>');
+    return;
+  }
+  
+  let html = '<div class="list-group">';
+  templates.forEach(template => {
+    html += `
+      <button type="button" class="list-group-item list-group-item-action template-item" 
+              data-content="${template.content.replace(/"/g, '&quot;')}">
+        <strong>${template.title}</strong>
+        <div class="text-muted small">${template.content.substring(0, 100)}${template.content.length > 100 ? '...' : ''}</div>
+      </button>
+    `;
+  });
+  html += '</div>';
+  
+  container.html(html);
+  
+  // Add click handler for template items
+  container.find('.template-item').click(function() {
+    const content = $(this).data('content');
+    insertFeedbackTemplate(content);
+  });
+}
+
+function insertFeedbackTemplate(content) {
+  const $editor = $(`#${currentEditor}-editor`);
+  
+  const formattedContent = `<li>${content}</li>`;
+  
+  const currentContent = $editor.summernote('code');
+  
+  let newContent;
+  if (currentContent.trim() === '') {
+    newContent = `<ul>${formattedContent}</ul>`;
+  } else if (!currentContent.includes('<ul')) {
+    newContent = `<ul>${formattedContent}</ul>`;
+    if (currentContent.trim() !== '') {
+      newContent += `<p></p>${currentContent}`;
+    }
+  } else {
+    newContent = currentContent.replace(/<\/ul>/i, `${formattedContent}</ul>`);
+  }
+  
+  $editor.summernote('code', newContent);
+  
+  $('#feedbackTemplatesModal').on('hidden.bs.modal', function() {
+    $('#feedbackTemplatesModal').off('hidden.bs.modal');
+    
+    setTimeout(function() {
+      $('body').addClass('modal-open');
+      
+      if ($('.modal-backdrop').length > 1) {
+        $('.modal-backdrop').not(':first').remove();
+      }
+      
+      $('#progressReportModal').css('overflow-y', 'auto');
+      $('#progressReportModal').css('padding-right', '17px');
+    }, 100);
+  });
+  
+  $('#feedbackTemplatesModal').modal('hide');
+  
+  toastr.success('Template added to feedback list');
+}
+
+$('#progressReportModal').on('hidden.bs.modal', function() {
+  $('.modal-backdrop').remove();
+  $('body').removeClass('modal-open');
+  $('body').css('padding-right', '');
+});
+
 </script>
 {% endblock extra_scripts %}
 {% endblock content %}

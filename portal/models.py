@@ -316,16 +316,14 @@ class Attendance(models.Model):
 
 class FeedbackTemplate(models.Model):
     CATEGORY_CHOICES = [
-        ('positive', 'Positive Feedback'),
-        ('improvement', 'Needs Improvement'),
-        ('technical', 'Technical Skills'),
-        ('behavioral', 'Behavioral Skills'),
-        ('general', 'General Comments'),
+        ('strengths', 'Strengths'),
+        ('growth', 'Areas for Growth'),
+        ('next_steps', 'Next Steps'),
     ]
     
     title = models.CharField(max_length=100)
     content = models.TextField()
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='general')
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='strengths')
     created_by = models.ForeignKey(
         CustomUser, 
         on_delete=models.CASCADE, 
