@@ -232,15 +232,6 @@
             <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#progressReportModal">
               <i class="fas fa-chart-bar"></i> Progress Report
             </button>
-            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#assessmentModal">
-              <i class="fas fa-chart-bar"></i> Assessments
-            </button>
-            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#assignmentModal">
-              <i class="fas fa-tasks"></i> Assignments
-            </button>
-            <button type="button" class="btn btn-light" data-toggle="modal" data-target="#materialModal">
-              <i class="fas fa-book"></i> Materials
-            </button>
             <button type="button" class="btn btn-info" data-toggle="modal" data-target="#viewAssignmentsModal">
               <i class="fas fa-tasks"></i> View All Activities
             </button>
@@ -652,7 +643,8 @@
           <div class="tab-pane fade show active" id="assignments" role="tabpanel">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h6 class="mb-0">Assignments</h6>
-              <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#assignmentModal">
+              <button type="button" class="btn btn-success btn-sm modal-switch-btn" 
+                      data-dismiss="modal" data-toggle="modal" data-target="#assignmentModal">
                 <i class="fas fa-plus"></i> Add Assignment
               </button>
             </div>
@@ -729,9 +721,10 @@
           <div class="tab-pane fade" id="assessments" role="tabpanel">
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h6 class="mb-0">Assessments</h6>
-              <button type="button" class="btn btn-warning btn-sm" data-toggle="modal" data-target="#assessmentModal">
-                <i class="fas fa-plus"></i> Add Assessment
-              </button>
+              <button type="button" class="btn btn-warning btn-sm modal-switch-btn" 
+                    data-dismiss="modal" data-toggle="modal" data-target="#assessmentModal">
+              <i class="fas fa-plus"></i> Add Assessment
+            </button>
             </div>
             <div class="table-responsive">
               <table class="table table-hover">
@@ -768,8 +761,10 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
               <h6 class="mb-0">Learning Materials</h6>
               <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#materialModal">
-                <i class="fas fa-plus"></i> Add Material
-              </button>
+                <button type="button" class="btn btn-info btn-sm modal-switch-btn" 
+                        data-dismiss="modal" data-toggle="modal" data-target="#materialModal">
+                  <i class="fas fa-plus"></i> Add Material
+                </button>
             </div>
             <div class="row">
               {% for event in timeline_events %}
@@ -829,7 +824,7 @@
           <div class="feedback-section mt-4">
             <h6 class="border-bottom pb-2">Feedback & Comments</h6>
             <div id="feedbackList" class="mb-3">
-              <!-- Feedback items will be loaded here -->
+              <!-- feedback items -->
             </div>
             <div class="form-group">
               <label>Add New Feedback</label>
@@ -847,7 +842,6 @@
   </div>
 </div>
 
-<!-- Add this modal for viewing submissions -->
 <div class="modal fade" id="submissionDetailModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -876,7 +870,6 @@
         <div class="feedback-section mt-4">
           <h6 class="border-bottom pb-2">Feedback & Comments</h6>
           <div id="submissionFeedbackList" class="mb-3">
-            <!-- Feedback items will be loaded here -->
           </div>
           <div class="form-group">
             <label>Add New Feedback</label>
@@ -892,7 +885,6 @@
   </div>
 </div>
 
-<!-- After the timelineModal, add this modal for showing attendance details -->
 <div class="modal fade" id="attendanceModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -1029,7 +1021,6 @@
   </div>
 </div>
 
-<!-- Add this at the end of the student_info.html, just before the extra_scripts block -->
 <div class="modal fade" id="criteriaModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -1427,6 +1418,26 @@ function updateCriteriaStatus() {
     }
   });
 }
+
+$(document).ready(function() {
+  $('#assignmentModal, #assessmentModal, #materialModal').on('hidden.bs.modal', function (e) {
+    if (!$(document.activeElement).hasClass('modal-switch-btn')) {
+      $('#viewAssignmentsModal').modal('show');
+    }
+  });
+
+  $('#editDueDatePicker').datetimepicker({
+    icons: {
+      time: 'far fa-clock',
+      date: 'far fa-calendar',
+      up: 'fas fa-arrow-up',
+      down: 'fas fa-arrow-down'
+    },
+    format: 'YYYY-MM-DD HH:mm:ss',
+    sideBySide: true,
+    stepping: 15
+  });
+});
 </script>
 {% endblock extra_scripts %}
 {% endblock content %}
