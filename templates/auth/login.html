@@ -51,42 +51,10 @@
                   </div>
                 </div>
               </form>
-              <!-- templates/auth/login.html (relevant script section) -->
-              <!-- Toastr JS and Configuration -->
-              <!-- jQuery (required by Toastr) -->
-              <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-              <!-- Toastr JS (via CDN) -->
-              <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-              <script>
-                  // Configure Toastr options
-                  toastr.options = {
-                      "closeButton": false,
-                      "debug": false,
-                      "newestOnTop": false,
-                      "progressBar": false,
-                      "positionClass": "toast-top-right",
-                      "preventDuplicates": false,
-                      "onclick": null,
-                      "showDuration": "400",
-                      "hideDuration": "1000",
-                      "timeOut": "5000",
-                      "extendedTimeOut": "1000",
-                      "showEasing": "swing",
-                      "hideEasing": "linear",
-                      "showMethod": "fadeIn",
-                      "hideMethod": "fadeOut"
-                  };
-
-              // Show Toastr error only if error_message exists
-              </script>
               {% if error_message %}
-              {{ error_message|json_script:"error-msg" }}
-              <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                  var errorMsg = JSON.parse(document.getElementById('error-msg').textContent);
-                  toastr["error"](errorMsg, "Error");
-                });
-              </script>
+                <div class="alert alert-danger">
+                  {{error_message}}
+                </div>
               {% endif %}
               <p class="mt-5 mb-2 text-center">
                 <a href="{% url 'password_reset' %}">Reset Pass</a>

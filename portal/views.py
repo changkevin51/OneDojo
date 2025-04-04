@@ -68,7 +68,7 @@ def user_login(request):
                 return redirect('teacher_dashboard')
             else:
                 messages.error(request, "Invalid user role.")
-                return redirect('login')
+                return render(request, "auth/login.html", {"error_message": "Invalid username or password"})
         else:
             print(f"Failed login attempt for username: {username}")
             return render(request, "auth/login.html", {"error_message": "Invalid username or password"})
@@ -262,7 +262,7 @@ def student_progress(request):
       {"name": "Mastery", "description": "Complete belt level mastery", "threshold": 100, "color": "#F44336"}
     ]
 
-    student_progress_value = 65 
+    student_progress_value = 0 
 
     for criteria in achievement_criteria:
         criteria['achieved'] = student_progress_value >= criteria['threshold']
@@ -273,8 +273,7 @@ def student_progress(request):
         'completed_assignments': completed_assignments,
         'total_assignments': total_assignments,
         'attendance_stats': attendance_stats,
-        
-        # Replace assessment_data with our new criteria-based data
+    
         'achievement_criteria': achievement_criteria,
         'student_progress_value': student_progress_value,
         'parent': 'progress',
@@ -283,6 +282,8 @@ def student_progress(request):
     }
     
     return render(request, 'pages/student_progress.html', context)
+    # return render(request, 'pages/progress.html', context)
+
 
 # student criterias
 

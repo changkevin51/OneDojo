@@ -186,7 +186,8 @@
                   <div class="btn-group">
                     {% if notification.link %}
                     <a href="{% if notification.notification_type == 'assessment' %}/assessments{% else %}{{ notification.link }}{% endif %}" 
-                       class="btn btn-sm btn-info mr-2">
+                    class="btn btn-sm btn-secondary dismiss-notification" 
+                    data-notification-id="{{ notification.id }}">
                       <i class="fas fa-eye"></i> View
                     </a>
                     {% endif %}
