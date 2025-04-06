@@ -76,7 +76,7 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
 
     # Examples
-    path('examples/calendar/', views.examples_calendar, name='examples_calendar'),
+    # path('examples/calendar/', views.examples_calendar, name='examples_calendar'),
     path('examples/gallery/', views.examples_gallery, name='examples_gallery'),
     path('examples/kanban/', views.examples_kanban, name='examples_kanban'),
     path('examples/invoice/', views.examples_invoice, name='examples_invoice'),

@@ -386,43 +386,17 @@
             <div class="d-flex justify-content-between align-items-center">
               <h6 class="mb-0 text-uppercase">Schedule</h6>
               <div class="btn-group">
-                <button type="button" class="btn btn-sm btn-outline-primary" id="add-event-btn">
-                  <i class="fas fa-plus"></i> Add Event
+                <button type="button" class="btn btn-sm btn-outline-primary" id="refreshCalendarBtn">
+                  <i class="fas fa-sync"></i> Refresh
                 </button>
               </div>
             </div>
           </div>
-          <div class="card-body">
-            <div class="row">
-              <!-- Calendar Sidebar -->
-              <div class="col-md-3">
-                <div class="mb-3">
-                  <div class="card">
-                    <div class="card-header">
-                      <h6 class="card-title mb-0">Event Types</h6>
-                    </div>
-                    <div class="card-body">
-                      <div id="external-events" class="mb-3">
-                        <div class="external-event bg-info">Class</div>
-                        <div class="external-event bg-warning">Assignment</div>
-                        <div class="external-event bg-success">Assessment</div>
-                        <div class="external-event bg-danger">Exam</div>
-                      </div>
-                      <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="drop-remove">
-                        <label class="custom-control-label" for="drop-remove">Remove after drop</label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- Calendar -->
-              <div class="col-md-9">
-                <div id="calendar"></div>
-              </div>
-            </div>
+          <div class="card-body p-0">
+            <div id="calendar"></div>
           </div>
         </div>
+
       </div>
       
       <!-- Right Column -->
@@ -589,18 +563,158 @@ $(function() {
       right: 'dayGridMonth,timeGridWeek,timeGridDay'
     },
     themeSystem: 'bootstrap',
-    events: [], // You can populate this with your events data
-    editable: true,
-    droppable: true,
-    drop: function(info) {
-      if ($('#drop-remove').is(':checked')) {
-        $(info.draggedEl).remove();
+    events: '/api/calendar/events/', 
+    eventTimeFormat: {
+      hour: 'numeric',
+      minute: '2-digit',
+      meridiem: 'short'
+    },
+    timeZone: 'local', // Use the browser's timezone
+    editable: false, // Read-only for students
+    selectable: false,
+    dayMaxEvents: true, 
+
+    eventDataTransform: function(event) {
+      if (event.daysOfWeek) {
+        event.allDay = !!event.allDay;
+        
+        if (!event.duration && event.startTime && event.endTime) {
+          const [startHour, startMinute] = event.startTime.split(':').map(Number);
+          const [endHour, endMinute] = event.endTime.split(':').map(Number);
+          
+          const startMinutes = startHour * 60 + startMinute;
+          const endMinutes = endHour * 60 + endMinute;
+          
+          const durationMinutes = endMinutes >= startMinutes ? 
+            endMinutes - startMinutes : 
+            (24 * 60) - startMinutes + endMinutes;
+            
+          event.duration = { minutes: durationMinutes };
+        }
+        
+        event.groupId = event.id + '_recurring';
       }
+      
+      if (event.extendedProps && event.extendedProps.repeats) {
+        if (!event.daysOfWeek) {
+          const start = moment(event.start);
+          const dayOfWeek = start.day(); // 0 = Sunday, 6 = Saturday
+
+          event.daysOfWeek = [dayOfWeek];
+          
+          event.startTime = start.format('HH:mm');
+          
+          if (event.end) {
+            const end = moment(event.end);
+            event.endTime = end.format('HH:mm');
+          }
+          
+          event.startRecur = moment(event.start).format('YYYY-MM-DD');
+          event.endRecur = event.extendedProps.repeatUntil;
+          
+          if (event.end && !event.allDay) {
+            const startMs = moment(event.start).valueOf();
+            const endMs = moment(event.end).valueOf();
+            const durationMs = endMs - startMs;
+            event.duration = { milliseconds: durationMs };
+          }
+        }
+      }
+      
+      return event;
+    },
+    
+    eventClick: function(info) {
+      const event = info.event;
+      const props = event.extendedProps;
+      
+      // Show modal with event details
+      $('#modalEventTitle').text(event.title);
+      
+      let timeText = '';
+      if (event.allDay) {
+        timeText = moment(event.start).format('MMM D, YYYY') + ' (All day)';
+        if (event.end) {
+          timeText = moment(event.start).format('MMM D, YYYY') + ' - ' + 
+                    moment(event.end).format('MMM D, YYYY') + ' (All day)';
+        }
+      } else {
+        timeText = moment(event.start).format('MMM D, YYYY, h:mm A');
+        if (event.end) {
+          timeText += ' - ' + moment(event.end).format('MMM D, YYYY h:mm A');
+        }
+      }
+      
+      $('#modalEventTime').text(timeText);
+      $('#modalEventDescription').text(props.description || 'No description available');
+      
+      $('.event-badges').html('');
+      
+      if (props.repeats) {
+        $('#recurringInfo').show();
+        const repeatEndDate = moment(props.repeatUntil).format('MMM D, YYYY');
+        $('#repeatEndDate').text(repeatEndDate);
+      } else {
+        $('#recurringInfo').hide();
+      }
+      
+      if (props.isAutoGenerated) {
+        $('#autoEventInfo').show();
+      } else {
+        $('#autoEventInfo').hide();
+      }
+
+      $('#eventModal').modal('show');
     }
   });
 
   calendar.render();
+  
+  setInterval(function() {
+    calendar.refetchEvents();
+  }, 60000);
+  
+  $('#refreshCalendarBtn').click(function() {
+    calendar.refetchEvents();
+  });
 });
 </script>
+
+<!-- Event Modal -->
+<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="eventModalLabel">Event Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="eventDetails">
+          <div class="event-badges mb-2">
+            <!-- Event type badge will be placed here -->
+          </div>
+          <h4 id="modalEventTitle"></h4>
+          <div id="modalEventTime" class="mb-2 text-muted"></div>
+          <div id="modalEventDescription" class="event-description"></div>
+          
+          <div id="recurringInfo" class="mt-3 text-info" style="display:none;">
+            <i class="fas fa-sync-alt mr-1"></i> 
+            <span>This event repeats weekly until <span id="repeatEndDate"></span></span>
+          </div>
+          
+          <div id="autoEventInfo" class="mt-3 text-muted" style="display:none;">
+            <i class="fas fa-robot mr-1"></i>
+            <span>This is an automatically generated event</span>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock extra_scripts %}
 

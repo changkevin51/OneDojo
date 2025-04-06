@@ -1918,18 +1918,23 @@ from django.core.cache import cache
 @login_required
 def calendar(request):
     """Enhanced calendar view for dojo management with auto-generated birthdays"""
-    if not (request.user.is_staff or request.user.is_teacher):
+    is_student = request.user.is_student
+    
+    can_manage = (request.user.is_staff or request.user.is_teacher)
+    
+    if not (can_manage or is_student):
         messages.error(request, "Permission denied")
         return redirect('dashboardv1')
     
-
     birthdays_enabled = cache.get('birthday_events_enabled', True)
     
     context = {
         'parent': 'calendar',
         'segment': 'calendar',
         'title': 'Calendar',
-        'birthdays_enabled': birthdays_enabled
+        'birthdays_enabled': birthdays_enabled,
+        'can_manage': can_manage,
+        'is_student': is_student
     }
 
     return render(request, 'pages/calendar.html', context)
@@ -1937,12 +1942,10 @@ def calendar(request):
 @login_required
 def calendar_events(request):
     """API to get calendar events"""
-    if not (request.user.is_staff or request.user.is_teacher):
+    if not (request.user.is_staff or request.user.is_teacher or request.user.is_student):
         return JsonResponse({'error': 'Permission denied'}, status=403)
     
-
     birthdays_enabled = cache.get('birthday_events_enabled', True)
-    
 
     if not birthdays_enabled:
         events = CalendarEvent.objects.filter(is_birthday=False)
