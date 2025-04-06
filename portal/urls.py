@@ -197,6 +197,16 @@ urlpatterns = [
     path('belt-criteria/<int:criteria_id>/edit/', views.edit_belt_criteria, name='edit_belt_criteria'),
     path('api/student/<int:student_id>/criteria/', views.get_student_criteria, name='get_student_criteria'),
     path('api/student/<int:student_id>/criteria/update/', views.update_student_criteria, name='update_student_criteria'),
+
+    # Calendar URLs
+    path('calendar/', views.calendar, name='calendar'),
+    path('api/calendar/events/', views.calendar_events, name='calendar_events'),
+    path('api/calendar/events/create/', views.create_calendar_event, name='create_calendar_event'),
+    path('api/calendar/events/<int:event_id>/', views.calendar_event_detail, name='calendar_event_detail'),
+    path('api/calendar/generate-birthdays/', views.generate_birthday_events, name='generate_birthday_events'),
+    path('api/calendar/delete-birthdays/', views.delete_birthday_events, name='delete_birthday_events'),
+    path('api/calendar/events/clear/', views.delete_all_calendar_events, name='delete_all_calendar_events'),
+    path('api/calendar/toggle-birthdays/', views.toggle_birthday_events, name='toggle_birthday_events'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

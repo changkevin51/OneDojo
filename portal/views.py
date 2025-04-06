@@ -17,9 +17,10 @@ from django.utils import timezone
 from django.db.models import Prefetch
 from datetime import datetime
 from django.http import JsonResponse
+import json
+from django.utils.timezone import localtime
 
 
-# User Registration View
 def register(request):
     if request.method == "POST":
         username = request.POST.get('username')
@@ -27,7 +28,7 @@ def register(request):
         password = request.POST.get('password')
         confirm_password = request.POST.get('confirm_password')
         
-        # Validation checks
+
         if password != confirm_password:
             messages.error(request, "Passwords do not match.")
             return redirect('register')
@@ -38,7 +39,7 @@ def register(request):
             messages.error(request, "Email already exists.")
             return redirect('register')
         
-        # Create user using CustomUser model
+
         user = CustomUser.objects.create_user(username=username, email=email, password=password)
         user.save()
         messages.success(request, "Registration successful. Please log in.")
@@ -114,9 +115,9 @@ def register_teacher(request):
         form = TeacherRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_teacher = True  # Assign role as teacher
+            user.is_teacher = True
             user.save()
-            return redirect('login')  # Redirect to login page after successful registration
+            return redirect('login')
     else:
         form = TeacherRegistrationForm()
     return render(request, 'auth/register_teacher.html', {'form': form})
@@ -136,21 +137,21 @@ def submit_assignment(request, event_id):
     )
     
     if request.method == 'POST':
-        # Update the assignment event (if needed)
+
         assignment_event.is_submitted = True
         assignment_event.submission_notes = request.POST.get('notes', '')
         assignment_event.submission_date = timezone.now()
         
         if 'submission_file' in request.FILES:
-            # Save the file on the assignment event if you want to keep a copy there
+
             assignment_event.submission_file = request.FILES['submission_file']
         assignment_event.save()
         
-        # Create a Submission object linked to the assignment event
+
         Submission.objects.create(
             assignment=assignment_event,
             student=request.user,
-            file=request.FILES.get('submission_file'),  # May be None if no file uploaded.
+            file=request.FILES.get('submission_file'),
             notes=request.POST.get('notes', '')
         )
         
@@ -181,10 +182,10 @@ def view_submissions(request, assignment_id):
 def report_session(request):
     if not request.user.is_student:
         return redirect('login')
-    # Logic for reporting the session
-    # Example: Just a confirmation page
+
+
     if request.method == 'POST':
-        # Handle session reporting logic
+
         return redirect('student_dashboard')
     return render(request, 'portal/report_session.html')
 
@@ -194,14 +195,14 @@ def student_dashboard(request):
     if not request.user.is_student:
         return redirect('login')
     
-    # Get active assignments
+
     active_assignments = TimelineEvent.objects.filter(
         student=request.user,
         event_type='assignment',
         is_submitted=False
     ).order_by('due_date')
 
-    # Get counts for statistics
+
     active_count = active_assignments.count()
     overdue_count = active_assignments.filter(due_date__lt=timezone.now()).count()
     completed_count = TimelineEvent.objects.filter(
@@ -219,7 +220,7 @@ def student_dashboard(request):
         'completed_count': completed_count
     }
     
-    # Add notifications to context
+
     context['notifications'] = request.user.notifications.filter(is_read=False)
     
     return render(request, 'pages/index.html', context)
@@ -890,7 +891,7 @@ def mailbox_read_mail(request):
   }
   return render(request, 'pages/mailbox/read-mail.html', context)
 
-# Pages -- Examples
+
 
 def examples_invoice(request):
   context = {
@@ -969,62 +970,7 @@ def examples_contact_us(request):
   }
   return render(request, 'pages/examples/contact-us.html', context)
 
-# Extra -- login & Registration v1
-# def login_v1(request):
-#   context = {
-#     'parent': '',
-#     'segment': ''
-#   }
-#   return render(request, 'pages/examples/login.html', context)
 
-# def login_v2(request):
-#   context = {
-#     'parent': '',
-#     'segment': ''
-#   }
-#   return render(request, 'pages/examples/login-v2.html', context)
-
-# def registration_v1(request):
-#   context = {
-#     'parent': '',
-#     'segment': ''
-#   }
-#   return render(request, 'pages/examples/register.html', context)
-
-# def registration_v2(request):
-#   context = {
-#     'parent': '',
-#     'segment': ''
-#   }
-#   return render(request, 'pages/examples/register-v2.html', context)
-
-# def forgot_password_v1(request):
-#   context = {
-#     'parent': '',
-#     'segment': ''
-#   }
-#   return render(request, 'pages/examples/forgot-password.html', context)
-
-# def forgot_password_v2(request):
-#   context = {
-#     'parent': '',
-#     'segment': ''
-#   }
-#   return render(request, 'pages/examples/forgot-password-v2.html', context)
-
-# def recover_password_v1(request):
-#   context = {
-#     'parent': '',
-#     'segment': ''
-#   }
-#   return render(request, 'pages/examples/recover-password.html', context)
-
-# def recover_password_v2(request):
-#   context = {
-#     'parent': '',
-#     'segment': ''
-#   }
-#   return render(request, 'pages/examples/recover-password-v2.html', context)
 
 def lockscreen(request):
   context = {
@@ -1465,7 +1411,7 @@ def attendance_records(request, unit_id):
         
     unit = get_object_or_404(Unit, id=unit_id)
     
-    # Get all dates with attendance records for this unit
+
     attendance_dates = Attendance.objects.filter(
         unit=unit
     ).values('date').distinct().order_by('-date')
@@ -1676,9 +1622,9 @@ def manage_belt_criteria(request):
                 messages.error(request, "Title is required")
                 return redirect('manage_belt_criteria')
             
-            # Handle "All Belt Levels" option
+
             if belt == 'all':
-                # Create the same criteria for each belt
+
                 for belt_value, _ in CustomUser.BELT_CHOICES:
                     BeltCriteria.objects.create(
                         belt=belt_value,
@@ -1690,7 +1636,7 @@ def manage_belt_criteria(request):
                     )
                 messages.success(request, f"Criteria '{title}' added to all belt levels")
             else:
-                # Create for a single belt
+
                 BeltCriteria.objects.create(
                     belt=belt,
                     title=title,
@@ -1817,12 +1763,12 @@ def get_student_criteria(request, student_id):
         
     student = get_object_or_404(CustomUser, id=student_id)
     
-    # Get all criteria for the student's current belt plus global criteria
+
     belt_criteria = BeltCriteria.objects.filter(
         models.Q(belt=student.belt) | models.Q(all_belts=True)
     ).order_by('order', 'title')
     
-    # Get the student's progress on these criteria
+
     progress_map = {
         p.criteria_id: p for p in StudentCriteriaProgress.objects.filter(
             student=student,
@@ -1830,7 +1776,7 @@ def get_student_criteria(request, student_id):
         )
     }
     
-    # Format the response data
+
     criteria_data = []
     completed_count = 0
     total_count = len(belt_criteria)
@@ -1852,7 +1798,7 @@ def get_student_criteria(request, student_id):
             'completed_by': progress.completed_by.get_full_name() if progress and progress.completed_by else None
         })
     
-    # Calculate progress percentage
+
     progress_percent = 0
     if total_count > 0:
         progress_percent = int((completed_count / total_count) * 100)
@@ -1869,7 +1815,7 @@ def student_criteria(request):
     if not request.user.is_student:
         return redirect('login')
     
-    # Get progress reports and other stats (same as before)
+
     progress_reports = TimelineEvent.objects.filter(
         student=request.user,
         event_type='progress_report'
@@ -1892,12 +1838,12 @@ def student_criteria(request):
     
     attendance_stats = Attendance.get_attendance_stats(request.user.id)
     
-    # Get the criteria for the student's current belt plus global criteria
+
     belt_criteria = BeltCriteria.objects.filter(
         models.Q(belt=request.user.belt) | models.Q(all_belts=True)
     ).order_by('order', 'title')
     
-    # Get the student's progress on these criteria
+
     progress_map = {
         p.criteria_id: p for p in StudentCriteriaProgress.objects.filter(
             student=request.user,
@@ -1905,7 +1851,7 @@ def student_criteria(request):
         )
     }
     
-    # Format criteria for the template
+
     criteria_list = []
     completed_criteria = []
     incomplete_criteria = []
@@ -1933,14 +1879,14 @@ def student_criteria(request):
             
         criteria_list.append(criteria_info)
     
-    # Calculate progress percentage and thresholds for display
+
     total_count = len(belt_criteria)
     progress_percent = 0
     
     if total_count > 0:
         progress_percent = int((completed_count / total_count) * 100)
         
-        # Calculate threshold positions (evenly distribute across progress bar)
+
         for i, criteria in enumerate(criteria_list):
             criteria['threshold'] = int((i + 1) * (100 / total_count))
             criteria['color'] = f"hsl({120 * (i / total_count)}, 80%, 45%)"
@@ -1952,7 +1898,7 @@ def student_criteria(request):
         'total_assignments': total_assignments,
         'attendance_stats': attendance_stats,
         
-        # Criteria data
+
         'criteria_list': criteria_list,
         'completed_criteria': completed_criteria,
         'incomplete_criteria': incomplete_criteria,
@@ -1967,3 +1913,321 @@ def student_criteria(request):
     
     return render(request, 'pages/student_criteria.html', context)
 
+from django.core.cache import cache
+
+@login_required
+def calendar(request):
+    """Enhanced calendar view for dojo management with auto-generated birthdays"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+    
+
+    birthdays_enabled = cache.get('birthday_events_enabled', True)
+    
+    context = {
+        'parent': 'calendar',
+        'segment': 'calendar',
+        'title': 'Calendar',
+        'birthdays_enabled': birthdays_enabled
+    }
+
+    return render(request, 'pages/calendar.html', context)
+
+@login_required
+def calendar_events(request):
+    """API to get calendar events"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        return JsonResponse({'error': 'Permission denied'}, status=403)
+    
+
+    birthdays_enabled = cache.get('birthday_events_enabled', True)
+    
+
+    if not birthdays_enabled:
+        events = CalendarEvent.objects.filter(is_birthday=False)
+    else:
+        events = CalendarEvent.objects.all()
+
+        if not CalendarEvent.objects.filter(is_birthday=True).exists():
+            CalendarEvent.generate_birthday_events()
+    
+
+    event_list = []
+    for event in events:
+        start = localtime(event.start_time)
+        event_data = {
+            'id': event.id,
+            'title': event.title,
+            'start': start.isoformat(),
+            'backgroundColor': event.background_color,
+            'borderColor': event.background_color,
+            'allDay': event.all_day,
+            'extendedProps': {
+                'description': event.description,
+                'isBirthday': event.is_birthday,
+                'repeats': event.repeats,
+                'isAutoGenerated': event.is_auto_generated
+            }
+        }
+        
+
+        if event.end_time:
+            end = localtime(event.end_time)
+            event_data['end'] = end.isoformat()
+        
+        if event.repeats and event.repeat_until:
+            start = localtime(event.start_time)
+            end = localtime(event.end_time) if event.end_time else None
+            day_of_week = event.start_time.weekday()
+            day_of_week = (day_of_week + 1) % 7
+            
+            event_data['startTime'] = start.strftime('%H:%M:%S')
+            if end:
+                event_data['endTime'] = end.strftime('%H:%M:%S')
+            
+
+            event_data['daysOfWeek'] = [day_of_week]
+            event_data['startRecur'] = start.strftime('%Y-%m-%d')
+            event_data['endRecur'] = event.repeat_until.strftime('%Y-%m-%d')
+            
+
+            if event.end_time and not event.all_day:
+                duration_ms = int((event.end_time - event.start_time).total_seconds() * 1000)
+                event_data['duration'] = str(duration_ms)
+        
+        event_list.append(event_data)
+    
+    return JsonResponse(event_list, safe=False)
+
+@login_required
+def calendar_event_detail(request, event_id):
+    """API to get, update or delete a calendar event"""
+
+    if not (request.user.is_staff or request.user.is_teacher):
+        return JsonResponse({'error': 'Permission denied'}, status=403)
+        
+    try:
+        event = CalendarEvent.objects.get(id=event_id)
+        start = localtime(event.start_time)
+        
+        if request.method == 'GET':
+            data = {
+                'id': event.id,
+                'title': event.title,
+                'description': event.description,
+                'start': start.isoformat(),
+                'end': event.end_time.isoformat() if event.end_time else None,
+                'allDay': event.all_day,
+                'backgroundColor': event.background_color,
+                'repeats': event.repeats,
+                'repeatUntil': event.repeat_until.isoformat() if event.repeat_until else None,
+                'isAutoGenerated': event.is_auto_generated,
+                'relatedUserId': event.related_user.id if event.related_user else None
+            }
+            return JsonResponse(data)
+            
+        elif request.method == 'PUT':
+            data = json.loads(request.body)
+            
+            if event.is_auto_generated:
+                return JsonResponse({'error': 'Cannot edit auto-generated events'}, status=403)
+                
+            event.title = data.get('title', event.title)
+            event.description = data.get('description', event.description)
+            event.all_day = data.get('allDay', event.all_day)
+            
+            if 'start' in data:
+                event.start_time = datetime.fromisoformat(data['start'].replace('Z', '+00:00'))
+            if 'end' in data and data['end']:
+                event.end_time = datetime.fromisoformat(data['end'].replace('Z', '+00:00'))
+            else:
+                event.end_time = None
+                
+            event.background_color = data.get('backgroundColor', event.background_color)
+            event.repeats = data.get('repeats', event.repeats)
+            
+            if 'repeatUntil' in data and data['repeatUntil']:
+                event.repeat_until = datetime.fromisoformat(data['repeatUntil'].replace('Z', '+00:00')).date()
+            else:
+                event.repeat_until = None
+                
+            event.save()
+            
+            return JsonResponse({'status': 'success', 'id': event.id})
+            
+
+        elif request.method == 'DELETE':
+
+            if event.is_auto_generated and event.is_birthday:
+
+                event.delete()
+                return JsonResponse({'status': 'success', 'message': 'Birthday event removed'})
+                
+
+            elif event.is_auto_generated:
+                return JsonResponse({'error': 'Cannot delete auto-generated events'}, status=403)
+                
+
+            event.delete()
+            return JsonResponse({'status': 'success'})
+            
+    except CalendarEvent.DoesNotExist:
+        return JsonResponse({'error': 'Event not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@login_required
+def create_calendar_event(request):
+    """API to create new calendar events"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        return JsonResponse({'error': 'Permission denied'}, status=403)
+        
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            
+
+            event = CalendarEvent(
+                title=data['title'],
+                description=data.get('description', ''),
+                all_day=data.get('allDay', False),
+                background_color=data.get('backgroundColor', '#3c8dbc'),
+                created_by=request.user,
+                repeats=data.get('repeats', False)
+            )
+            
+
+            event.start_time = datetime.fromisoformat(data['start'].replace('Z', '+00:00'))
+            if 'end' in data and data['end']:
+                event.end_time = datetime.fromisoformat(data['end'].replace('Z', '+00:00'))
+            
+
+            if event.repeats and 'repeatUntil' in data and data['repeatUntil']:
+                event.repeat_until = datetime.fromisoformat(
+                    data['repeatUntil'].replace('Z', '+00:00')
+                ).date()
+            
+            event.save()
+            
+            return JsonResponse({
+                'status': 'success',
+                'id': event.id,
+                'title': event.title
+            })
+            
+        except KeyError as e:
+            return JsonResponse({'error': f'Missing required field: {str(e)}'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@login_required
+def generate_birthday_events(request):
+    """Generate birthday events for all users"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        return JsonResponse({'error': 'Permission denied'}, status=403)
+        
+    if request.method == 'POST':
+        try:
+
+            CalendarEvent.generate_birthday_events()
+            
+            count = CalendarEvent.objects.filter(is_birthday=True, is_auto_generated=True).count()
+            return JsonResponse({
+                'status': 'success',
+                'message': f'Successfully generated {count} birthday events'
+            })
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@login_required
+def delete_birthday_events(request):
+    """Delete all auto-generated birthday events"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        return JsonResponse({'error': 'Permission denied'}, status=403)
+        
+    if request.method == 'DELETE':
+        try:
+            count = CalendarEvent.objects.filter(is_birthday=True, is_auto_generated=True).delete()[0]
+            return JsonResponse({
+                'status': 'success',
+                'message': f'Successfully deleted {count} birthday events'
+            })
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@login_required
+def toggle_birthday_events(request):
+    """Toggle birthday events on or off"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        return JsonResponse({'error': 'Permission denied'}, status=403)
+        
+    if request.method == 'POST':
+        try:
+
+            current_state = cache.get('birthday_events_enabled', True)
+            
+
+            new_state = not current_state
+            cache.set('birthday_events_enabled', new_state, None)
+            
+            if new_state:
+
+                count = CalendarEvent.generate_birthday_events()
+                return JsonResponse({
+                    'status': 'success',
+                    'enabled': True,
+                    'message': f'Birthday events enabled. Generated {count} events.'
+                })
+            else:
+
+                count = CalendarEvent.objects.filter(is_birthday=True).delete()[0]
+                return JsonResponse({
+                    'status': 'success',
+                    'enabled': False,
+                    'message': f'Birthday events disabled. Removed {count} events.'
+                })
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@login_required
+def delete_all_calendar_events(request):
+    """Delete all calendar events (except auto-generated ones if specified)"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        return JsonResponse({'error': 'Permission denied'}, status=403)
+        
+    if request.method == 'DELETE':
+        try:
+
+            data = json.loads(request.body) if request.body else {}
+            keep_auto_generated = data.get('keep_auto_generated', True)
+            
+
+            if keep_auto_generated:
+
+                count = CalendarEvent.objects.filter(is_auto_generated=False).delete()[0]
+                message = f"Successfully deleted {count} manually created events"
+            else:
+
+                count = CalendarEvent.objects.all().delete()[0]
+                message = f"Successfully deleted all {count} events"
+                
+            return JsonResponse({
+                'status': 'success',
+                'message': message
+            })
+            
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Invalid request method'}, status=405)

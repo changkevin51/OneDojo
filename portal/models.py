@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
+import datetime
+import time
 
 class CustomUser(AbstractUser):
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
@@ -380,5 +382,70 @@ class StudentCriteriaProgress(models.Model):
         status = 'Completed' if self.completed else 'Incomplete'
         return f"{self.student.username} - {self.criteria.title} - {status}"
 
+class CalendarEvent(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    start_time = models.DateTimeField()
+    end_time = models.DateTimeField(blank=True, null=True)
+    all_day = models.BooleanField(default=False)
+    background_color = models.CharField(max_length=20, default='#3c8dbc')
+    created_by = models.ForeignKey(CustomUser, on_delete=models.CASCADE, 
+                                  related_name='created_calendar_events') 
+    
+    repeats = models.BooleanField(default=False)
+    repeat_until = models.DateField(blank=True, null=True)
+    
+    is_birthday = models.BooleanField(default=False)
+    is_auto_generated = models.BooleanField(default=False)
+    related_user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, 
+                                    related_name='related_events')
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.title
+    
+    @classmethod
+    def generate_birthday_events(cls):
+        """Generate birthday events for all users with birthdays"""
+        # Clear existing auto-generated birthday events
+        cls.objects.filter(is_birthday=True, is_auto_generated=True).delete()
+        
+        # Get all users with birthdays - using dob field instead of birth_date
+        users = CustomUser.objects.exclude(dob__isnull=True)
+        
+        created_count = 0
+        current_year = timezone.now().year
+        
+        for user in users:
+            # Create birthday event for this year
+            if user.dob:
+                try:
+                    # Create birthday this year
+                    birthday_this_year = datetime.datetime.combine(
+                        datetime.date(current_year, user.dob.month, user.dob.day),
+                        datetime.time(9, 0)  # 9 AM
+                    )
+                    
+                    # Create the event
+                    cls.objects.create(
+                        title=f"{user.get_full_name()}'s Birthday",
+                        description=f"Birthday celebration for {user.get_full_name()}",
+                        start_time=timezone.make_aware(birthday_this_year),
+                        all_day=True,
+                        is_birthday=True,  # Use is_birthday instead of event_type
+                        background_color='#dc3545',  # Red color for birthdays
+                        is_auto_generated=True,
+                        related_user=user,
+                        created_by=CustomUser.objects.filter(is_staff=True).first() or user  # Fallback to the user if no staff
+                    )
+                    created_count += 1
+                except Exception as e:
+                    # Skip invalid dates (e.g., Feb 29 in non-leap years)
+                    print(f"Error creating birthday for {user}: {str(e)}")
+                    continue
+        
+        return created_count
 
 

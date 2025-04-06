@@ -4,19 +4,61 @@
 {% block title %} Calendar {% endblock title %}
 
 {% block extrastyle %}
-
   <!-- fullCalendar -->
   <link rel="stylesheet" href="{% static 'plugins/fullcalendar/main.css' %}">
+  <!-- Tempusdominus Bootstrap 4 (datetime picker) -->
+  <link rel="stylesheet" href="{% static 'plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+  <!-- toastr -->
+  <link rel="stylesheet" href="{% static 'plugins/toastr/toastr.min.css' %}">
+  <style>
+    .fc-event {
+      cursor: pointer;
+    }
+    .event-description {
+      margin-top: 10px;
+      white-space: pre-line;
+    }
 
+    .color-chooser li a {
+      display: inline-block;
+      width: 25px;
+      height: 25px;
+      margin: 2px;
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+    }
+    .color-chooser li a:hover {
+      transform: scale(1.2);
+    }
+    .color-chooser li a.selected {
+      transform: rotate(45deg) scale(1.2);
+      box-shadow: 0 0 0 2px #fff, 0 0 0 4px #000;
+    }
+    
+    /* Make modal content scrollable */
+    .modal-dialog {
+      max-height: 90vh;
+    }
+    .modal-content {
+      max-height: 90vh;
+    }
+    .modal-body {
+      overflow-y: auto;
+      max-height: calc(90vh - 120px); /* Account for header and footer */
+    }
+    
+    body.modal-open {
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
+    }
+  </style>
 {% endblock extrastyle %}
 
 {% block bodyclass %} hold-transition sidebar-mini {% endblock bodyclass %}
 
 {% block content %}
-
-  <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
     <section class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
@@ -41,51 +83,96 @@
             <div class="sticky-top mb-3">
               <div class="card">
                 <div class="card-header">
-                  <h4 class="card-title">Draggable Events</h4>
+                  <h4 class="card-title">Create Event</h4>
                 </div>
                 <div class="card-body">
-                  <!-- the events -->
-                  <div id="external-events">
-                    <div class="external-event bg-success">Lunch</div>
-                    <div class="external-event bg-warning">Go home</div>
-                    <div class="external-event bg-info">Do homework</div>
-                    <div class="external-event bg-primary">Work on UI design</div>
-                    <div class="external-event bg-danger">Sleep tight</div>
-                    <div class="checkbox">
-                      <label for="drop-remove">
-                        <input type="checkbox" id="drop-remove">
-                        remove after drop
-                      </label>
+                  <form id="eventForm">
+                    <div class="form-group">
+                      <label for="eventTitle">Event Title</label>
+                      <input id="eventTitle" type="text" class="form-control" placeholder="Event Title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>Event Color</label>
+                      <div class="btn-group" style="width: 100%; margin-bottom: 10px;">
+                        <ul class="fc-color-picker color-chooser" id="color-chooser">
+                          <li><a class="bg-primary" href="#" data-color="primary"></a></li>
+                          <li><a class="bg-success" href="#" data-color="success"></a></li>
+                          <li><a class="bg-warning" href="#" data-color="warning"></a></li>
+                          <li><a class="bg-danger" href="#" data-color="danger"></a></li>
+                          <li><a class="bg-info" href="#" data-color="info"></a></li>
+                          <li><a class="bg-dark" href="#" data-color="dark"></a></li>
+                        </ul>
+                      </div>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                      <input type="checkbox" class="form-check-input" id="allDayEvent">
+                      <label class="form-check-label" for="allDayEvent">All day event</label>
+                    </div>
+                    
+                    <div class="form-group date-time-inputs">
+                      <label>Start Date/Time:</label>
+                      <div class="input-group date" id="startDateTimePicker" data-target-input="nearest">
+                        <input type="text" class="form-control datetimepicker-input" data-target="#startDateTimePicker" id="startDateTime" required />
+                        <div class="input-group-append" data-target="#startDateTimePicker" data-toggle="datetimepicker">
+                          <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="form-group date-time-inputs">
+                      <label>End Date/Time:</label>
+                      <div class="input-group date" id="endDateTimePicker" data-target-input="nearest">
+                        <input type="text" class="form-control datetimepicker-input" data-target="#endDateTimePicker" id="endDateTime" />
+                        <div class="input-group-append" data-target="#endDateTimePicker" data-toggle="datetimepicker">
+                          <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                      <input type="checkbox" class="form-check-input" id="repeatingEvent">
+                      <label class="form-check-label" for="repeatingEvent">Repeat weekly</label>
+                    </div>
+                    
+                    <div class="form-group repeat-until-input" style="display:none;">
+                      <label>Repeat Until:</label>
+                      <div class="input-group date" id="repeatUntilPicker" data-target-input="nearest">
+                        <input type="text" class="form-control datetimepicker-input" data-target="#repeatUntilPicker" id="repeatUntil" />
+                        <div class="input-group-append" data-target="#repeatUntilPicker" data-toggle="datetimepicker">
+                          <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label for="eventDescription">Description</label>
+                      <textarea id="eventDescription" class="form-control" rows="3" placeholder="Event details..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                      <button type="submit" id="saveEventBtn" class="btn btn-primary btn-block">Create Event</button>
+                    </div>
+                  </form>
+                  
+                  <hr>
+                  <div class="dropdown w-100">
+                    <button class="btn btn-info dropdown-toggle w-100" type="button" id="calendarOptionsDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      Calendar Options
+                    </button>
+                    <div class="dropdown-menu w-100" aria-labelledby="calendarOptionsDropdown">
+                      <a class="dropdown-item" href="#" id="toggleBirthdaysBtn">
+                        <i class="fas fa-toggle-on mr-1" id="birthdayToggleIcon"></i> 
+                        <span id="toggleBirthdaysText">Disable Birthday Events</span>
+                      </a>
+                      <a class="dropdown-item" href="#" id="refreshCalendarBtn">Refresh Calendar</a>
+                      <div class="dropdown-divider"></div>
+                      <a class="dropdown-item text-danger" href="#" id="clearAllEventsBtn">
+                        <i class="fas fa-trash mr-1"></i> Clear All Events
+                      </a>
                     </div>
                   </div>
-                </div>
-                <!-- /.card-body -->
-              </div>
-              <!-- /.card -->
-              <div class="card">
-                <div class="card-header">
-                  <h3 class="card-title">Create Event</h3>
-                </div>
-                <div class="card-body">
-                  <div class="btn-group" style="width: 100%; margin-bottom: 10px;">
-                    <ul class="fc-color-picker" id="color-chooser">
-                      <li><a class="text-primary" href="#"><i class="fas fa-square"></i></a></li>
-                      <li><a class="text-warning" href="#"><i class="fas fa-square"></i></a></li>
-                      <li><a class="text-success" href="#"><i class="fas fa-square"></i></a></li>
-                      <li><a class="text-danger" href="#"><i class="fas fa-square"></i></a></li>
-                      <li><a class="text-muted" href="#"><i class="fas fa-square"></i></a></li>
-                    </ul>
-                  </div>
-                  <!-- /btn-group -->
-                  <div class="input-group">
-                    <input id="new-event" type="text" class="form-control" placeholder="Event Title">
-
-                    <div class="input-group-append">
-                      <button id="add-new-event" type="button" class="btn btn-primary">Add</button>
-                    </div>
-                    <!-- /btn-group -->
-                  </div>
-                  <!-- /input-group -->
                 </div>
               </div>
             </div>
@@ -109,183 +196,882 @@
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
+  
+  <!-- Event Modal -->
+  <div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="eventModalLabel">Event Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="eventDetails">
+            <div class="event-badges mb-2">
+              <!-- Event type badge will be placed here -->
+            </div>
+            <h4 id="modalEventTitle"></h4>
+            <div id="modalEventTime" class="mb-2 text-muted"></div>
+            <div id="modalEventDescription" class="event-description"></div>
+            
+            <div id="recurringInfo" class="mt-3 text-info" style="display:none;">
+              <i class="fas fa-sync-alt mr-1"></i> 
+              <span>This event repeats weekly until <span id="repeatEndDate"></span></span>
+            </div>
+            
+            <div id="autoEventInfo" class="mt-3 text-muted" style="display:none;">
+              <i class="fas fa-robot mr-1"></i>
+              <span>This is an automatically generated event</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-warning" id="removeBirthdayBtn" style="display:none">
+            <i class="fas fa-birthday-cake mr-1"></i> Remove This Birthday
+          </button>
+          <button type="button" class="btn btn-danger" id="deleteEventBtn">Delete</button>
+          <button type="button" class="btn btn-primary" id="editEventBtn">Edit</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-  {% endblock content %}
+  <!-- Edit Event Modal -->
+  <div class="modal fade" id="editEventModal" tabindex="-1" role="dialog" aria-labelledby="editEventModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editEventModalLabel">Edit Event</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="editEventForm">
+            <input type="hidden" id="editEventId">
+            <div class="form-group">
+              <label for="editEventTitle">Event Title</label>
+              <input id="editEventTitle" type="text" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+              <label>Event Color</label>
+              <div class="btn-group" style="width: 100%; margin-bottom: 10px;">
+                <ul class="fc-color-picker color-chooser" id="edit-color-chooser">
+                  <li><a class="bg-primary" href="#" data-color="primary"></a></li>
+                  <li><a class="bg-success" href="#" data-color="success"></a></li>
+                  <li><a class="bg-warning" href="#" data-color="warning"></a></li>
+                  <li><a class="bg-danger" href="#" data-color="danger"></a></li>
+                  <li><a class="bg-info" href="#" data-color="info"></a></li>
+                  <li><a class="bg-dark" href="#" data-color="dark"></a></li>
+                </ul>
+              </div>
+            </div>
+            
+            <div class="form-check mb-3">
+              <input type="checkbox" class="form-check-input" id="editAllDayEvent">
+              <label class="form-check-label" for="editAllDayEvent">All day event</label>
+            </div>
+            
+            <div class="form-group edit-date-time-inputs">
+              <label>Start Date/Time:</label>
+              <div class="input-group date" id="editStartDateTimePicker" data-target-input="nearest">
+                <input type="text" class="form-control datetimepicker-input" data-target="#editStartDateTimePicker" id="editStartDateTime" required />
+                <div class="input-group-append" data-target="#editStartDateTimePicker" data-toggle="datetimepicker">
+                  <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group edit-date-time-inputs">
+              <label>End Date/Time:</label>
+              <div class="input-group date" id="editEndDateTimePicker" data-target-input="nearest">
+                <input type="text" class="form-control datetimepicker-input" data-target="#editEndDateTimePicker" id="editEndDateTime" />
+                <div class="input-group-append" data-target="#editEndDateTimePicker" data-toggle="datetimepicker">
+                  <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-check mb-3">
+              <input type="checkbox" class="form-check-input" id="editRepeatingEvent">
+              <label class="form-check-label" for="editRepeatingEvent">Repeat weekly</label>
+            </div>
+            
+            <div class="form-group edit-repeat-until-input" style="display:none;">
+              <label>Repeat Until:</label>
+              <div class="input-group date" id="editRepeatUntilPicker" data-target-input="nearest">
+                <input type="text" class="form-control datetimepicker-input" data-target="#editRepeatUntilPicker" id="editRepeatUntil" />
+                <div class="input-group-append" data-target="#editRepeatUntilPicker" data-toggle="datetimepicker">
+                  <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="editEventDescription">Description</label>
+              <textarea id="editEventDescription" class="form-control" rows="3"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="saveEditEventBtn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
 
-  {% block extra_scripts %}
-
+{% block extra_scripts %}
   <!-- jQuery UI -->
   <script src="{% static 'plugins/jquery-ui/jquery-ui.min.js' %}"></script>
-  <!-- fullCalendar 2.2.5 -->
+  <!-- Bootstrap JS - Ensure this is loaded -->
+  <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <!-- Moment.js -->
   <script src="{% static 'plugins/moment/moment.min.js' %}"></script>
+  <!-- FullCalendar -->
   <script src="{% static 'plugins/fullcalendar/main.js' %}"></script>
+  <!-- DateTime Picker -->
+  <script src="{% static 'plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+  <!-- Toastr -->
+  <script src="{% static 'plugins/toastr/toastr.min.js' %}"></script>
+  
+  <!-- CSRF Token for API calls -->
+  <script>
+    const csrftoken = "{{ csrf_token }}";
+  </script>
 
   <!-- Page specific script -->
   <script>
     $(function () {
 
-      /* initialize the external events
-      -----------------------------------------------------------------*/
-      function ini_events(ele) {
-        ele.each(function () {
+      const colorMap = {
+        'primary': '#007bff',
+        'success': '#28a745',
+        'warning': '#ffc107',
+        'danger': '#dc3545',
+        'info': '#17a2b8',
+        'dark': '#343a40'
+      };
+      
 
-          // create an Event Object (https://fullcalendar.io/docs/event-object)
-          // it doesn't need to have a start or end
-          var eventObject = {
-            title: $.trim($(this).text()) // use the element's text as the event title
+      function initializeDateTimePickers() {
+
+        $('#startDateTimePicker').datetimepicker({
+          format: 'YYYY-MM-DD HH:mm',
+          icons: {
+            time: 'far fa-clock'
+          },
+          sideBySide: true,
+          useCurrent: true
+        });
+        
+
+        $('#endDateTimePicker').datetimepicker({
+          format: 'YYYY-MM-DD HH:mm',
+          icons: {
+            time: 'far fa-clock'
+          },
+          useCurrent: false,
+          sideBySide: true
+        });
+        
+
+        $('#startDateTimePicker').on('change.datetimepicker', function(e) {
+          if (e.date) {
+
+            const endDate = moment(e.date).add(2, 'hours');
+            $('#endDateTimePicker').datetimepicker('date', endDate);
+            $('#endDateTimePicker').datetimepicker('minDate', e.date);
           }
+        });
+        
 
-          // store the Event Object in the DOM element so we can get to it later
-          $(this).data('eventObject', eventObject)
+        $('#repeatUntilPicker').datetimepicker({
+          format: 'YYYY-MM-DD',
+          icons: {
+            time: 'far fa-calendar'
+          }
+        });
+        
 
-          // make the event draggable using jQuery UI
-          $(this).draggable({
-            zIndex        : 1070,
-            revert        : true, // will cause the event to go back to its
-            revertDuration: 0  //  original position after the drag
-          })
+        $('#editStartDateTimePicker').datetimepicker({
+          format: 'YYYY-MM-DD HH:mm',
+          icons: {
+            time: 'far fa-clock'
+          },
+          sideBySide: true,
+          useCurrent: true
+        });
+        
+        $('#editEndDateTimePicker').datetimepicker({
+          format: 'YYYY-MM-DD HH:mm',
+          icons: {
+            time: 'far fa-clock'
+          },
+          useCurrent: false,
+          sideBySide: true
+        });
+        
 
-        })
+        $('#editStartDateTimePicker').on('change.datetimepicker', function(e) {
+          if (e.date) {
+
+            const endDate = moment(e.date).add(2, 'hours');
+            $('#editEndDateTimePicker').datetimepicker('date', endDate);
+            $('#editEndDateTimePicker').datetimepicker('minDate', e.date);
+          }
+        });
+        
+        $('#editRepeatUntilPicker').datetimepicker({
+          format: 'YYYY-MM-DD',
+          icons: {
+            time: 'far fa-calendar'
+          }
+        });
+        
+        $('#startDateTimePicker').on('change.datetimepicker', function(e) {
+          $('#endDateTimePicker').datetimepicker('minDate', e.date);
+        });
+        
+        $('#editStartDateTimePicker').on('change.datetimepicker', function(e) {
+          $('#editEndDateTimePicker').datetimepicker('minDate', e.date);
+        });
       }
+      
+      initializeDateTimePickers();
+      
 
-      ini_events($('#external-events div.external-event'))
+      $('.dropdown-toggle').dropdown();
+      
 
-      /* initialize the calendar
-      -----------------------------------------------------------------*/
-      //Date for the calendar events (dummy data)
-      var date = new Date()
-      var d    = date.getDate(),
-          m    = date.getMonth(),
-          y    = date.getFullYear()
+      $('#allDayEvent').change(function() {
+        if(this.checked) {
 
-      var Calendar = FullCalendar.Calendar;
-      var Draggable = FullCalendar.Draggable;
+          $('#startDateTimePicker').datetimepicker('format', 'YYYY-MM-DD');
+          $('#endDateTimePicker').datetimepicker('format', 'YYYY-MM-DD');
+        } else {
 
-      var containerEl = document.getElementById('external-events');
-      var checkbox = document.getElementById('drop-remove');
-      var calendarEl = document.getElementById('calendar');
-
-      // initialize the external events
-      // -----------------------------------------------------------------
-
-      new Draggable(containerEl, {
-        itemSelector: '.external-event',
-        eventData: function(eventEl) {
-          return {
-            title: eventEl.innerText,
-            backgroundColor: window.getComputedStyle( eventEl ,null).getPropertyValue('background-color'),
-            borderColor: window.getComputedStyle( eventEl ,null).getPropertyValue('background-color'),
-            textColor: window.getComputedStyle( eventEl ,null).getPropertyValue('color'),
-          };
+          $('#startDateTimePicker').datetimepicker('format', 'YYYY-MM-DD HH:mm');
+          $('#endDateTimePicker').datetimepicker('format', 'YYYY-MM-DD HH:mm');
         }
       });
+      
+      $('#editAllDayEvent').change(function() {
+        if(this.checked) {
+          $('#editStartDateTimePicker').datetimepicker('format', 'YYYY-MM-DD');
+          $('#editEndDateTimePicker').datetimepicker('format', 'YYYY-MM-DD');
+        } else {
+          $('#editStartDateTimePicker').datetimepicker('format', 'YYYY-MM-DD HH:mm');
+          $('#editEndDateTimePicker').datetimepicker('format', 'YYYY-MM-DD HH:mm');
+        }
+      });
+      
 
-      var calendar = new Calendar(calendarEl, {
+      let currColor = colorMap['primary']; // Default color
+      
+      function updateColorSelection(colorPicker, selectedColor) {
+        $(colorPicker).find('a').removeClass('selected');
+        $(colorPicker).find(`a[data-color="${selectedColor}"]`).addClass('selected');
+      }
+      
+
+      updateColorSelection('#color-chooser', 'primary');
+      
+      $('#color-chooser > li > a').click(function (e) {
+        e.preventDefault();
+
+        const colorKey = $(this).data('color');
+        currColor = colorMap[colorKey] || currColor;
+        
+
+        updateColorSelection('#color-chooser', colorKey);
+      });
+      
+
+      let editCurrColor = colorMap['primary'];
+      updateColorSelection('#edit-color-chooser', 'primary');
+      
+      $('#edit-color-chooser > li > a').click(function (e) {
+        e.preventDefault();
+        const colorKey = $(this).data('color');
+        editCurrColor = colorMap[colorKey] || editCurrColor;
+        
+
+        updateColorSelection('#edit-color-chooser', colorKey);
+      });
+      
+
+      $('#repeatingEvent').change(function() {
+        if(this.checked) {
+          $('.repeat-until-input').show();
+        } else {
+          $('.repeat-until-input').hide();
+        }
+      });
+      
+      $('#editRepeatingEvent').change(function() {
+        if(this.checked) {
+          $('.edit-repeat-until-input').show();
+        } else {
+          $('.edit-repeat-until-input').hide();
+        }
+      });
+      
+
+      const calendarEl = document.getElementById('calendar');
+      const calendar = new FullCalendar.Calendar(calendarEl, {
         headerToolbar: {
-          left  : 'prev,next today',
+          left: 'prev,next today',
           center: 'title',
-          right : 'dayGridMonth,timeGridWeek,timeGridDay'
+          right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
         themeSystem: 'bootstrap',
-        //Random default events
-        events: [
-          {
-            title          : 'All Day Event',
-            start          : new Date(y, m, 1),
-            backgroundColor: '#f56954', //red
-            borderColor    : '#f56954', //red
-            allDay         : true
-          },
-          {
-            title          : 'Long Event',
-            start          : new Date(y, m, d - 5),
-            end            : new Date(y, m, d - 2),
-            backgroundColor: '#f39c12', //yellow
-            borderColor    : '#f39c12' //yellow
-          },
-          {
-            title          : 'Meeting',
-            start          : new Date(y, m, d, 10, 30),
-            allDay         : false,
-            backgroundColor: '#0073b7', //Blue
-            borderColor    : '#0073b7' //Blue
-          },
-          {
-            title          : 'Lunch',
-            start          : new Date(y, m, d, 12, 0),
-            end            : new Date(y, m, d, 14, 0),
-            allDay         : false,
-            backgroundColor: '#00c0ef', //Info (aqua)
-            borderColor    : '#00c0ef' //Info (aqua)
-          },
-          {
-            title          : 'Birthday Party',
-            start          : new Date(y, m, d + 1, 19, 0),
-            end            : new Date(y, m, d + 1, 22, 30),
-            allDay         : false,
-            backgroundColor: '#00a65a', //Success (green)
-            borderColor    : '#00a65a' //Success (green)
-          },
-          {
-            title          : 'Click for Google',
-            start          : new Date(y, m, 28),
-            end            : new Date(y, m, 29),
-            url            : 'https://www.google.com/',
-            backgroundColor: '#3c8dbc', //Primary (light-blue)
-            borderColor    : '#3c8dbc' //Primary (light-blue)
+
+        selectable: true,
+        select: function(info) {
+
+          const startDate = moment(info.start);
+          $('#startDateTimePicker').datetimepicker('date', startDate);
+          
+
+          const endDate = moment(info.start).add(2, 'hours');
+          if (info.end) {
+
+            $('#endDateTimePicker').datetimepicker('date', moment(info.end));
+          } else {
+
+            $('#endDateTimePicker').datetimepicker('date', endDate);
           }
-        ],
-        editable  : true,
-        droppable : true, // this allows things to be dropped onto the calendar !!!
-        drop      : function(info) {
-          // is the "remove after drop" checkbox checked?
-          if (checkbox.checked) {
-            // if so, remove the element from the "Draggable Events" list
-            info.draggedEl.parentNode.removeChild(info.draggedEl);
+          
+
+          $('#eventTitle').val('');
+          $('#eventDescription').val('');
+          $('#allDayEvent').prop('checked', info.allDay);
+          $('#repeatingEvent').prop('checked', false);
+          $('.repeat-until-input').hide();
+          
+
+          $('#eventTitle').focus();
+        },
+
+        eventClick: function(info) {
+          const event = info.event;
+          const props = event.extendedProps;
+          
+
+          $('#modalEventTitle').text(event.title);
+          
+
+          let timeText = '';
+          if (event.allDay) {
+            timeText = moment(event.start).format('MMM D, YYYY') + ' (All day)';
+            if (event.end) {
+              timeText = moment(event.start).format('MMM D, YYYY') + ' - ' + 
+                        moment(event.end).format('MMM D, YYYY') + ' (All day)';
+            }
+          } else {
+            timeText = moment(event.start).format('MMM D, YYYY, h:mm A');
+            if (event.end) {
+              timeText += ' - ' + moment(event.end).format('MMM D, YYYY h:mm A');
+            }
           }
+          
+          $('#modalEventTime').text(timeText);
+          $('#modalEventDescription').text(props.description || 'No description available');
+          
+
+          $('.event-badges').html('');
+          
+
+          if (props.repeats) {
+            $('#recurringInfo').show();
+            const repeatEndDate = moment(props.repeatUntil).format('MMM D, YYYY');
+            $('#repeatEndDate').text(repeatEndDate);
+          } else {
+            $('#recurringInfo').hide();
+          }
+          
+
+          if (props.isAutoGenerated) {
+            $('#autoEventInfo').show();
+
+            $('#editEventBtn, #deleteEventBtn').hide();
+            
+
+            if (props.isBirthday) {
+              $('#removeBirthdayBtn').show().data('event-id', event.id);
+            } else {
+              $('#removeBirthdayBtn').hide();
+            }
+          } else {
+            $('#autoEventInfo').hide();
+
+            $('#editEventBtn, #deleteEventBtn').show();
+
+            $('#removeBirthdayBtn').hide();
+          }
+
+          $('#editEventBtn').data('event-id', event.id);
+          $('#deleteEventBtn').data('event-id', event.id);
+          
+
+          $('#eventModal').modal('show');
+        },
+        editable: true,
+        dayMaxEvents: true, // allow "more" link when too many events
+        events: '/api/calendar/events/', // Load from our API
+        eventTimeFormat: {
+          hour: 'numeric',
+          minute: '2-digit',
+          meridiem: 'short'
+        },
+        timeZone: 'local', // Use the browser's timezone
+
+        eventDataTransform: function(event) {
+
+          if (event.daysOfWeek) {
+
+            event.allDay = !!event.allDay;
+            
+
+            if (!event.duration && event.startTime && event.endTime) {
+
+              const [startHour, startMinute] = event.startTime.split(':').map(Number);
+              const [endHour, endMinute] = event.endTime.split(':').map(Number);
+              
+
+              const startMinutes = startHour * 60 + startMinute;
+              const endMinutes = endHour * 60 + endMinute;
+              
+
+              const durationMinutes = endMinutes >= startMinutes ? 
+                endMinutes - startMinutes : 
+                (24 * 60) - startMinutes + endMinutes;
+                
+              event.duration = { minutes: durationMinutes };
+            }
+            
+
+            event.groupId = event.id + '_recurring';
+          }
+          
+
+          if (event.extendedProps && event.extendedProps.repeats) {
+            if (!event.daysOfWeek) {
+
+              const start = moment(event.start);
+              const dayOfWeek = start.day(); // 0 = Sunday, 6 = Saturday
+
+
+              event.daysOfWeek = [dayOfWeek];
+              
+
+              event.startTime = start.format('HH:mm');
+              
+              if (event.end) {
+                const end = moment(event.end);
+                event.endTime = end.format('HH:mm');
+              }
+              
+              event.startRecur = moment(event.start).format('YYYY-MM-DD');
+
+              event.endRecur = event.extendedProps.repeatUntil;
+              
+
+              if (event.end && !event.allDay) {
+                const startMs = moment(event.start).valueOf();
+                const endMs = moment(event.end).valueOf();
+                const durationMs = endMs - startMs;
+                event.duration = { milliseconds: durationMs };
+              }
+            }
+          }
+          
+          return event;
         }
       });
-
+      
       calendar.render();
-      // $('#calendar').fullCalendar()
 
-      /* ADDING EVENTS */
-      var currColor = '#3c8dbc' //Red by default
-      // Color chooser button
-      $('#color-chooser > li > a').click(function (e) {
-        e.preventDefault()
-        // Save color
-        currColor = $(this).css('color')
-        // Add color effect to button
-        $('#add-new-event').css({
-          'background-color': currColor,
-          'border-color'    : currColor
-        })
-      })
-      $('#add-new-event').click(function (e) {
-        e.preventDefault()
-        // Get value and make sure it is not null
-        var val = $('#new-event').val()
-        if (val.length == 0) {
-          return
+
+      $('.modal').on('show.bs.modal', function() {
+        $('body').addClass('modal-open');
+      });
+      
+      $('.modal').on('hidden.bs.modal', function() {
+        $('body').removeClass('modal-open');
+      });
+      
+
+      $('#eventForm').submit(function(e) {
+        e.preventDefault();
+        
+        const title = $('#eventTitle').val().trim();
+        const allDay = $('#allDayEvent').is(':checked');
+        const description = $('#eventDescription').val().trim();
+        const repeats = $('#repeatingEvent').is(':checked');
+        
+
+        let startDate = $('#startDateTimePicker').datetimepicker('date');
+        let endDate = $('#endDateTimePicker').datetimepicker('date');
+        let repeatUntil = null;
+        
+        if (repeats) {
+          repeatUntil = $('#repeatUntilPicker').datetimepicker('date');
         }
+        
 
-        // Create events
-        var event = $('<div />')
-        event.css({
-          'background-color': currColor,
-          'border-color'    : currColor,
-          'color'           : '#fff'
-        }).addClass('external-event')
-        event.text(val)
-        $('#external-events').prepend(event)
+        if (!title) {
+          toastr.error('Event title is required');
+          return;
+        }
+        
+        if (!startDate) {
+          toastr.error('Start date is required');
+          return;
+        }
+        
 
-        // Add draggable funtionality
-        ini_events(event)
+        const eventData = {
+          title: title,
+          allDay: allDay,
+          start: startDate.toISOString(), // Include timezone info
+          backgroundColor: currColor,
+          description: description,
+          repeats: repeats
+        };
+        
 
-        // Remove event from text input
-        $('#new-event').val('')
-      })
-    })
+        if (endDate) {
+          eventData.end = endDate.toISOString(); // Include timezone info
+        }
+        
+
+        if (repeats && repeatUntil) {
+          eventData.repeatUntil = repeatUntil.toISOString(); // Include timezone info
+        }
+        
+
+        $.ajax({
+          url: '/api/calendar/events/create/',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(eventData),
+          beforeSend: function(xhr) {
+            xhr.setRequestHeader('X-CSRFToken', csrftoken);
+          },
+          success: function(response) {
+
+            toastr.success('Event created successfully');
+            
+
+            $('#eventForm')[0].reset();
+            $('#startDateTimePicker').datetimepicker('clear');
+            $('#endDateTimePicker').datetimepicker('clear');
+            $('#repeatUntilPicker').datetimepicker('clear');
+            $('.repeat-until-input').hide();
+            
+
+            updateColorSelection('#color-chooser', 'primary');
+            currColor = colorMap['primary'];
+            
+
+            calendar.refetchEvents();
+          },
+          error: function(xhr) {
+            let errorMsg = 'Failed to create event';
+            try {
+              const response = JSON.parse(xhr.responseText);
+              if (response.error) {
+                errorMsg = response.error;
+              }
+            } catch (e) {}
+            toastr.error(errorMsg);
+          }
+        });
+      });
+      
+
+      $('#editEventBtn').click(function() {
+        const eventId = $(this).data('event-id');
+        
+
+        $('#eventModal').modal('hide');
+        
+
+        $.ajax({
+          url: `/api/calendar/events/${eventId}/`,
+          type: 'GET',
+          success: function(event) {
+
+            $('#editEventId').val(event.id);
+            $('#editEventTitle').val(event.title);
+            $('#editEventDescription').val(event.description);
+            $('#editAllDayEvent').prop('checked', event.allDay);
+            
+
+            $('#editStartDateTimePicker').datetimepicker('date', moment(event.start));
+            
+            if (event.end) {
+              $('#editEndDateTimePicker').datetimepicker('date', moment(event.end));
+            } else {
+              $('#editEndDateTimePicker').datetimepicker('clear');
+            }
+            
+
+            $('#editRepeatingEvent').prop('checked', event.repeats);
+            
+            if (event.repeats && event.repeatUntil) {
+              $('.edit-repeat-until-input').show();
+              $('#editRepeatUntilPicker').datetimepicker('date', moment(event.repeatUntil));
+            } else {
+              $('.edit-repeat-until-input').hide();
+            }
+            
+
+            const colorKey = Object.keys(colorMap).find(key => colorMap[key] === event.backgroundColor) || 'primary';
+            editCurrColor = event.backgroundColor;
+            updateColorSelection('#edit-color-chooser', colorKey);
+            
+
+            $('#editEventModal').modal('show');
+          },
+          error: function() {
+            toastr.error('Failed to load event details');
+          }
+        });
+      });
+      
+
+      $('#saveEditEventBtn').click(function() {
+        const eventId = $('#editEventId').val();
+        
+        const title = $('#editEventTitle').val().trim();
+        const allDay = $('#editAllDayEvent').is(':checked');
+        const description = $('#editEventDescription').val().trim();
+        const repeats = $('#editRepeatingEvent').is(':checked');
+        
+
+        let startDate = $('#editStartDateTimePicker').datetimepicker('date');
+        let endDate = $('#editEndDateTimePicker').datetimepicker('date');
+        let repeatUntil = null;
+        
+        if (repeats) {
+          repeatUntil = $('#editRepeatUntilPicker').datetimepicker('date');
+        }
+        
+
+        if (!title) {
+          toastr.error('Event title is required');
+          return;
+        }
+        
+        if (!startDate) {
+          toastr.error('Start date is required');
+          return;
+        }
+        
+
+        const eventData = {
+          title: title,
+          allDay: allDay,
+          start: startDate.toISOString(), // Include timezone info
+          backgroundColor: editCurrColor,
+          description: description,
+          repeats: repeats
+        };
+        
+
+        if (endDate) {
+          eventData.end = endDate.toISOString(); // Include timezone info
+        }
+        
+
+        if (repeats && repeatUntil) {
+          eventData.repeatUntil = repeatUntil.toISOString(); // Include timezone info
+        }
+        
+
+        $.ajax({
+          url: `/api/calendar/events/${eventId}/`,
+          type: 'PUT',
+          contentType: 'application/json',
+          data: JSON.stringify(eventData),
+          beforeSend: function(xhr) {
+            xhr.setRequestHeader('X-CSRFToken', csrftoken);
+          },
+          success: function(response) {
+            toastr.success('Event updated successfully');
+            
+
+            $('#editEventModal').modal('hide');
+            
+
+            calendar.refetchEvents();
+          },
+          error: function(xhr) {
+            let errorMsg = 'Failed to update event';
+            try {
+              const response = JSON.parse(xhr.responseText);
+              if (response.error) {
+                errorMsg = response.error;
+              }
+            } catch (e) {}
+            toastr.error(errorMsg);
+          }
+        });
+      });
+      
+
+      $('#deleteEventBtn').click(function() {
+        if (confirm('Are you sure you want to delete this event?')) {
+          const eventId = $(this).data('event-id');
+          
+          $.ajax({
+            url: `/api/calendar/events/${eventId}/`,
+            type: 'DELETE',
+            beforeSend: function(xhr) {
+              xhr.setRequestHeader('X-CSRFToken', csrftoken);
+            },
+            success: function() {
+              toastr.success('Event deleted successfully');
+              
+
+              $('#eventModal').modal('hide');
+              
+
+              calendar.refetchEvents();
+            },
+            error: function(xhr) {
+              let errorMsg = 'Failed to delete event';
+              try {
+                const response = JSON.parse(xhr.responseText);
+                if (response.error) {
+                  errorMsg = response.error;
+                }
+              } catch (e) {}
+              toastr.error(errorMsg);
+            }
+          });
+        }
+      });
+      
+
+      $('#removeBirthdayBtn').click(function() {
+        if (confirm('Remove this birthday event? The global birthday setting will remain enabled.')) {
+          const eventId = $(this).data('event-id');
+          
+          $.ajax({
+            url: `/api/calendar/events/${eventId}/`,
+            type: 'DELETE',
+            data: JSON.stringify({ remove_single_birthday: true }),
+            contentType: 'application/json',
+            beforeSend: function(xhr) {
+              xhr.setRequestHeader('X-CSRFToken', csrftoken);
+            },
+            success: function() {
+              toastr.success('Birthday event removed');
+              
+
+              $('#eventModal').modal('hide');
+              
+
+              calendar.refetchEvents();
+            },
+            error: function(xhr) {
+              let errorMsg = 'Failed to remove birthday event';
+              try {
+                const response = JSON.parse(xhr.responseText);
+                if (response.error) {
+                  errorMsg = response.error;
+                }
+              } catch (e) {}
+              toastr.error(errorMsg);
+            }
+          });
+        }
+      });
+      
+      const birthdaysEnabled = JSON.parse("{{ birthdays_enabled|default:'false'|yesno:'true,false' }}");
+            
+      function updateBirthdayToggleUI(enabled) {
+        if (enabled) {
+          $('#birthdayToggleIcon').removeClass('fa-toggle-off').addClass('fa-toggle-on');
+          $('#toggleBirthdaysText').text('Disable Birthday Events');
+        } else {
+          $('#birthdayToggleIcon').removeClass('fa-toggle-on').addClass('fa-toggle-off');
+          $('#toggleBirthdaysText').text('Enable Birthday Events');
+        }
+      }
+      
+
+      updateBirthdayToggleUI(birthdaysEnabled);
+      
+
+      $('#toggleBirthdaysBtn').click(function() {
+        $.ajax({
+          url: '/api/calendar/toggle-birthdays/',
+          type: 'POST',
+          beforeSend: function(xhr) {
+            xhr.setRequestHeader('X-CSRFToken', csrftoken);
+          },
+          success: function(response) {
+            toastr.success(response.message);
+            
+
+            updateBirthdayToggleUI(response.enabled);
+            
+
+            calendar.refetchEvents();
+          },
+          error: function() {
+            toastr.error('Failed to toggle birthday events');
+          }
+        });
+      });
+      
+
+      $('#refreshCalendarBtn').click(function() {
+        calendar.refetchEvents();
+        toastr.info('Calendar refreshed');
+      });
+      
+
+      $('#clearAllEventsBtn').click(function() {
+        if (confirm('Are you sure you want to delete ALL calendar events? This cannot be undone.')) {
+          $.ajax({
+            url: '/api/calendar/events/clear/',
+            type: 'DELETE',  // Changed from POST to DELETE
+            beforeSend: function(xhr) {
+              xhr.setRequestHeader('X-CSRFToken', csrftoken);
+            },
+            success: function(response) {
+              toastr.success('All events have been cleared');
+              
+
+              calendar.refetchEvents();
+            },
+            error: function(xhr) {
+              let errorMsg = 'Failed to clear events';
+              try {
+                const response = JSON.parse(xhr.responseText);
+                if (response.error) {
+                  errorMsg = response.error;
+                }
+              } catch (e) {}
+              toastr.error(errorMsg);
+            }
+          });
+        }
+      });
+      
+
+
+    });
   </script>
 {% endblock extra_scripts %}
