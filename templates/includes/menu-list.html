@@ -6,7 +6,7 @@
         <a href="{% if request.user.is_staff %}{% url 'admin:index' %}{% else %}{% url 'student_dashboard' %}{% endif %}" 
            class="nav-link {% if request.path == '/admin/' or request.resolver_match.url_name == 'student_dashboard' %}active bg-primary text-white{% endif %}">
             <i class="nav-icon fas fa-tachometer-alt"></i>
-            <p>Class List</p>
+            <p>Dashboard</p>
         </a>
     </li>
     
@@ -68,12 +68,12 @@
                 <p>Sessions</p>
             </a>
         </li> -->
-        <li class="nav-item">
+        <!-- <li class="nav-item">
             <a href="{% url 'admin:portal_unit_changelist' %}" class="nav-link">
                 <i class="nav-icon fas fa-chalkboard-teacher"></i>
                 <p>Classes</p>
             </a>
-        </li>
+        </li> -->
         <li class="nav-item">
             <a href="{% url 'attendance_list' %}" class="nav-link {% if 'attendance' in segment %}active{% endif %}">
                 <i class="nav-icon fas fa-clipboard-check"></i>

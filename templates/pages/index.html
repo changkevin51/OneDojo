@@ -563,7 +563,7 @@ $(function() {
       right: 'dayGridMonth,timeGridWeek,timeGridDay'
     },
     themeSystem: 'bootstrap',
-    events: '/api/calendar/events/', 
+    events: '/api/calendar/events/', // This endpoint now filters events based on user
     eventTimeFormat: {
       hour: 'numeric',
       minute: '2-digit',
@@ -670,6 +670,7 @@ $(function() {
 
   calendar.render();
   
+  // Auto-refresh calendar periodically
   setInterval(function() {
     calendar.refetchEvents();
   }, 60000);

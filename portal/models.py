@@ -398,6 +398,16 @@ class CalendarEvent(models.Model):
     related_user = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, 
                                     related_name='related_events')
     
+    # Add new visibility fields
+    VISIBILITY_CHOICES = [
+        ('all', 'All Students'),
+        ('classes', 'Specific Classes'),
+        ('students', 'Specific Students'),
+    ]
+    visibility_type = models.CharField(max_length=10, choices=VISIBILITY_CHOICES, default='all')
+    visible_to_classes = models.ManyToManyField('Unit', related_name='calendar_events', blank=True)
+    visible_to_students = models.ManyToManyField('CustomUser', related_name='visible_events', blank=True)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -445,5 +455,30 @@ class CalendarEvent(models.Model):
                     continue
         
         return created_count
+
+    def is_visible_to_user(self, user):
+        """Check if event is visible to a specific user"""
+        # Instructors can see all events
+        if user.is_staff or user.is_teacher:
+            return True
+            
+        # Auto-generated events like birthdays are visible to everyone
+        if self.is_auto_generated:
+            return True
+            
+        # Check visibility settings
+        if self.visibility_type == 'all':
+            return True
+        elif self.visibility_type == 'classes':
+            # Check if user is in any of the visible classes
+            return Registration.objects.filter(
+                student=user, 
+                unit__in=self.visible_to_classes.all()
+            ).exists()
+        elif self.visibility_type == 'students':
+            # Check if user is in the visible students list
+            return self.visible_to_students.filter(id=user.id).exists()
+            
+        return False
 
 

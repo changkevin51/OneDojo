@@ -152,6 +152,34 @@
                       <textarea id="eventDescription" class="form-control" rows="3" placeholder="Event details..."></textarea>
                     </div>
                     
+                    <!-- Add visibility controls -->
+                    <div class="form-group">
+                      <label>Event Visibility</label>
+                      <select id="visibilityType" class="form-control">
+                        <option value="all">All Students</option>
+                        <option value="classes">Specific Classes</option>
+                        <option value="students">Specific Students</option>
+                      </select>
+                    </div>
+                    
+                    <!-- Class selection (initially hidden) -->
+                    <div class="form-group visibility-classes" style="display: none;">
+                      <label>Select Classes</label>
+                      <select id="visibleClasses" class="form-control" multiple data-placeholder="Select classes">
+                        <!-- Will be populated via API -->
+                      </select>
+                      <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple classes</small>
+                    </div>
+                    
+                    <!-- Student selection (initially hidden) -->
+                    <div class="form-group visibility-students" style="display: none;">
+                      <label>Select Students</label>
+                      <select id="visibleStudents" class="form-control" multiple data-placeholder="Select students">
+                        <!-- Will be populated via API -->
+                      </select>
+                      <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple students</small>
+                    </div>
+                    
                     <div class="form-group">
                       <button type="submit" id="saveEventBtn" class="btn btn-primary btn-block">Create Event</button>
                     </div>
@@ -322,6 +350,34 @@
             <div class="form-group">
               <label for="editEventDescription">Description</label>
               <textarea id="editEventDescription" class="form-control" rows="3"></textarea>
+            </div>
+            
+            <!-- Add visibility controls to edit form -->
+            <div class="form-group">
+              <label>Event Visibility</label>
+              <select id="editVisibilityType" class="form-control">
+                <option value="all">All Students</option>
+                <option value="classes">Specific Classes</option>
+                <option value="students">Specific Students</option>
+              </select>
+            </div>
+            
+            <!-- Class selection (initially hidden) -->
+            <div class="form-group edit-visibility-classes" style="display: none;">
+              <label>Select Classes</label>
+              <select id="editVisibleClasses" class="form-control" multiple data-placeholder="Select classes">
+                <!-- Will be populated via API -->
+              </select>
+              <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple classes</small>
+            </div>
+            
+            <!-- Student selection (initially hidden) -->
+            <div class="form-group edit-visibility-students" style="display: none;">
+              <label>Select Students</label>
+              <select id="editVisibleStudents" class="form-control" multiple data-placeholder="Select students">
+                <!-- Will be populated via API -->
+              </select>
+              <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple students</small>
             </div>
           </form>
         </div>
@@ -698,6 +754,64 @@
       
 
       {% if can_manage %}
+      // Load classes and students data for the visibility dropdowns
+      function loadClassesAndStudents() {
+        $.ajax({
+          url: '/api/calendar/classes-students/',
+          type: 'GET',
+          success: function(data) {
+            // Populate class dropdown
+            const classSelect = $('#visibleClasses, #editVisibleClasses');
+            classSelect.empty();
+            data.classes.forEach(function(cls) {
+              classSelect.append($('<option>', {
+                value: cls.id,
+                text: cls.name
+              }));
+            });
+            
+            // Populate student dropdown
+            const studentSelect = $('#visibleStudents, #editVisibleStudents');
+            studentSelect.empty();
+            data.students.forEach(function(student) {
+              studentSelect.append($('<option>', {
+                value: student.id,
+                text: student.name
+              }));
+            });
+          },
+          error: function() {
+            toastr.error('Failed to load classes and students data');
+          }
+        });
+      }
+      
+      // Call on page load
+      loadClassesAndStudents();
+      
+      // Show/hide visibility selection based on type
+      $('#visibilityType').change(function() {
+        const value = $(this).val();
+        $('.visibility-classes, .visibility-students').hide();
+        
+        if (value === 'classes') {
+          $('.visibility-classes').show();
+        } else if (value === 'students') {
+          $('.visibility-students').show();
+        }
+      });
+      
+      $('#editVisibilityType').change(function() {
+        const value = $(this).val();
+        $('.edit-visibility-classes, .edit-visibility-students').hide();
+        
+        if (value === 'classes') {
+          $('.edit-visibility-classes').show();
+        } else if (value === 'students') {
+          $('.edit-visibility-students').show();
+        }
+      });
+
       $('#eventForm').submit(function(e) {
         e.preventDefault();
         
@@ -705,6 +819,7 @@
         const allDay = $('#allDayEvent').is(':checked');
         const description = $('#eventDescription').val().trim();
         const repeats = $('#repeatingEvent').is(':checked');
+        const visibilityType = $('#visibilityType').val();
         
 
         let startDate = $('#startDateTimePicker').datetimepicker('date');
@@ -733,7 +848,8 @@
           start: startDate.toISOString(), // Include timezone info
           backgroundColor: currColor,
           description: description,
-          repeats: repeats
+          repeats: repeats,
+          visibility_type: visibilityType
         };
         
 
@@ -744,6 +860,13 @@
 
         if (repeats && repeatUntil) {
           eventData.repeatUntil = repeatUntil.toISOString(); // Include timezone info
+        }
+        
+        // Add visibility data based on selection
+        if (visibilityType === 'classes') {
+          eventData.visible_to_classes = $('#visibleClasses').val();
+        } else if (visibilityType === 'students') {
+          eventData.visible_to_students = $('#visibleStudents').val();
         }
         
 
@@ -765,6 +888,8 @@
             $('#endDateTimePicker').datetimepicker('clear');
             $('#repeatUntilPicker').datetimepicker('clear');
             $('.repeat-until-input').hide();
+            $('.visibility-classes, .visibility-students').hide();
+            $('#visibilityType').val('all');
             
 
             updateColorSelection('#color-chooser', 'primary');
@@ -828,6 +953,18 @@
             editCurrColor = event.backgroundColor;
             updateColorSelection('#edit-color-chooser', colorKey);
             
+            // Set visibility type
+            $('#editVisibilityType').val(event.visibility_type);
+            
+            // Show/hide fields based on visibility
+            $('.edit-visibility-classes, .edit-visibility-students').hide();
+            if (event.visibility_type === 'classes') {
+              $('.edit-visibility-classes').show();
+              $('#editVisibleClasses').val(event.visible_to_classes);
+            } else if (event.visibility_type === 'students') {
+              $('.edit-visibility-students').show();
+              $('#editVisibleStudents').val(event.visible_to_students);
+            }
 
             $('#editEventModal').modal('show');
           },
@@ -845,6 +982,7 @@
         const allDay = $('#editAllDayEvent').is(':checked');
         const description = $('#editEventDescription').val().trim();
         const repeats = $('#editRepeatingEvent').is(':checked');
+        const visibilityType = $('#editVisibilityType').val();
         
 
         let startDate = $('#editStartDateTimePicker').datetimepicker('date');
@@ -873,7 +1011,8 @@
           start: startDate.toISOString(), // Include timezone info
           backgroundColor: editCurrColor,
           description: description,
-          repeats: repeats
+          repeats: repeats,
+          visibility_type: visibilityType
         };
         
 
@@ -884,6 +1023,13 @@
 
         if (repeats && repeatUntil) {
           eventData.repeatUntil = repeatUntil.toISOString(); // Include timezone info
+        }
+        
+        // Add visibility data based on selection
+        if (visibilityType === 'classes') {
+          eventData.visible_to_classes = $('#editVisibleClasses').val();
+        } else if (visibilityType === 'students') {
+          eventData.visible_to_students = $('#editVisibleStudents').val();
         }
         
 

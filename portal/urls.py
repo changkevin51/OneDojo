@@ -207,6 +207,8 @@ urlpatterns = [
     path('api/calendar/delete-birthdays/', views.delete_birthday_events, name='delete_birthday_events'),
     path('api/calendar/events/clear/', views.delete_all_calendar_events, name='delete_all_calendar_events'),
     path('api/calendar/toggle-birthdays/', views.toggle_birthday_events, name='toggle_birthday_events'),
+    # New endpoint for classes and students data
+    path('api/calendar/classes-students/', views.get_classes_and_students, name='get_classes_and_students'),
 
     # User Management
     path('users/', views.users_list, name='users_list'),
