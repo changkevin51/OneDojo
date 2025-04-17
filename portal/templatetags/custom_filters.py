@@ -19,3 +19,12 @@ def filename(value):
 @register.filter
 def get_file_extension(filename):
     return os.path.splitext(filename)[1][1:].upper()
+
+
+@register.filter
+def split(value, arg):
+    """
+    Split a string and return the first part.
+    Example: {{ value|split:" " }} returns everything before the first space.
+    """
+    return value.split(arg)[0]

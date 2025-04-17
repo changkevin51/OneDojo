@@ -1,0 +1,363 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Users Management{% endblock title %}
+
+{% block content %}
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Users Management</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{% url 'dashboardv1' %}">Home</a></li>
+            <li class="breadcrumb-item active">Users</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="content">
+    <div class="container-fluid">
+
+      <!-- Filter and Search Card -->
+      <div class="card card-primary card-outline">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="fas fa-filter mr-1"></i>
+            Filter and Search
+          </h3>
+          <div class="col-md-12 text-right">
+            <a href="{% url 'create_user' %}?type=student" class="btn btn-success">
+              <i class="fas fa-user-plus mr-1"></i> Add Student
+            </a>
+            <a href="{% url 'create_user' %}?type=teacher" class="btn btn-info">
+              <i class="fas fa-chalkboard-teacher mr-1"></i> Add Instructor
+            </a>
+          </div>
+        </div>
+        <div class="card-body">
+          <form method="GET" class="mb-3">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="form-group">
+                  <label>Search</label>
+                  <input type="text" name="q" class="form-control" placeholder="Search name, email..." value="{{ search_query }}">
+                </div>
+              </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label>Role</label>
+                  <select name="role" class="form-control">
+                    <option value="" {% if filter_role == '' %}selected{% endif %}>All Roles</option>
+                    <option value="student" {% if filter_role == 'student' %}selected{% endif %}>Students</option>
+                    <option value="teacher" {% if filter_role == 'teacher' %}selected{% endif %}>Instructors</option>
+                    <option value="admin" {% if filter_role == 'admin' %}selected{% endif %}>Admins</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label>Gender</label>
+                  <select name="gender" class="form-control">
+                    <option value="" {% if filter_gender == '' %}selected{% endif %}>All Genders</option>
+                    {% for value, label in gender_choices %}
+                    <option value="{{ value }}" {% if filter_gender == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label>Belt</label>
+                  <select name="belt" class="form-control">
+                    <option value="" {% if filter_belt == '' %}selected{% endif %}>All Belts</option>
+                    {% for value, label in belt_choices %}
+                    <option value="{{ value }}" {% if filter_belt == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label>Sort By</label>
+                  <select name="sort_by" class="form-control">
+                    <option value="username" {% if sort_by == 'username' %}selected{% endif %}>Username</option>
+                    <option value="first_name" {% if sort_by == 'first_name' %}selected{% endif %}>First Name</option>
+                    <option value="last_name" {% if sort_by == 'last_name' %}selected{% endif %}>Last Name</option>
+                    <option value="email" {% if sort_by == 'email' %}selected{% endif %}>Email</option>
+                    <option value="gender" {% if sort_by == 'gender' %}selected{% endif %}>Gender</option>
+                    <option value="city" {% if sort_by == 'city' %}selected{% endif %}>City</option>
+                    <option value="belt" {% if sort_by == 'belt' %}selected{% endif %}>Belt</option>
+                    <option value="dob" {% if sort_by == 'dob' %}selected{% endif %}>Age</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-1">
+                <div class="form-group">
+                  <label>&nbsp;</label>
+                  <button type="submit" class="btn btn-primary form-control">
+                    <i class="fas fa-search"></i> Filter
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Students Section -->
+      <div class="card card-success">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="fas fa-user-graduate mr-1"></i>
+            Students
+          </h3>
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered">
+              <thead>
+                <tr>
+                  <th style="width: 60px;" class="text-center">Profile</th>
+                  <th>Full Name</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Gender</th>
+                  <th>City</th>
+                  <th>Belt</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for student in students %}
+                <tr>
+                  <td class="text-center">
+                    {% if student.profile_picture %}
+                      <img src="{{ student.profile_picture.url }}" alt="{{ student.username }}" class="img-circle" width="40" height="40">
+                    {% else %}
+                      <img src="{% static 'images/pfp_student.jpg' %}" alt="{{ student.username }}" class="img-circle" width="40" height="40">
+                    {% endif %}
+                  </td>
+                  <td>{{ student.get_full_name }}</td>
+                  <td>{{ student.username }}</td>
+                  <td>{{ student.email }}</td>
+                  <td>{{ student.get_gender_display }}</td>
+                  <td>{% if student.city %}{{ student.city }}{% else %}-{% endif %}</td>
+                  <td>
+                    <span class="badge 
+                      {% if student.belt == 'white' %}bg-light text-dark{% endif %}
+                      {% if student.belt == 'yellow' %}bg-warning{% endif %}
+                      {% if student.belt == 'orange' %}bg-orange{% endif %}
+                      {% if student.belt == 'green' %}bg-success{% endif %}
+                      {% if student.belt == 'blue' %}bg-info{% endif %}
+                      {% if student.belt == 'purple' %}bg-purple{% endif %}
+                      {% if student.belt == 'red' %}bg-danger{% endif %}
+                      {% if student.belt == 'brown' %}bg-brown text-white{% endif %}
+                      {% if student.belt == 'black' %}bg-dark text-white{% endif %}
+                      {% if student.belt == 'none' %}bg-secondary text-white{% endif %}
+                    ">
+                      {{ student.get_belt_display }}
+                    </span>
+                  </td>
+                  <td>
+                    <a href="{% url 'user_info' student.id %}" class="btn btn-sm btn-primary">
+                      <i class="fas fa-edit"></i> Edit
+                    </a>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="8" class="text-center">No students found matching the criteria.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Instructors Section -->
+      <div class="card card-info">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="fas fa-chalkboard-teacher mr-1"></i>
+            Instructors
+          </h3>
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered">
+              <thead>
+                <tr>
+                  <th style="width: 60px;" class="text-center">Profile</th>
+                  <th>Full Name</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Gender</th>
+                  <th>City</th>
+                  <th>Belt</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for teacher in teachers %}
+                <tr>
+                  <td class="text-center">
+                    {% if teacher.profile_picture %}
+                      <img src="{{ teacher.profile_picture.url }}" alt="{{ teacher.username }}" class="img-circle" width="40" height="40">
+                    {% else %}
+                      <img src="{% static 'images/pfp_instructor.jpg' %}" alt="{{ teacher.username }}" class="img-circle" width="40" height="40">
+                    {% endif %}
+                  </td>
+                  <td>{{ teacher.get_full_name }}</td>
+                  <td>{{ teacher.username }}</td>
+                  <td>{{ teacher.email }}</td>
+                  <td>{{ teacher.get_gender_display }}</td>
+                  <td>{% if teacher.city %}{{ teacher.city }}{% else %}-{% endif %}</td>
+                  <td>
+                    <span class="badge 
+                      {% if teacher.belt == 'white' %}bg-light text-dark{% endif %}
+                      {% if teacher.belt == 'yellow' %}bg-warning{% endif %}
+                      {% if teacher.belt == 'orange' %}bg-orange{% endif %}
+                      {% if teacher.belt == 'green' %}bg-success{% endif %}
+                      {% if teacher.belt == 'blue' %}bg-info{% endif %}
+                      {% if teacher.belt == 'purple' %}bg-purple{% endif %}
+                      {% if teacher.belt == 'red' %}bg-danger{% endif %}
+                      {% if teacher.belt == 'brown' %}bg-brown text-white{% endif %}
+                      {% if teacher.belt == 'black' %}bg-dark text-white{% endif %}
+                      {% if teacher.belt == 'none' %}bg-secondary text-white{% endif %}
+                    ">
+                      {{ teacher.get_belt_display }}
+                    </span>
+                  </td>
+                  <td>
+                    {% comment %} Disable edit button if:
+                      1. Logged-in user is a teacher
+                      2. Logged-in user is NOT an admin
+                      3. The teacher in this row is NOT the logged-in user
+                    {% endcomment %}
+                    {% if request.user.is_teacher and not request.user.is_staff and request.user.id != teacher.id %}
+                      <button class="btn btn-sm btn-secondary" disabled title="Teachers cannot edit other teachers">
+                        <i class="fas fa-edit"></i> Edit
+                      </button>
+                    {% else %}
+                      {% comment %} Allow edit if user is admin OR if user is editing themselves {% endcomment %}
+                      <a href="{% url 'user_info' teacher.id %}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-edit"></i> Edit
+                      </a>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="8" class="text-center">No instructors found matching the criteria.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admins Section -->
+      <div class="card card-danger">
+        <div class="card-header">
+          <h3 class="card-title">
+            <i class="fas fa-user-shield mr-1"></i>
+            Administrators
+          </h3>
+          <div class="card-tools">
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover table-bordered">
+              <thead>
+                <tr>
+                  <th style="width: 60px;" class="text-center">Profile</th>
+                  <th>Full Name</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Gender</th>
+                  <th>City</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for admin in admins %}
+                <tr>
+                  <td class="text-center">
+                    {% if admin.profile_picture %}
+                      <img src="{{ admin.profile_picture.url }}" alt="{{ admin.username }}" class="img-circle" width="40" height="40">
+                    {% else %}
+                      <img src="{% static 'img/default-avatar.jpg' %}" alt="{{ admin.username }}" class="img-circle" width="40" height="40">
+                    {% endif %}
+                  </td>
+                  <td>{{ admin.get_full_name }}</td>
+                  <td>{{ admin.username }}</td>
+                  <td>{{ admin.email }}</td>
+                  <td>{{ admin.get_gender_display }}</td>
+                  <td>{% if admin.city %}{{ admin.city }}{% else %}-{% endif %}</td>
+                  <td>
+                    {% comment %} Check if the logged-in user is a teacher but not an admin {% endcomment %}
+                    {% if request.user.is_teacher and not request.user.is_staff %}
+                      {% comment %} Teachers cannot edit admins, disable button {% endcomment %}
+                      <button class="btn btn-sm btn-secondary" disabled title="Teachers cannot edit administrators">
+                        <i class="fas fa-edit"></i> Edit
+                      </button>
+                    {% else %}
+                      {% comment %} Admins can edit anyone {% endcomment %}
+                      <a href="{% url 'user_info' admin.id %}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-edit"></i> Edit
+                      </a>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="7" class="text-center">No administrators found matching the criteria.</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+</div>
+</section>
+
+<style>
+  .bg-orange {
+    background-color: #fd7e14;
+    color: white;
+  }
+  .bg-purple {
+    background-color: #6f42c1;
+    color: white;
+  }
+  .bg-brown {
+    background-color: #8B4513;
+    color: white;
+  }
+</style>
+{% endblock content %}

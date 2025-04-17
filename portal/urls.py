@@ -207,6 +207,17 @@ urlpatterns = [
     path('api/calendar/delete-birthdays/', views.delete_birthday_events, name='delete_birthday_events'),
     path('api/calendar/events/clear/', views.delete_all_calendar_events, name='delete_all_calendar_events'),
     path('api/calendar/toggle-birthdays/', views.toggle_birthday_events, name='toggle_birthday_events'),
+
+    # User Management
+    path('users/', views.users_list, name='users_list'),
+    path('users/<int:user_id>/', views.user_info, name='user_info'),
+    path('users/create/', views.create_user, name='create_user'),  # New URL for creating users
+
+    # Class Management
+    path('class/create/', views.edit_class, name='create_class'),
+    path('class/<int:unit_id>/edit/', views.edit_class, name='edit_class'),
+    path('class/add-students/', views.add_students_to_class, name='add_students_to_class'),
+    path('class/remove-student/', views.remove_student_from_class, name='remove_student_from_class'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

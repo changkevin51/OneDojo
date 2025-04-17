@@ -1,0 +1,231 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}{{ title|default:"Edit Class" }}{% endblock title %}
+
+{% block content %}
+<div class="content-wrapper">
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>{{ unit.name|default:"Create New Class" }}</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">Home</a></li>
+                        <li class="breadcrumb-item active">{{ unit.name|default:"Create Class" }}</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Class Info Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Class Information</h3>
+                </div>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="card-body">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags }}{% endif %} alert-dismissible">
+                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        
+                        <div class="form-group">
+                            <label for="unit_name">Class Name</label>
+                            <input type="text" class="form-control" id="unit_name" name="name" value="{{ unit.name|default:'' }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="unit_code">Class Code</label>
+                            <input type="text" class="form-control" id="unit_code" name="code" value="{{ unit.code|default:'' }}" required>
+                            <small class="form-text text-muted">A unique code for this class (e.g., CS101)</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="teacher">Instructors</label>
+                            <select class="form-control select2" id="teacher" name="teacher" multiple="multiple" data-placeholder="Select instructors">
+                                {% for teacher in teachers %}
+                                    <option value="{{ teacher.id }}" {% if teacher in unit.teachers.all %}selected{% endif %}>
+                                        {{ teacher.get_full_name|default:teacher.username }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">You can select multiple instructors for this class</small>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Save Class Information</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Student List -->
+            {% if unit.id %}
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Students in {{ unit.name }}</h3>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#addStudentsModal">
+                            <i class="fas fa-user-plus"></i> Add Students
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th style="width: 10px">#</th>
+                                <th>Student Name</th>
+                                <th>Email</th>
+                                <th>Belt Level</th>
+                                <th style="width: 100px">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for registration in registrations %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    <a href="{% url 'admin_student_info' student_id=registration.student.id %}">
+                                        {{ registration.student.get_full_name|default:registration.student.username }}
+                                    </a>
+                                </td>
+                                <td>{{ registration.student.email }}</td>
+                                <td>
+                                    <span class="badge" style="background-color: {{ registration.student.belt }}; 
+                                         color: {% if registration.student.belt == 'black' or registration.student.belt == 'blue' or registration.student.belt == 'purple' %}white{% else %}black{% endif %}; 
+                                         padding: 5px 8px;">
+                                        {{ registration.student.get_belt_display }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <form method="post" action="{% url 'remove_student_from_class' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="registration_id" value="{{ registration.id }}">
+                                        <input type="hidden" name="unit_id" value="{{ unit.id }}">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to remove this student?')">
+                                            <i class="fas fa-user-minus"></i> Remove
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No students assigned to this class.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+</div>
+
+<!-- Add Students Modal -->
+{% if unit.id %}
+<div class="modal fade" id="addStudentsModal" tabindex="-1" role="dialog" aria-labelledby="addStudentsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addStudentsModalLabel">Add Students to {{ unit.name }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post" action="{% url 'add_students_to_class' %}">
+                {% csrf_token %}
+                <input type="hidden" name="unit_id" value="{{ unit.id }}">
+                
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="search_students">Search Students</label>
+                        <input type="text" class="form-control" id="search_students" placeholder="Type to search students...">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Available Students</label>
+                        <div class="student-checkbox-container">
+                            {% for student in available_students %}
+                                <div class="custom-control custom-checkbox student-checkbox-item">
+                                    <input type="checkbox" class="custom-control-input" id="student{{ student.id }}" name="student_ids" value="{{ student.id }}">
+                                    <label class="custom-control-label" for="student{{ student.id }}">
+                                        {{ student.get_full_name|default:student.username }} ({{ student.email }})
+                                    </label>
+                                </div>
+                            {% empty %}
+                                <p>No available students</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="selectAllStudents">Select All</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" id="deselectAllStudents">Deselect All</button>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Selected Students</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock content %}
+
+{% block extra_scripts %}
+<script>
+$(document).ready(function() {
+    // Initialize select2 for better dropdown experience
+    $('.select2').select2({
+        theme: 'bootstrap4'
+    });
+    
+    // Student search filter
+    $('#search_students').on('keyup', function() {
+        var value = $(this).val().toLowerCase();
+        $('.student-checkbox-item').filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+    });
+    
+    // Select/Deselect all students
+    $('#selectAllStudents').click(function() {
+        $('.student-checkbox-item:visible input[type="checkbox"]').prop('checked', true);
+    });
+    
+    $('#deselectAllStudents').click(function() {
+        $('.student-checkbox-item input[type="checkbox"]').prop('checked', false);
+    });
+});
+</script>
+<style>
+.student-checkbox-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 4px;
+}
+.student-checkbox-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #f3f3f3;
+}
+.student-checkbox-item:last-child {
+    border-bottom: none;
+}
+</style>
+{% endblock extra_scripts %}

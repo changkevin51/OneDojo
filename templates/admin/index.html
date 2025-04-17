@@ -48,13 +48,15 @@
         <div class="row">
           {% for unit in units %}
           <div class="col-md-4">
-            <a href="{% url 'admin_student_list' unit.id %}" class="text-decoration-none">
-              <div class="card card-outline card-primary hover-shadow">
+            <div class="card card-outline card-primary hover-shadow card-clickable" data-href="{% url 'admin_student_list' unit.id %}">
                 <div class="card-header">
                   <h3 class="card-title">{{ unit.name }}</h3>
                   <div class="card-tools">
                     <span class="badge badge-primary">{{ unit.student_count }} Students</span>
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                    <a href="{% url 'edit_class' unit_id=unit.id %}" class="btn btn-tool clickable-exclude">
+                      <i class="fas fa-edit"></i>
+                    </a>
+                    <button type="button" class="btn btn-tool clickable-exclude" data-card-widget="collapse">
                       <i class="fas fa-minus"></i>
                     </button>
                   </div>
@@ -71,15 +73,14 @@
                   </div>
                 </div>
               </div>
-            </a>
           </div>
           {% endfor %}
         </div>
       </div>
     </section>
 
-    <!-- Floating "+" button for new unit creation -->
-    <a href="{% url 'admin:portal_unit_add' %}" class="btn btn-primary" 
+    <!-- Floating "+" button -->
+    <a href="{% url 'create_class' %}" class="btn btn-primary" 
            style="position: fixed; bottom: 80px; right: 40px; border-radius: 50%; width: 60px;
                   height: 60px; display: flex; align-items: center; justify-content: center;
                   font-size: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 1000;">
@@ -99,6 +100,9 @@
   }
   .text-lg {
     font-size: 1.1rem;
+  }
+  .card-clickable {
+    cursor: pointer;
   }
   </style>
   {% endblock content %}
@@ -131,6 +135,18 @@
     <script src="{% static 'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
     <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
     <script src="{% static 'dist/js/pages/dashboard.js' %}"></script>
+  
+    <!-- Add clickable card functionality -->
+    <script>
+      $(document).ready(function() {
+        $('.card-clickable').on('click', function(e) {
+          // Check if the click was on an excluded element
+          if(!$(e.target).closest('.clickable-exclude').length) {
+            window.location.href = $(this).data('href');
+          }
+        });
+      });
+    </script>
   
   {% endblock extra_scripts %}
 

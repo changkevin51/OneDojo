@@ -7,7 +7,7 @@ import time
 class CustomUser(AbstractUser):
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     
-    # Add role-based fields
+
     is_student = models.BooleanField(default=False)  # To identify students
     is_teacher = models.BooleanField(default=False)  # To identify teachers
 
@@ -36,7 +36,7 @@ class CustomUser(AbstractUser):
         default='none'
     )
 
-    # Add related_name for groups and user_permissions to avoid conflicts
+
     groups = models.ManyToManyField(
         'auth.Group',
         related_name='customuser_set',
@@ -95,10 +95,8 @@ class Session(models.Model):
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
     
-    # Optional: Add a reference to the academic year or semester
     academic_year = models.CharField(max_length=20, blank=True, null=True)
     
-    # Optional: Add a status field
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -409,26 +407,26 @@ class CalendarEvent(models.Model):
     @classmethod
     def generate_birthday_events(cls):
         """Generate birthday events for all users with birthdays"""
-        # Clear existing auto-generated birthday events
+
         cls.objects.filter(is_birthday=True, is_auto_generated=True).delete()
         
-        # Get all users with birthdays - using dob field instead of birth_date
+
         users = CustomUser.objects.exclude(dob__isnull=True)
         
         created_count = 0
         current_year = timezone.now().year
         
         for user in users:
-            # Create birthday event for this year
+
             if user.dob:
                 try:
-                    # Create birthday this year
+
                     birthday_this_year = datetime.datetime.combine(
                         datetime.date(current_year, user.dob.month, user.dob.day),
                         datetime.time(9, 0)  # 9 AM
                     )
                     
-                    # Create the event
+
                     cls.objects.create(
                         title=f"{user.get_full_name()}'s Birthday",
                         description=f"Birthday celebration for {user.get_full_name()}",
@@ -442,7 +440,7 @@ class CalendarEvent(models.Model):
                     )
                     created_count += 1
                 except Exception as e:
-                    # Skip invalid dates (e.g., Feb 29 in non-leap years)
+
                     print(f"Error creating birthday for {user}: {str(e)}")
                     continue
         

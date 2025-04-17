@@ -1,0 +1,207 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}Create New User{% endblock title %}
+
+{% block content %}
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Create New User</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{% url 'dashboardv1' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'users_list' %}">Users</a></li>
+            <li class="breadcrumb-item active">Create User</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="content">
+    <div class="container-fluid">
+      <div class="card card-primary">
+        <div class="card-header">
+          <h3 class="card-title">User Information</h3>
+        </div>
+        
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="card-body">
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible">
+                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="first_name">First Name</label>
+                  <input type="text" class="form-control" id="first_name" name="first_name" placeholder="First Name" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="last_name">Last Name</label>
+                  <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Last Name" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="username">Username</label>
+                  <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="password">Password</label>
+                  <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+                  <small class="text-muted">
+                    <i class="fas fa-lock mr-1"></i> 
+                    Passwords are encrypted for security. There is no way to view it after creation. 
+                    If needed, a new password can be set.
+                  </small>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="confirm_password">Confirm Password</label>
+                  <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="address">Address</label>
+                  <input type="text" class="form-control" id="address" name="address" placeholder="Address">
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="city">City</label>
+                  <input type="text" class="form-control" id="city" name="city" placeholder="City">
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="province">Province/State</label>
+                  <input type="text" class="form-control" id="province" name="province" placeholder="Province/State">
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-group">
+                  <label for="belt">Belt Level</label>
+                  <select class="form-control" id="belt" name="belt">
+                    <option value="none">None</option>
+                    <option value="white">White</option>
+                    <option value="yellow">Yellow</option>
+                    <option value="orange">Orange</option>
+                    <option value="green">Green</option>
+                    <option value="blue">Blue</option>
+                    <option value="purple">Purple</option>
+                    <option value="red">Red</option>
+                    <option value="brown">Brown</option>
+                    <option value="black">Black</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="gender">Gender</label>
+                  <select class="form-control" id="gender" name="gender">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="dob">Date of Birth</label>
+                  <input type="date" class="form-control" id="dob" name="dob">
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="profile_picture">Profile Picture</label>
+                  <div class="input-group">
+                    <div class="custom-file">
+                      <input type="file" class="custom-file-input" id="profile_picture" name="profile_picture">
+                      <label class="custom-file-label" for="profile_picture">Choose file</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label>User Type</label>
+                  <div class="custom-control custom-radio">
+                    <input class="custom-control-input" type="radio" id="user_type_student" name="user_type" value="student" checked>
+                    <label for="user_type_student" class="custom-control-label">Student</label>
+                  </div>
+                  <div class="custom-control custom-radio">
+                    <input class="custom-control-input" type="radio" id="user_type_teacher" name="user_type" value="teacher">
+                    <label for="user_type_teacher" class="custom-control-label">Instructor</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+          </div>
+          <div class="card-footer">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save mr-1"></i> Create User
+            </button>
+            <a href="{% url 'users_list' %}" class="btn btn-secondary">
+              <i class="fas fa-times mr-1"></i> Cancel
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+  $(function () {
+    // Show file name in custom file input
+    bsCustomFileInput.init();
+  });
+</script>
+{% endblock %}

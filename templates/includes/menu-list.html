@@ -6,7 +6,7 @@
         <a href="{% if request.user.is_staff %}{% url 'admin:index' %}{% else %}{% url 'student_dashboard' %}{% endif %}" 
            class="nav-link {% if request.path == '/admin/' or request.resolver_match.url_name == 'student_dashboard' %}active bg-primary text-white{% endif %}">
             <i class="nav-icon fas fa-tachometer-alt"></i>
-            <p>Dashboard</p>
+            <p>Class List</p>
         </a>
     </li>
     
@@ -54,18 +54,20 @@
         </li>
     {% else %}  <!-- Show only for admins -->
         <!-- Admin Pages -->
-        <li class="nav-item">
-            <a href="{% url 'admin:portal_customuser_changelist' %}" class="nav-link">
+
+        <li class="nav-item {% if request.resolver_match.url_name == 'users_list' %}menu-open{% endif %}">
+            <a href="{% url 'users_list' %}" class="nav-link {% if request.resolver_match.url_name == 'users_list' %}active{% endif %}">
                 <i class="nav-icon fas fa-users"></i>
-                <p>Users</p>
+                <p>All Users</p>
             </a>
         </li>
-        <li class="nav-item">
+
+        <!-- <li class="nav-item">
             <a href="{% url 'admin:portal_session_changelist' %}" class="nav-link">
                 <i class="nav-icon fas fa-calendar-check"></i>
                 <p>Sessions</p>
             </a>
-        </li>
+        </li> -->
         <li class="nav-item">
             <a href="{% url 'admin:portal_unit_changelist' %}" class="nav-link">
                 <i class="nav-icon fas fa-chalkboard-teacher"></i>

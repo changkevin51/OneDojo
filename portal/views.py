@@ -462,7 +462,7 @@ def admin_student_list(request, unit_id):
         'is_popup': False,
         'has_view_permission': True
     }
-    return render(request, 'pages/student_list.html', context)
+    return render(request, 'pages/instructor/student_list.html', context)
 
 @login_required
 def admin_student_info(request, student_id):
@@ -517,7 +517,7 @@ def admin_student_info(request, student_id):
         'now': timezone.now(),
     }
     
-    return render(request, 'pages/student_info.html', context)
+    return render(request, 'pages/instructor/student_info.html', context)
 
 @login_required
 def event_detail_api(request, event_id):
@@ -1296,7 +1296,7 @@ def take_attendance(request, unit_id):
         'today': timezone.now().date(),
     }
     
-    return render(request, 'pages/take_attendance.html', context)
+    return render(request, 'pages/instructor/take_attendance.html', context)
 
 @login_required
 def save_attendance(request):
@@ -1400,7 +1400,7 @@ def attendance_list(request):
         'title': 'Attendance Records',
     }
     
-    return render(request, 'pages/attendance_list.html', context)
+    return render(request, 'pages/instructor/attendance_list.html', context)
 
 @login_required
 def attendance_records(request, unit_id):
@@ -1443,7 +1443,7 @@ def attendance_records(request, unit_id):
         'title': f'Attendance Records: {unit.name}',
     }
     
-    return render(request, 'pages/attendance_records.html', context)
+    return render(request, 'pages/instructor/attendance_records.html', context)
 
 @login_required
 def edit_attendance(request, attendance_id):
@@ -1477,7 +1477,7 @@ def edit_attendance(request, attendance_id):
         'title': f'Edit Attendance: {attendance.student.get_full_name()}',
     }
     
-    return render(request, 'pages/edit_attendance.html', context)
+    return render(request, 'pages/instructor/edit_attendance.html', context)
 
 @login_required
 def manage_feedback_templates(request):
@@ -1513,7 +1513,7 @@ def manage_feedback_templates(request):
         'segment': 'feedback_templates',
     }
     
-    return render(request, 'pages/manage_feedback_templates.html', context)
+    return render(request, 'pages/instructor/manage_feedback_templates.html', context)
 
 @login_required
 def edit_feedback_template(request, template_id):
@@ -1669,7 +1669,7 @@ def manage_belt_criteria(request):
         'title': 'Manage Belt Criteria'
     }
     
-    return render(request, 'pages/manage_belt_criteria.html', context)
+    return render(request, 'pages/instructor/manage_belt_criteria.html', context)
 
 @login_required
 def edit_belt_criteria(request, criteria_id):
@@ -1703,7 +1703,7 @@ def edit_belt_criteria(request, criteria_id):
         'title': 'Edit Belt Criteria'
     }
     
-    return render(request, 'pages/edit_belt_criteria.html', context)
+    return render(request, 'pages/instructor/edit_belt_criteria.html', context)
 
 @login_required
 def update_student_criteria(request, student_id):
@@ -1937,7 +1937,7 @@ def calendar(request):
         'is_student': is_student
     }
 
-    return render(request, 'pages/calendar.html', context)
+    return render(request, 'pages/instructor/calendar.html', context)
 
 @login_required
 def calendar_events(request):
@@ -2234,3 +2234,389 @@ def delete_all_calendar_events(request):
             return JsonResponse({'error': str(e)}, status=500)
     
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
+@login_required
+def users_list(request):
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+    
+    # Get query parameters for filtering
+    sort_by = request.GET.get('sort_by', 'username')
+    filter_gender = request.GET.get('gender', '')
+    filter_role = request.GET.get('role', '')
+    filter_belt = request.GET.get('belt', '')
+    search_query = request.GET.get('q', '')
+    
+    # Base queryset with all users
+    users = CustomUser.objects.all()
+    
+    # Apply search if provided
+    if search_query:
+        users = users.filter(
+            models.Q(username__icontains=search_query) |
+            models.Q(first_name__icontains=search_query) |
+            models.Q(last_name__icontains=search_query) |
+            models.Q(email__icontains=search_query)
+        )
+    
+    # Apply filters
+    if filter_gender:
+        users = users.filter(gender=filter_gender)
+    
+    if filter_belt:
+        users = users.filter(belt=filter_belt)
+    
+    if filter_role == 'student':
+        users = users.filter(is_student=True)
+    elif filter_role == 'teacher':
+        users = users.filter(is_teacher=True)
+    elif filter_role == 'admin':
+        users = users.filter(is_staff=True, is_teacher=False, is_student=False)
+    
+    # Sort users
+    users = users.order_by(sort_by)
+    
+    # Group users by role for template
+    students = users.filter(is_student=True)
+    teachers = users.filter(is_teacher=True)
+    admins = users.filter(is_staff=True, is_teacher=False, is_student=False)
+    
+    context = {
+        'students': students,
+        'teachers': teachers,
+        'admins': admins,
+        'sort_by': sort_by,
+        'filter_gender': filter_gender,
+        'filter_role': filter_role,
+        'filter_belt': filter_belt,
+        'search_query': search_query,
+        'belt_choices': CustomUser.BELT_CHOICES,
+        'gender_choices': [("female", "Female"), ("male", "Male"), ("other", "Other")],
+        'title': 'Users Management',
+        'parent': 'users',
+        'segment': 'users_list',
+    }
+    
+    return render(request, 'pages/instructor/users.html', context)
+
+@login_required
+def user_info(request, user_id):
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+    
+    user = get_object_or_404(CustomUser, id=user_id)
+    
+    # Check if the user is a teacher trying to edit a non-student
+    if request.user.is_teacher and not request.user.is_staff and not user.is_student:
+        messages.error(request, "Teachers can only edit student information")
+        return redirect('users_list')
+    
+    if request.method == 'POST':
+        # Handle form submission
+        user.username = request.POST.get('username', user.username)
+        user.first_name = request.POST.get('first_name', user.first_name)
+        user.last_name = request.POST.get('last_name', user.last_name)
+        user.email = request.POST.get('email', user.email)
+        user.gender = request.POST.get('gender', user.gender)
+        
+        # Handle date of birth
+        dob_str = request.POST.get('dob')
+        if dob_str:
+            try:
+                user.dob = datetime.strptime(dob_str, '%Y-%m-%d').date()
+            except ValueError:
+                messages.error(request, "Invalid date format for date of birth")
+                
+        user.address = request.POST.get('address', user.address)
+        user.province = request.POST.get('province', user.province)
+        user.city = request.POST.get('city', user.city)
+        
+        # Handle belt changes
+        if request.user.is_staff:  # Only staff can change belt
+            belt = request.POST.get('belt')
+            if belt in dict(CustomUser.BELT_CHOICES):
+                user.belt = belt
+        
+        # Handle profile picture
+        if 'profile_picture' in request.FILES:
+            user.profile_picture = request.FILES['profile_picture']
+        
+        # Handle password change
+        new_password = request.POST.get('new_password')
+        if new_password:
+            confirm_password = request.POST.get('confirm_password')
+            if new_password == confirm_password:
+                user.set_password(new_password)
+                messages.success(request, "Password changed successfully")
+            else:
+                messages.error(request, "Passwords do not match")
+        
+        user.save()
+        messages.success(request, f"User {user.username} updated successfully")
+        return redirect('user_info', user_id=user.id)
+    
+    context = {
+        'user_data': user,
+        'belt_choices': CustomUser.BELT_CHOICES,
+        'gender_choices': [("female", "Female"), ("male", "Male"), ("other", "Other")],
+        'title': f'User Info: {user.get_full_name() or user.username}',
+        'parent': 'users',
+        'segment': 'user_info',
+        'now': timezone.now(),
+    }
+    
+    return render(request, 'pages/instructor/user_info.html', context)
+
+@login_required
+def create_user(request):
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+    
+    # Pre-select user type if specified in query parameter
+    user_type = request.GET.get('type', 'student')
+    
+    if request.method == 'POST':
+        # Extract form data
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        email = request.POST.get('email')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+        address = request.POST.get('address')
+        city = request.POST.get('city')
+        province = request.POST.get('province')
+        belt = request.POST.get('belt')
+        gender = request.POST.get('gender')
+        dob = request.POST.get('dob')
+        user_type = request.POST.get('user_type')
+        
+        # Validate form data
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match")
+            return redirect('create_user')
+        
+        if CustomUser.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists")
+            return redirect('create_user')
+        
+        if CustomUser.objects.filter(email=email).exists():
+            messages.error(request, "Email already exists")
+            return redirect('create_user')
+        
+        try:
+            # Create new user
+            user = CustomUser.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name,
+                last_name=last_name
+            )
+            
+            # Set additional fields
+            user.address = address
+            user.city = city
+            user.province = province
+            user.belt = belt
+            user.gender = gender
+            
+            # Set date of birth if provided
+            if dob:
+                try:
+                    user.dob = datetime.strptime(dob, '%Y-%m-%d').date()
+                except ValueError:
+                    pass  # Ignore invalid date format
+            
+            # Set user type
+            if user_type == 'teacher':
+                user.is_teacher = True
+                user.is_staff = True  # Teachers get staff status
+            else:  # Default to student
+                user.is_student = True
+            
+            # Handle profile picture if uploaded
+            if 'profile_picture' in request.FILES:
+                user.profile_picture = request.FILES['profile_picture']
+            
+            user.save()
+            
+            user_role = "Instructor" if user_type == 'teacher' else "Student"
+            messages.success(request, f"{user_role} {username} created successfully")
+            return redirect('users_list')
+            
+        except Exception as e:
+            messages.error(request, f"Error creating user: {str(e)}")
+            return redirect('create_user')
+    
+    context = {
+        'user_type': user_type,
+        'title': 'Create New User',
+        'parent': 'users',
+        'segment': 'create_user',
+    }
+    
+    return render(request, 'pages/instructor/create_user.html', context)
+
+@login_required
+def edit_class(request, unit_id=None):
+    """View for creating or editing a class (unit)"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+    
+    # Get the unit if editing an existing one
+    unit = None
+    registrations = []
+    if unit_id:
+        unit = get_object_or_404(Unit, id=unit_id)
+        registrations = Registration.objects.filter(unit=unit).select_related('student')
+    
+    # Get available teachers and students
+    teachers = CustomUser.objects.filter(is_teacher=True).order_by('first_name', 'last_name')
+    
+    # For existing units, get students not in this class
+    if unit:
+        current_student_ids = registrations.values_list('student_id', flat=True)
+        available_students = CustomUser.objects.filter(is_student=True).exclude(id__in=current_student_ids).order_by('first_name', 'last_name')
+    else:
+        available_students = CustomUser.objects.filter(is_student=True).order_by('first_name', 'last_name')
+    
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        code = request.POST.get('code')
+        teacher_id = request.POST.get('teacher')
+        
+        if not name or not code:
+            messages.error(request, "Class name and code are required")
+            return redirect('edit_class', unit_id=unit_id)
+        
+        # Check for duplicate code
+        existing = Unit.objects.filter(code=code)
+        if unit:
+            existing = existing.exclude(id=unit.id)
+        if existing.exists():
+            messages.error(request, f"Class code '{code}' is already in use")
+            return redirect('edit_class', unit_id=unit_id)
+        
+        if unit is None:
+            # Create new unit
+            unit = Unit(name=name, code=code)
+            action = "created"
+        else:
+            # Update existing unit
+            unit.name = name
+            unit.code = code
+            action = "updated"
+        
+        # Set teacher if selected
+        if teacher_id:
+            try:
+                teacher = CustomUser.objects.get(id=teacher_id, is_teacher=True)
+                unit.teacher = teacher
+            except CustomUser.DoesNotExist:
+                pass
+        else:
+            unit.teacher = None
+        
+        unit.save()
+        messages.success(request, f"Class '{name}' {action} successfully")
+        
+        # Redirect to edit the newly created class
+        if action == "created":
+            return redirect('edit_class', unit_id=unit.id)
+        return redirect('edit_class', unit_id=unit.id)
+    
+    context = {
+        'unit': unit,
+        'registrations': registrations,
+        'teachers': teachers,
+        'available_students': available_students,
+        'title': 'Edit Class' if unit else 'Create Class',
+        'parent': 'classes',
+        'segment': 'edit_class',
+    }
+    
+    return render(request, 'pages/instructor/edit_class.html', context)
+
+@login_required
+def add_students_to_class(request):
+    """Add students to a class"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+    
+    if request.method == 'POST':
+        unit_id = request.POST.get('unit_id')
+        student_ids = request.POST.getlist('student_ids')
+        
+        if not unit_id or not student_ids:
+            messages.error(request, "Missing required information")
+            return redirect('admin:index')
+        
+        unit = get_object_or_404(Unit, id=unit_id)
+        
+        # Find active session for registrations
+        active_session = Session.objects.filter(is_active=True).first()
+        if not active_session:
+            # Create a default session if none exists
+            current_year = timezone.now().year
+            active_session = Session.objects.create(
+                name=f"Session {current_year}",
+                start_date=timezone.now().date(),
+                end_date=timezone.now().date() + timezone.timedelta(days=180),
+                academic_year=f"{current_year}-{current_year+1}",
+                is_active=True
+            )
+        
+        # Add each student
+        count = 0
+        for student_id in student_ids:
+            try:
+                student = CustomUser.objects.get(id=student_id, is_student=True)
+                
+                # Check if student is already in class
+                if not Registration.objects.filter(student=student, unit=unit).exists():
+                    Registration.objects.create(
+                        student=student,
+                        unit=unit,
+                        session=active_session
+                    )
+                    count += 1
+            except CustomUser.DoesNotExist:
+                continue
+        
+        messages.success(request, f"Added {count} student(s) to {unit.name}")
+        return redirect('edit_class', unit_id=unit_id)
+    
+    return redirect('admin:index')
+
+@login_required
+def remove_student_from_class(request):
+    """Remove student from a class"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+    
+    if request.method == 'POST':
+        registration_id = request.POST.get('registration_id')
+        unit_id = request.POST.get('unit_id')
+        
+        if not registration_id or not unit_id:
+            messages.error(request, "Missing required information")
+            return redirect('admin:index')
+        
+        try:
+            registration = Registration.objects.get(id=registration_id)
+            student_name = registration.student.get_full_name() or registration.student.username
+            registration.delete()
+            messages.success(request, f"Removed {student_name} from class")
+        except Registration.DoesNotExist:
+            messages.error(request, "Student registration not found")
+        
+        return redirect('edit_class', unit_id=unit_id)
+    
+    return redirect('admin:index')

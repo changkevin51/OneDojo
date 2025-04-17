@@ -1,0 +1,294 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block title %}User Info - {{ user_data.get_full_name }}{% endblock title %}
+
+{% block content %}
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">User Information</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{% url 'dashboardv1' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'users_list' %}">Users</a></li>
+            <li class="breadcrumb-item active">{{ user_data.username }}</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="content">
+    <div class="container-fluid">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <div class="row">
+        <div class="col-md-4">
+          <!-- Profile Image -->
+          <div class="card card-primary card-outline">
+            <div class="card-body box-profile">
+              <div class="text-center">
+                {% if user_data.profile_picture %}
+                  <img class="profile-user-img img-fluid img-circle" src="{{ user_data.profile_picture.url }}" alt="{{ user_data.username }}">
+                {% elif user_data.is_student %}
+                  <img class="profile-user-img img-fluid img-circle" src="{% static 'images/pfp_student.jpg' %}" alt="{{ user_data.username }}">
+                {% elif user_data.is_teacher %}
+                  <img class="profile-user-img img-fluid img-circle" src="{% static 'images/pfp_instructor.jpg' %}" alt="{{ user_data.username }}">
+                {% else %}
+                  <img class="profile-user-img img-fluid img-circle" src="{% static 'img/default-avatar.jpg' %}" alt="{{ user_data.username }}">
+                {% endif %}
+              </div>
+
+              <h3 class="profile-username text-center">{{ user_data.get_full_name }}</h3>
+              <p class="text-muted text-center">
+                {% if user_data.is_student %}
+                  <span class="badge bg-success">Student</span>
+                {% elif user_data.is_teacher %}
+                  <span class="badge bg-info">Instructor</span>
+                {% elif user_data.is_staff %}
+                  <span class="badge bg-danger">Administrator</span>
+                {% endif %}
+                
+                {% if user_data.belt and user_data.belt != 'none' %}
+                  <span class="badge 
+                    {% if user_data.belt == 'white' %}bg-light text-dark{% endif %}
+                    {% if user_data.belt == 'yellow' %}bg-warning{% endif %}
+                    {% if user_data.belt == 'orange' %}bg-orange{% endif %}
+                    {% if user_data.belt == 'green' %}bg-success{% endif %}
+                    {% if user_data.belt == 'blue' %}bg-info{% endif %}
+                    {% if user_data.belt == 'purple' %}bg-purple{% endif %}
+                    {% if user_data.belt == 'red' %}bg-danger{% endif %}
+                    {% if user_data.belt == 'brown' %}bg-brown text-white{% endif %}
+                    {% if user_data.belt == 'black' %}bg-dark text-white{% endif %}
+                  ">
+                    {{ user_data.get_belt_display }}
+                  </span>
+                {% endif %}
+              </p>
+
+              <ul class="list-group list-group-unbordered mb-3">
+                <li class="list-group-item">
+                  <b>Username</b> <a class="float-right">{{ user_data.username }}</a>
+                </li>
+                <li class="list-group-item">
+                  <b>Email</b> <a class="float-right">{{ user_data.email }}</a>
+                </li>
+                {% if user_data.dob %}
+                <li class="list-group-item">
+                  <b>Age</b> <a class="float-right">{{ user_data.dob|timesince|split:" " }}</a>
+                </li>
+                {% endif %}
+                {% if user_data.date_joined %}
+                <li class="list-group-item">
+                  <b>Member since</b> <a class="float-right">{{ user_data.date_joined|date:"F j, Y" }}</a>
+                </li>
+                {% endif %}
+              </ul>
+
+              <a href="{% url 'users_list' %}" class="btn btn-secondary btn-block">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Users List
+              </a>
+
+              {% if user_data.is_student and request.user.is_teacher %}
+              <a href="{% url 'admin_student_info' user_data.id %}" class="btn btn-info btn-block mt-2">
+                <i class="fas fa-user-graduate mr-2"></i> View Student Profile
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-md-8">
+          <div class="card card-primary">
+            <div class="card-header">
+              <h3 class="card-title">Edit User Information</h3>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="username">Username</label>
+                      <input type="text" class="form-control" id="username" name="username" value="{{ user_data.username }}" required>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="email">Email</label>
+                      <input type="email" class="form-control" id="email" name="email" value="{{ user_data.email }}" required>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="first_name">First Name</label>
+                      <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user_data.first_name }}">
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="last_name">Last Name</label>
+                      <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user_data.last_name }}">
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="gender">Gender</label>
+                      <select class="form-control" id="gender" name="gender">
+                        <option value="" {% if not user_data.gender %}selected{% endif %}>Not Specified</option>
+                        {% for value, label in gender_choices %}
+                          <option value="{{ value }}" {% if user_data.gender == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="dob">Date of Birth</label>
+                      <input type="date" class="form-control" id="dob" name="dob" value="{% if user_data.dob %}{{ user_data.dob|date:'Y-m-d' }}{% endif %}">
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="address">Address</label>
+                  <input type="text" class="form-control" id="address" name="address" value="{{ user_data.address }}">
+                </div>
+                
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="city">City</label>
+                      <input type="text" class="form-control" id="city" name="city" value="{{ user_data.city }}">
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="province">Province/State</label>
+                      <input type="text" class="form-control" id="province" name="province" value="{{ user_data.province }}">
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <label for="belt">Belt Level</label>
+                      <select class="form-control" id="belt" name="belt" {% if not request.user.is_staff %}disabled{% endif %}>
+                        {% for value, label in belt_choices %}
+                          <option value="{{ value }}" {% if user_data.belt == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                      </select>
+                      {% if not request.user.is_staff %}
+                      <small class="text-muted">Only administrators can change belt levels</small>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="profile_picture">Profile Picture</label>
+                  <div class="input-group">
+                    <div class="custom-file">
+                      <input type="file" class="custom-file-input" id="profile_picture" name="profile_picture">
+                      <label class="custom-file-label" for="profile_picture">Choose file</label>
+                    </div>
+                  </div>
+                  <small class="text-muted">Recommended size: 200x200 pixels</small>
+                </div>
+
+                <hr>
+                
+                <div class="card card-warning">
+                  <div class="card-header">
+                    <h3 class="card-title">Change Password</h3>
+                  </div>
+                  <div class="card-body">
+                    <div class="alert alert-info">
+                      <i class="icon fas fa-info-circle"></i> 
+                      For security reasons, existing passwords are stored in an encrypted format and cannot be displayed. 
+                      You can set a new password below.
+                    </div>
+                    
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="new_password">New Password</label>
+                          <input type="password" class="form-control" id="new_password" name="new_password" placeholder="Leave blank to keep current password">
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="confirm_password">Confirm New Password</label>
+                          <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm new password">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-footer">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<style>
+  .bg-orange {
+    background-color: #fd7e14;
+    color: white;
+  }
+  .bg-purple {
+    background-color: #6f42c1;
+    color: white;
+  }
+  .bg-brown {
+    background-color: #8B4513;
+    color: white;
+  }
+</style>
+
+<script>
+  $(function() {
+    // Add the following code if you want the name of the file to appear on select
+    $(".custom-file-input").on("change", function() {
+      var fileName = $(this).val().split("\\").pop();
+      $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+
+    // Password validation
+    $("#new_password, #confirm_password").on("keyup", function() {
+      var password = $("#new_password").val();
+      var confirmPassword = $("#confirm_password").val();
+      
+      if (password && password !== confirmPassword) {
+        $("#confirm_password").addClass("is-invalid");
+      } else {
+        $("#confirm_password").removeClass("is-invalid");
+      }
+    });
+  });
+</script>
+{% endblock content %}
