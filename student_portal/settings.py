@@ -45,7 +45,8 @@ MIDDLEWARE = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://changkevin51.hackclub.app"
+    "https://changkevin51.hackclub.app",
+    "https://onedojo.tech"
 ]
 
 ROOT_URLCONF = 'student_portal.urls'
