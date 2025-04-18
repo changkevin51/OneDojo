@@ -44,6 +44,10 @@ MIDDLEWARE = [
 
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://changkevin51.hackclub.app"
+]
+
 ROOT_URLCONF = 'student_portal.urls'
 
 TEMPLATES = [
