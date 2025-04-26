@@ -20,12 +20,12 @@ ALLOWED_HOSTS = ['*']
 ASGI_APPLICATION = 'student_portal.asgi.application'
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "student_portal.chat.channel_layer.SQLiteChannelLayer",
+        "BACKEND": "student_portal.chat.channel_layer.SQLiteChannelLayer", #sqlite channel layer
     }
 }
 
 INSTALLED_APPS = [
-    'daphne' ,
+    'daphne' , 
     'channels',
     'admin_adminlte.apps.AdminAdminlteConfig',
     'django.contrib.admin',

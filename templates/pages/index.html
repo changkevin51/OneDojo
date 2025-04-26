@@ -709,67 +709,7 @@ $(function() {
     <!-- Conversations are loaded here -->
     <div class="direct-chat-messages">
       <!-- Message. Default to the left -->
-      <div class="direct-chat-msg">
-        <div class="direct-chat-infos clearfix">
-          <span class="direct-chat-name float-left">Alexander Pierce</span>
-          <span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
-        </div>
-        <!-- /.direct-chat-infos -->
-        <img class="direct-chat-img" src="dist/img/user1-128x128.jpg" alt="message user image">
-        <!-- /.direct-chat-img -->
-        <div class="direct-chat-text">
-          Is this template really for free? That's unbelievable!
-        </div>
-        <!-- /.direct-chat-text -->
-      </div>
-      <!-- /.direct-chat-msg -->
-
-      <!-- Message to the right -->
-      <div class="direct-chat-msg right">
-        <div class="direct-chat-infos clearfix">
-          <span class="direct-chat-name float-right">Sarah Bullock</span>
-          <span class="direct-chat-timestamp float-left">23 Jan 2:05 pm</span>
-        </div>
-        <!-- /.direct-chat-infos -->
-        <img class="direct-chat-img" src="dist/img/user3-128x128.jpg" alt="message user image">
-        <!-- /.direct-chat-img -->
-        <div class="direct-chat-text">
-          You better believe it!
-        </div>
-        <!-- /.direct-chat-text -->
-      </div>
-      <!-- /.direct-chat-msg -->
-
-      <!-- Message. Default to the left -->
-      <div class="direct-chat-msg">
-        <div class="direct-chat-infos clearfix">
-          <span class="direct-chat-name float-left">Alexander Pierce</span>
-          <span class="direct-chat-timestamp float-right">23 Jan 5:37 pm</span>
-        </div>
-        <!-- /.direct-chat-infos -->
-        <img class="direct-chat-img" src="dist/img/user1-128x128.jpg" alt="message user image">
-        <!-- /.direct-chat-img -->
-        <div class="direct-chat-text">
-          Working with AdminLTE on a great new app! Wanna join?
-        </div>
-        <!-- /.direct-chat-text -->
-      </div>
-      <!-- /.direct-chat-msg -->
-
-      <!-- Message to the right -->
-      <div class="direct-chat-msg right">
-        <div class="direct-chat-infos clearfix">
-          <span class="direct-chat-name float-right">Sarah Bullock</span>
-          <span class="direct-chat-timestamp float-left">23 Jan 6:10 pm</span>
-        </div>
-        <!-- /.direct-chat-infos -->
-        <img class="direct-chat-img" src="dist/img/user3-128x128.jpg" alt="message user image">
-        <!-- /.direct-chat-img -->
-        <div class="direct-chat-text">
-          I would love to.
-        </div>
-        <!-- /.direct-chat-text -->
-      </div>
+      
       <!-- /.direct-chat-msg -->
 
     </div>
@@ -887,14 +827,13 @@ $(function() {
 
 <script>
   const roomName = "general";
-  const currentUser = "{{ request.user.username}}";
+  const currentUser = "{{ request.user.username}}"; // gets name of user
   const chatSocket = new WebSocket(
     `ws://${window.location.host}/ws/chat/${roomName}/`
 );
 
 chatSocket.onmessage = function(e) {
     const data = JSON.parse(e.data);
-    // Append message to your chat interface
     const messages = document.querySelector('.direct-chat-messages');
     
     messages.innerHTML += `
@@ -911,40 +850,35 @@ chatSocket.onmessage = function(e) {
                 ${data.message}
             </div>
         </div>
-    `;
-    // Auto-scroll to bottom
+    `; //html for receiving messages
     messages.scrollTop = messages.scrollHeight; 
 };
 
-// Send message when form is submitted
+
 document.querySelector('.card-footer form').addEventListener('submit', function(e) {
     e.preventDefault();
     const messageInput = this.querySelector('input[name="message"]');
     const message = messageInput.value.trim();
     if (message) {
-        chatSocket.send(JSON.stringify({
+        chatSocket.send(JSON.stringify({// sends the mesaage
             'message': message,
-            'sender': currentUser
+            'sender': currentUser 
         }));
-        messageInput.value = '';
+        messageInput.value = ''; 
     }
 });
-  // Also send message when the Send button is clicked
 
 
   
 
-  // Handle WebSocket connection open
   chatSocket.onopen = function(e) {
       console.log('WebSocket connection established');
   };
 
-  // Handle WebSocket errors
   chatSocket.onerror = function(e) {
       console.error('WebSocket error:', e);
   };
 
-  // Handle WebSocket connection close
   chatSocket.onclose = function(e) {
       console.log('WebSocket connection closed');
   };
