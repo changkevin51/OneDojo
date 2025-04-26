@@ -10,7 +10,20 @@ https://docs.djangoproject.com/en/5.1/howto/deployment/asgi/
 import os
 
 from django.core.asgi import get_asgi_application
+from channels.routing import ProtocolTypeRouter, URLRouter
+import student_portal.chat.routing 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'student_portal.settings')
 
-application = get_asgi_application()
+django_asgi_app = get_asgi_application()
+
+
+
+application = ProtocolTypeRouter({
+    "http": django_asgi_app,
+
+    "websocket": 
+        URLRouter(
+            student_portal.chat.routing.websocket_urlpatterns
+    )
+})
