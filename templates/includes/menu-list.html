@@ -81,6 +81,16 @@
             </a>
         </li>
 
+        <!-- Dojo List - Only for Superusers -->
+        {% if request.user.is_superuser %}
+        <li class="nav-item {% if request.resolver_match.url_name == 'dojo_list' %}menu-open{% endif %}">
+            <a href="{% url 'dojo_list' %}" class="nav-link {% if request.resolver_match.url_name == 'dojo_list' %}active{% endif %}">
+                <i class="nav-icon fas fa-school"></i>
+                <p>Dojo List</p>
+            </a>
+        </li>
+        {% endif %}
+        
         <li class="nav-item">
             <a href="{% url 'manage_belt_criteria' %}" class="nav-link">
                 <i class="nav-icon fas fa-list-alt"></i>

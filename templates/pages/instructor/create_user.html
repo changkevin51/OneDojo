@@ -26,11 +26,32 @@
     <div class="container-fluid">
       <div class="card card-primary">
         <div class="card-header">
-          <h3 class="card-title">User Information</h3>
+          <h3 class="card-title">
+            {% if user_type == 'teacher' %}
+            Create New Instructor
+            {% else %}
+            Create New Student
+            {% endif %}
+            {% if selected_dojo %}
+            for {{ selected_dojo.name }}
+            {% endif %}
+          </h3>
         </div>
         
         <form method="POST" enctype="multipart/form-data">
           {% csrf_token %}
+          
+          <!-- Add hidden field for dojo_id -->
+          {% if dojo_id %}
+          <input type="hidden" name="dojo_id" value="{{ dojo_id }}">
+          {% endif %}
+          
+          {% if selected_dojo %}
+          <div class="alert alert-info">
+            You are creating a user for <strong>{{ selected_dojo.name }}</strong>
+          </div>
+          {% endif %}
+          
           <div class="card-body">
             {% if messages %}
               {% for message in messages %}
@@ -41,38 +62,36 @@
               {% endfor %}
             {% endif %}
 
+            <div class="form-group">
+              <label>User Type</label>
+              <div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
+                <label class="btn btn-outline-primary {% if user_type == 'student' %}active{% endif %}">
+                  <input type="radio" name="user_type" value="student" {% if user_type == 'student' %}checked{% endif %}> Student
+                </label>
+                <label class="btn btn-outline-info {% if user_type == 'teacher' %}active{% endif %}">
+                  <input type="radio" name="user_type" value="teacher" {% if user_type == 'teacher' %}checked{% endif %}> Instructor
+                </label>
+              </div>
+            </div>
+
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
                   <label for="first_name">First Name</label>
-                  <input type="text" class="form-control" id="first_name" name="first_name" placeholder="First Name" required>
+                  <input type="text" class="form-control" id="first_name" name="first_name" placeholder="First Name">
                 </div>
-              </div>
-              <div class="col-md-6">
                 <div class="form-group">
                   <label for="last_name">Last Name</label>
-                  <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Last Name" required>
+                  <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Last Name">
                 </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-6">
                 <div class="form-group">
                   <label for="email">Email</label>
                   <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
                 </div>
-              </div>
-              <div class="col-md-6">
                 <div class="form-group">
                   <label for="username">Username</label>
                   <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
                 </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-6">
                 <div class="form-group">
                   <label for="password">Password</label>
                   <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
@@ -82,38 +101,37 @@
                     If needed, a new password can be set.
                   </small>
                 </div>
-              </div>
-              <div class="col-md-6">
                 <div class="form-group">
                   <label for="confirm_password">Confirm Password</label>
                   <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
                 </div>
               </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-12">
+              <div class="col-md-6">
+                {% if user.is_superuser and not selected_dojo and dojos %}
                 <div class="form-group">
-                  <label for="address">Address</label>
-                  <input type="text" class="form-control" id="address" name="address" placeholder="Address">
+                  <label for="dojo">Dojo</label>
+                  <select name="dojo_id" id="dojo" class="form-control">
+                    <option value="">-- Select Dojo --</option>
+                    {% for dojo in dojos %}
+                    <option value="{{ dojo.id }}">{{ dojo.name }}</option>
+                    {% endfor %}
+                  </select>
                 </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-4">
+                {% endif %}
+                
                 <div class="form-group">
-                  <label for="city">City</label>
-                  <input type="text" class="form-control" id="city" name="city" placeholder="City">
+                  <label for="gender">Gender</label>
+                  <select class="form-control" id="gender" name="gender">
+                    <option value="">-- Select Gender --</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
                 </div>
-              </div>
-              <div class="col-md-4">
                 <div class="form-group">
-                  <label for="province">Province/State</label>
-                  <input type="text" class="form-control" id="province" name="province" placeholder="Province/State">
+                  <label for="dob">Date of Birth</label>
+                  <input type="date" class="form-control" id="dob" name="dob">
                 </div>
-              </div>
-              <div class="col-md-4">
                 <div class="form-group">
                   <label for="belt">Belt Level</label>
                   <select class="form-control" id="belt" name="belt">
@@ -129,30 +147,18 @@
                     <option value="black">Black</option>
                   </select>
                 </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-6">
                 <div class="form-group">
-                  <label for="gender">Gender</label>
-                  <select class="form-control" id="gender" name="gender">
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </select>
+                  <label for="address">Address</label>
+                  <input type="text" class="form-control" id="address" name="address" placeholder="Address">
                 </div>
-              </div>
-              <div class="col-md-6">
                 <div class="form-group">
-                  <label for="dob">Date of Birth</label>
-                  <input type="date" class="form-control" id="dob" name="dob">
+                  <label for="city">City</label>
+                  <input type="text" class="form-control" id="city" name="city" placeholder="City">
                 </div>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="province">Province/State</label>
+                  <input type="text" class="form-control" id="province" name="province" placeholder="Province/State">
+                </div>
                 <div class="form-group">
                   <label for="profile_picture">Profile Picture</label>
                   <div class="input-group">
@@ -164,26 +170,10 @@
                 </div>
               </div>
             </div>
-
-            <div class="row">
-              <div class="col-md-12">
-                <div class="form-group">
-                  <label>User Type</label>
-                  <div class="custom-control custom-radio">
-                    <input class="custom-control-input" type="radio" id="user_type_student" name="user_type" value="student" checked>
-                    <label for="user_type_student" class="custom-control-label">Student</label>
-                  </div>
-                  <div class="custom-control custom-radio">
-                    <input class="custom-control-input" type="radio" id="user_type_teacher" name="user_type" value="teacher">
-                    <label for="user_type_teacher" class="custom-control-label">Instructor</label>
-                  </div>
-                </div>
-              </div>
-            </div>
             
           </div>
           <div class="card-footer">
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary float-right">
               <i class="fas fa-save mr-1"></i> Create User
             </button>
             <a href="{% url 'users_list' %}" class="btn btn-secondary">

@@ -1,0 +1,138 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Create Registration Link</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{% url 'dashboardv1' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'dojo_list' %}">Dojos</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'dojo_detail' dojo.id %}">{{ dojo.name }}</a></li>
+            <li class="breadcrumb-item active">Create Registration Link</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="content">
+    <div class="container-fluid">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card card-primary">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i class="fas fa-link mr-1"></i> Create Registration Link for {{ dojo.name }}
+              </h3>
+            </div>
+            <form method="POST">
+              {% csrf_token %}
+              <div class="card-body">
+                <div class="form-group">
+                  <label for="description">Description</label>
+                  <input type="text" class="form-control" id="description" name="description" 
+                         placeholder="e.g., May 2025 Enrollment" required>
+                  <small class="form-text text-muted">
+                    Give this link a meaningful description to identify its purpose.
+                  </small>
+                </div>
+                <div class="form-group">
+                  <label for="expires_days">Expiration</label>
+                  <div class="input-group">
+                    <input type="number" class="form-control" id="expires_days" name="expires_days" 
+                           min="0" value="30" placeholder="Number of days until expiration">
+                    <div class="input-group-append">
+                      <span class="input-group-text">days</span>
+                    </div>
+                  </div>
+                  <small class="form-text text-muted">
+                    Leave as 0 if the link should never expire.
+                  </small>
+                </div>
+                <div class="form-group">
+                  <label for="max_uses">Maximum Uses</label>
+                  <input type="number" class="form-control" id="max_uses" name="max_uses" 
+                         min="0" value="0" placeholder="Maximum number of registrations">
+                  <small class="form-text text-muted">
+                    Maximum number of times this link can be used for registration. Leave as 0 for unlimited.
+                  </small>
+                </div>
+                <div class="form-group">
+                  <div class="alert alert-info">
+                    <i class="fas fa-info-circle mr-1"></i> The registration link will be generated when you submit this form. You will be able to copy and share it afterward.
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save mr-1"></i> Generate Registration Link
+                </button>
+                <a href="{% url 'dojo_detail' dojo.id %}" class="btn btn-default float-right">
+                  <i class="fas fa-times-circle mr-1"></i> Cancel
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card card-secondary">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i class="fas fa-info-circle mr-1"></i> About Registration Links
+              </h3>
+            </div>
+            <div class="card-body">
+              <h5>How Registration Links Work</h5>
+              <p>Registration links are special URLs that automatically associate a new student or instructor with your dojo when they register through the link.</p>
+              
+              <hr>
+              
+              <h5>Best Practices</h5>
+              <ul>
+                <li><strong>Set an expiration date</strong> for time-limited enrollment periods.</li>
+                <li><strong>Limit the number of uses</strong> for specific cohort sizes.</li>
+                <li><strong>Use descriptive names</strong> to keep track of different registration campaigns.</li>
+                <li><strong>Disable old links</strong> when they are no longer needed.</li>
+              </ul>
+              
+              <hr>
+              
+              <h5>Security Tips</h5>
+              <ul>
+                <li>Only share links with your intended audience.</li>
+                <li>Registration links will automatically expire after their expiration date or maximum uses.</li>
+                <li>You can manually disable any link at any time from the registration link management page.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+  $(function () {
+    // Your custom JavaScript here if needed
+  });
+</script>
+{% endblock %}
