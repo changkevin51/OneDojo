@@ -4,7 +4,7 @@
 </p>
 
 <div align="center">
-  <h1>OneDojo</h1>
+  <h1>OneDojo - Dojo Management Portal</h1>
 </div>
 
 
