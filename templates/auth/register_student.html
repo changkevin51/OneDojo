@@ -1,134 +1,116 @@
-{% load static %} 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Registration</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.1/mdb.min.css" rel="stylesheet">
-</head>
-<body>
-  <section class="h-100" style="background: url('{% static "images/bg.jpg" %}') no-repeat center center / cover;">
-    <div class="container py-5 h-100">
-      <div class="row d-flex justify-content-center align-items-center h-100">
-        <div class="col">
-          <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="card card-registration my-4">
-              <div class="row g-0">
-                <div class="col-xl-6 d-none d-xl-block">
-                  <img src="{% static 'images/garden.jpg' %}" alt="Garden Image"
-                    alt="Sample photo" class="img-fluid"
-                    style="border-top-left-radius: .25rem; border-bottom-left-radius: .25rem;" />
-                </div>
-                <div class="col-xl-6">
-                  <div class="card-body p-md-5 text-black">
-                    <h3 class="mb-5 text-uppercase">Student registration form</h3>
+{% extends 'layouts/base.html' %}
+{% load static %}
 
-                    <!-- First Name and Last Name -->
-                    <div class="row">
-                      <div class="col-md-6 mb-4">
-                        <div class="form-outline">
-                          {{ form.first_name }}
-                          <label class="form-label" for="first_name">First name</label>
-                        </div>
-                      </div>
-                      <div class="col-md-6 mb-4">
-                        <div class="form-outline">
-                          {{ form.last_name }}
-                          <label class="form-label" for="last_name">Last name</label>
-                        </div>
-                      </div>
-                    </div>
+{% block title %}Register Student{% endblock title %}
 
-                    <!-- Gender -->
-                    <div class="d-flex justify-content-start align-items-center mb-4 py-2">
-                      <h6 class="mb-0 me-4">Gender: </h6>
-                      {% for radio in form.gender %}
-                        <div class="form-check form-check-inline">
-                          {{ radio.tag }}
-                          <label class="form-check-label" for="{{ radio.id_for_label }}">
-                            {{ radio.choice_label }}
-                          </label>
-                        </div>
-                      {% endfor %}
-                    </div>
+{% block content %}
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">Student Registration</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{% url 'dashboardv1' %}">Home</a></li>
+            <li class="breadcrumb-item active">Register Student</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
 
-                    <!-- Address -->
-                    <div data-mdb-input-init class="form-outline mb-4">
-                      {{ form.address }}
-                      <label class="form-label" for="address">Address</label>
-                    </div>
-
-                    <!-- Province and City -->
-                    <div class="row">
-                      <div class="col-md-6 mb-4">
-                        <div class="form-outline">
-                          {{ form.province }}
-                          <label class="form-label" for="province">Province</label>
-                        </div>
-                      </div>
-                      <div class="col-md-6 mb-4">
-                        <div class="form-outline">
-                          {{ form.city }}
-                          <label class="form-label" for="city">City</label>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- DOB -->
-                    <div data-mdb-input-init class="form-outline mb-4">
-                      {{ form.dob }}
-                      <label class="form-label" for="dob">DOB</label>
-                    </div>
-
-                    <!-- Username -->
-                    <div data-mdb-input-init class="form-outline mb-4">
+  <section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card card-primary">
+            <div class="card-header">
+              <h3 class="card-title">
+                {% if dojo_name %}
+                Register New Student for {{ dojo_name }}
+                {% else %}
+                Register New Student
+                {% endif %}
+              </h3>
+            </div>
+            <div class="card-body">
+              <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Add hidden field for dojo_id -->
+                {% if dojo_id %}
+                <input type="hidden" name="dojo_id" value="{{ dojo_id }}">
+                {% endif %}
+                
+                <!-- Form fields -->
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="id_username">Username</label>
                       {{ form.username }}
-                      <label class="form-label" for="username">Username</label>
                     </div>
-
-                    <!-- Profile Picture -->
-                    <div class="mb-4">
-                      <label for="profilePicture" class="form-label">Upload Profile Picture (Optional)</label>
-                      {{ form.profile_picture }}
-                    </div>
-
-                    <!-- Email -->
-                    <div data-mdb-input-init class="form-outline mb-4">
+                    <div class="form-group">
+                      <label for="id_email">Email</label>
                       {{ form.email }}
-                      <label class="form-label" for="email">Email Address</label>
                     </div>
-
-                    <!-- Password -->
-                    <div data-mdb-input-init class="form-outline mb-4">
-                      {{ form.password }}
-                      <label class="form-label" for="password">Password</label>
+                    <div class="form-group">
+                      <label for="id_first_name">First Name</label>
+                      {{ form.first_name }}
                     </div>
-
-                    <!-- Confirm Password -->
-                    <div data-mdb-input-init class="form-outline mb-4">
-                      {{ form.confirm_password }}
-                      <label class="form-label" for="confirm_password">Confirm Password</label>
+                    <div class="form-group">
+                      <label for="id_last_name">Last Name</label>
+                      {{ form.last_name }}
                     </div>
-
-                    <div class="d-flex justify-content-end pt-3">
-                      <button type="reset" class="btn btn-light btn-lg">Reset all</button>
-                      <button type="submit" class="btn btn-warning btn-lg ms-2">Submit form</button>
+                    <div class="form-group">
+                      <label for="id_password1">Password</label>
+                      {{ form.password1 }}
+                    </div>
+                    <div class="form-group">
+                      <label for="id_password2">Confirm Password</label>
+                      {{ form.password2 }}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="id_gender">Gender</label>
+                      {{ form.gender }}
+                    </div>
+                    <div class="form-group">
+                      <label for="id_dob">Date of Birth</label>
+                      {{ form.dob }}
+                    </div>
+                    <div class="form-group">
+                      <label for="id_address">Address</label>
+                      {{ form.address }}
+                    </div>
+                    <div class="form-group">
+                      <label for="id_city">City</label>
+                      {{ form.city }}
+                    </div>
+                    <div class="form-group">
+                      <label for="id_province">Province/State</label>
+                      {{ form.province }}
+                    </div>
+                    <div class="form-group">
+                      <label for="id_profile_picture">Profile Picture</label>
+                      {{ form.profile_picture }}
                     </div>
                   </div>
                 </div>
-              </div>
+
+                <div class="row">
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-primary float-right">Register Student</button>
+                  </div>
+                </div>
+              </form>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>
   </section>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.1/mdb.min.js"></script>
-</body>
-</html>
+</div>
+{% endblock content %}

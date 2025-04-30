@@ -69,8 +69,7 @@ def user_login(request):
             elif user.is_teacher:
                 return redirect('teacher_dashboard')
             else:
-                messages.error(request, "Invalid user role.")
-                return render(request, "auth/login.html", {"error_message": "Invalid username or password"})
+                return redirect('dashboardv1')
         else:
             print(f"Failed login attempt for username: {username}")
             return render(request, "auth/login.html", {"error_message": "Invalid username or password"})
@@ -99,31 +98,131 @@ def register_units(request):
     return render(request, 'portal/register_units.html', {'form': form})
 
 
-def register_student(request):
+def register_student(request, dojo_id=None):
+    """Register a student with specified dojo from URL or session"""
+    # First try to get dojo from URL parameter
+    selected_dojo = None
+    
+    if dojo_id:
+        try:
+            selected_dojo = Dojo.objects.get(id=dojo_id)
+        except Dojo.DoesNotExist:
+            messages.error(request, "The specified dojo was not found.")
+            return redirect('login')
+    
+    # If not from URL, try from session (from registration link)
+    if not selected_dojo:
+        session_dojo_id = request.session.get('registration_dojo_id')
+        registration_code = request.session.get('registration_code')
+        
+        if session_dojo_id:
+            try:
+                selected_dojo = Dojo.objects.get(id=session_dojo_id)
+            except Dojo.DoesNotExist:
+                pass
+    
+    # If no dojo is found and user is not staff, show error
+    if not selected_dojo and not request.user.is_staff and not request.user.is_superuser:
+        messages.error(request, "Please use a valid registration link or URL to sign up.")
+        return redirect('login')
+    
     if request.method == 'POST':
         form = StudentRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save(commit=False)
-            user.is_student = True 
+            
+            # Set the dojo for the user if available
+            if selected_dojo:
+                user.dojo = selected_dojo
+                
+                # If registration code exists from session, set the registration link
+                if registration_code:
+                    try:
+                        reg_link = DojoRegistrationLink.objects.get(code=registration_code)
+                        user.registration_link = reg_link
+                    except DojoRegistrationLink.DoesNotExist:
+                        pass
+            
+            user.is_student = True
+            user.set_password(form.cleaned_data['password1'])
             user.save()
-            return redirect('login')  
+            
+            messages.success(request, "Registration successful. Please log in.")
+            
+            # Clear registration data from session
+            request.session.pop('registration_dojo_id', None)
+            request.session.pop('registration_code', None)
+            
+            return redirect('login')
     else:
         form = StudentRegistrationForm()
-    return render(request, 'auth/register_student.html', {'form': form})
+        
+    # If dojo is found, display its name in the context
+    context = {'form': form}
+    if selected_dojo:
+        context['dojo_name'] = selected_dojo.name
+        context['dojo_id'] = selected_dojo.id
+    
+    return render(request, 'auth/register_student.html', context)
 
-def register_teacher(request):
+def register_teacher(request, dojo_id=None):
+    """Register a teacher with specified dojo from URL or form selection"""
+    # Only superusers and staff can register teachers
+    if not request.user.is_authenticated or (not request.user.is_staff and not request.user.is_superuser):
+        messages.error(request, "You don't have permission to register instructors.")
+        return redirect('login')
+    
+    # Try to get dojo from URL parameter
+    selected_dojo = None
+    if dojo_id:
+        try:
+            selected_dojo = Dojo.objects.get(id=dojo_id)
+        except Dojo.DoesNotExist:
+            messages.error(request, "The specified dojo was not found.")
+            # Continue without a selected dojo
+    
     if request.method == 'POST':
         form = TeacherRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save(commit=False)
             user.is_teacher = True
+            
+            # First priority: Get dojo from form if provided
+            dojo_form_id = request.POST.get('dojo')
+            if dojo_form_id:
+                try:
+                    user.dojo = Dojo.objects.get(id=dojo_form_id)
+                except Dojo.DoesNotExist:
+                    messages.error(request, "The selected dojo does not exist.")
+                    return render(request, 'auth/register_teacher.html', {'form': form, 'dojos': Dojo.objects.all()})
+            # Second priority: Use dojo from URL
+            elif selected_dojo:
+                user.dojo = selected_dojo
+            # Third priority: For staff who aren't superusers, auto-assign their dojo
+            elif request.user.dojo and not request.user.is_superuser:
+                user.dojo = request.user.dojo
+                
             user.save()
-            return redirect('login')
+            messages.success(request, f"Instructor {user.get_full_name()} has been registered successfully.")
+            return redirect('users_list')
     else:
         form = TeacherRegistrationForm()
-    return render(request, 'auth/register_teacher.html', {'form': form})
-
-
+    
+    # Get dojos for dropdown
+    if request.user.is_superuser:
+        dojos = Dojo.objects.all()
+    elif request.user.dojo:
+        dojos = Dojo.objects.filter(id=request.user.dojo.id)
+    else:
+        dojos = Dojo.objects.none()
+        
+    context = {
+        'form': form, 
+        'dojos': dojos,
+        'selected_dojo': selected_dojo
+    }
+        
+    return render(request, 'auth/register_teacher.html', context)
 
 @login_required
 def submit_assignment(request, event_id):
@@ -2427,13 +2526,27 @@ def user_info(request, user_id):
     return render(request, 'pages/instructor/user_info.html', context)
 
 @login_required
-def create_user(request):
+def create_user(request, dojo_id=None):
     if not (request.user.is_staff or request.user.is_teacher):
         messages.error(request, "Permission denied")
         return redirect('dashboardv1')
     
     # Pre-select user type if specified in query parameter
     user_type = request.GET.get('type', 'student')
+    
+    # Handle dojo_id from URL parameter
+    selected_dojo = None
+    if dojo_id:
+        try:
+            selected_dojo = Dojo.objects.get(id=dojo_id)
+        except Dojo.DoesNotExist:
+            messages.error(request, "The specified dojo was not found.")
+            return redirect('dojo_list')
+    
+    # Get all dojos for the dropdown if user is superuser and no dojo was specified
+    dojos = None
+    if request.user.is_superuser and not selected_dojo:
+        dojos = Dojo.objects.all().order_by('name')
     
     if request.method == 'POST':
         # Extract form data
@@ -2450,6 +2563,21 @@ def create_user(request):
         gender = request.POST.get('gender')
         dob = request.POST.get('dob')
         user_type = request.POST.get('user_type')
+        
+        # Get the dojo - first try from form, then from URL parameter, then from user's own dojo
+        form_dojo_id = request.POST.get('dojo_id')
+        user_dojo = None
+        
+        if form_dojo_id:
+            try:
+                user_dojo = Dojo.objects.get(id=form_dojo_id)
+            except Dojo.DoesNotExist:
+                messages.error(request, "Selected dojo not found")
+                return redirect('create_user')
+        elif selected_dojo:
+            user_dojo = selected_dojo
+        elif not request.user.is_superuser and request.user.dojo:
+            user_dojo = request.user.dojo
         
         # Validate form data
         if password != confirm_password:
@@ -2480,6 +2608,7 @@ def create_user(request):
             user.province = province
             user.belt = belt
             user.gender = gender
+            user.dojo = user_dojo  # Assign the dojo to the user
             
             # Set date of birth if provided
             if dob:
@@ -2502,8 +2631,14 @@ def create_user(request):
             user.save()
             
             user_role = "Instructor" if user_type == 'teacher' else "Student"
-            messages.success(request, f"{user_role} {username} created successfully")
-            return redirect('users_list')
+            dojo_name = user_dojo.name if user_dojo else "No Dojo"
+            messages.success(request, f"{user_role} {username} created successfully for {dojo_name}")
+            
+            # Redirect to appropriate place
+            if selected_dojo:
+                return redirect('dojo_detail', dojo_id=selected_dojo.id)
+            else:
+                return redirect('users_list')
             
         except Exception as e:
             messages.error(request, f"Error creating user: {str(e)}")
@@ -2514,6 +2649,9 @@ def create_user(request):
         'title': 'Create New User',
         'parent': 'users',
         'segment': 'create_user',
+        'selected_dojo': selected_dojo,
+        'dojos': dojos,
+        'dojo_id': dojo_id if dojo_id else None,
     }
     
     return render(request, 'pages/instructor/create_user.html', context)
@@ -2525,22 +2663,44 @@ def edit_class(request, unit_id=None):
         messages.error(request, "Permission denied")
         return redirect('dashboardv1')
     
-    # Get the unit if editing an existing one
+    selected_dojo_id = request.session.get('selected_dojo_id')
+    
+    if not selected_dojo_id and not request.user.dojo:
+        messages.warning(request, "Please select a dojo first")
+        return redirect('select_dojo')
+    
+    dojo_id = selected_dojo_id if selected_dojo_id else request.user.dojo.id
+    
+    try:
+        dojo = Dojo.objects.get(id=dojo_id)
+    except Dojo.DoesNotExist:
+        messages.error(request, "Selected dojo not found")
+        return redirect('select_dojo')
+    
     unit = None
     registrations = []
     if unit_id:
         unit = get_object_or_404(Unit, id=unit_id)
+        # Make sure the unit belongs to the selected dojo
+        if unit.dojo.id != dojo.id:
+            messages.error(request, "This class does not belong to the selected dojo")
+            return redirect('dashboardv1')
+        
         registrations = Registration.objects.filter(unit=unit).select_related('student')
     
-    # Get available teachers and students
-    teachers = CustomUser.objects.filter(is_teacher=True).order_by('first_name', 'last_name')
+    teachers = CustomUser.objects.filter(is_teacher=True, dojo=dojo).order_by('first_name', 'last_name')
     
-    # For existing units, get students not in this class
     if unit:
-        current_student_ids = registrations.values_list('student_id', flat=True)
-        available_students = CustomUser.objects.filter(is_student=True).exclude(id__in=current_student_ids).order_by('first_name', 'last_name')
+        registered_student_ids = Registration.objects.filter(unit=unit).values_list('student_id', flat=True)
+        available_students = CustomUser.objects.filter(
+            is_student=True, 
+            dojo=dojo
+        ).exclude(id__in=registered_student_ids).order_by('first_name', 'last_name')
     else:
-        available_students = CustomUser.objects.filter(is_student=True).order_by('first_name', 'last_name')
+        available_students = CustomUser.objects.filter(
+            is_student=True, 
+            dojo=dojo
+        ).order_by('first_name', 'last_name')
     
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -2548,57 +2708,50 @@ def edit_class(request, unit_id=None):
         teacher_id = request.POST.get('teacher')
         
         if not name or not code:
-            messages.error(request, "Class name and code are required")
-            return redirect('edit_class', unit_id=unit_id)
-        
-        # Check for duplicate code
-        existing = Unit.objects.filter(code=code)
-        if unit:
-            existing = existing.exclude(id=unit.id)
-        if existing.exists():
-            messages.error(request, f"Class code '{code}' is already in use")
-            return redirect('edit_class', unit_id=unit_id)
-        
-        if unit is None:
-            # Create new unit
-            unit = Unit(name=name, code=code)
-            action = "created"
+            messages.error(request, "Name and code are required")
         else:
-            # Update existing unit
-            unit.name = name
-            unit.code = code
-            action = "updated"
-        
-        # Set teacher if selected
-        if teacher_id:
-            try:
-                teacher = CustomUser.objects.get(id=teacher_id, is_teacher=True)
+            teacher = None
+            if teacher_id:
+                try:
+                    teacher = CustomUser.objects.get(id=teacher_id, is_teacher=True)
+                except CustomUser.DoesNotExist:
+                    messages.warning(request, "Selected teacher not found")
+            
+            if unit:
+                # Update existing unit
+                unit.name = name
+                unit.code = code
                 unit.teacher = teacher
-            except CustomUser.DoesNotExist:
-                pass
-        else:
-            unit.teacher = None
-        
-        unit.save()
-        messages.success(request, f"Class '{name}' {action} successfully")
-        
-        # Redirect to edit the newly created class
-        if action == "created":
-            return redirect('edit_class', unit_id=unit.id)
-        return redirect('edit_class', unit_id=unit.id)
+                # Ensure the dojo is set
+                unit.dojo = dojo
+            else:
+                # Create new unit with the selected dojo
+                unit = Unit(
+                    name=name,
+                    code=code,
+                    teacher=teacher,
+                    dojo=dojo  # This is critical!
+                )
+            
+            try:
+                unit.save()
+                messages.success(request, f"Class '{name}' has been {'updated' if unit_id else 'created'} successfully")
+                return redirect('admin_student_list', unit_id=unit.id)
+            except Exception as e:
+                messages.error(request, f"Error saving class: {str(e)}")
     
     context = {
         'unit': unit,
         'registrations': registrations,
         'teachers': teachers,
         'available_students': available_students,
+        'selected_dojo': dojo,
         'title': 'Edit Class' if unit else 'Create Class',
         'parent': 'classes',
         'segment': 'edit_class',
     }
     
     return render(request, 'pages/instructor/edit_class.html', context)
-
 @login_required
 def add_students_to_class(request):
     """Add students to a class"""
@@ -2677,3 +2830,366 @@ def remove_student_from_class(request):
         return redirect('edit_class', unit_id=unit_id)
     
     return redirect('admin:index')
+
+@login_required
+def delete_user(request, user_id):
+    """Delete a user with permission checks"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+    
+    user_to_delete = get_object_or_404(CustomUser, id=user_id)
+    
+    # Check if user has permission to delete
+    if request.user.is_teacher and not request.user.is_staff:
+        # Teachers can only delete students
+        if not user_to_delete.is_student:
+            messages.error(request, "Teachers can only delete students")
+            return redirect('users_list')
+    
+    # Prevent self-deletion
+    if user_to_delete.id == request.user.id:
+        messages.error(request, "You cannot delete your own account")
+        return redirect('users_list')
+    
+    # Get the user's name for the success message
+    user_name = user_to_delete.get_full_name() or user_to_delete.username
+    user_role = "Administrator" if user_to_delete.is_staff else ("Instructor" if user_to_delete.is_teacher else "Student")
+    
+    try:
+        user_to_delete.delete()
+        messages.success(request, f"{user_role} {user_name} has been deleted successfully")
+    except Exception as e:
+        messages.error(request, f"Error deleting user: {str(e)}")
+    
+    return redirect('users_list')
+
+def register_with_dojo_code(request, code):
+    """Register a student with a specific dojo registration code"""
+    try:
+        reg_link = DojoRegistrationLink.objects.get(code=code)
+        
+        # Check if the link is still valid
+        if not reg_link.is_valid():
+            messages.error(request, "This registration link has expired or is no longer active.")
+            return redirect('login')
+            
+        # Check if the link has reached maximum usage (if limit set)
+        if reg_link.max_uses > 0 and reg_link.uses_count >= reg_link.max_uses:
+            messages.error(request, "This registration link has reached its maximum usage limit.")
+            return redirect('login')
+        
+        # Store dojo info in session for the registration form
+        request.session['registration_dojo_id'] = reg_link.dojo.id
+        request.session['registration_code'] = code
+        
+        # Redirect to student registration form
+        messages.success(request, f"You're registering with {reg_link.dojo.name}. Please complete your information.")
+        return redirect('register_student')
+        
+    except DojoRegistrationLink.DoesNotExist:
+        messages.error(request, "Invalid registration link.")
+        return redirect('login')
+
+@login_required
+def dojo_list(request):
+    """View for displaying all dojos (for admins only) or current user's dojo"""
+    if not request.user.is_authenticated:
+        return redirect('login')
+        
+    # Superusers can see all dojos
+    if request.user.is_superuser:
+        dojos = Dojo.objects.all().order_by('name')
+    elif request.user.dojo:
+        dojos = Dojo.objects.filter(id=request.user.dojo.id)
+    else:
+        dojos = Dojo.objects.none()
+    
+    # Handle dojo creation
+    if request.method == 'POST' and request.user.is_superuser:
+        name = request.POST.get('name')
+        if name:
+            dojo = Dojo(
+                name=name,
+                address=request.POST.get('address', ''),
+                city=request.POST.get('city', ''),
+                province=request.POST.get('province', ''),
+                country=request.POST.get('province', ''),
+                phone=request.POST.get('phone', ''),
+                email=request.POST.get('email', ''),
+            )
+            
+            if 'logo' in request.FILES:
+                dojo.logo = request.FILES['logo']
+                
+            dojo.save()
+            messages.success(request, f"Dojo '{name}' created successfully!")
+            return redirect('dojo_detail', dojo_id=dojo.id)
+        else:
+            messages.error(request, "Dojo name is required.")
+    
+    context = {
+        'dojos': dojos,
+        'can_create': request.user.is_superuser,
+        'title': 'Dojos',
+        'parent': 'dojos',
+        'segment': 'dojo_list',
+    }
+    return render(request, 'pages/instructor/dojo_list.html', context)
+
+@login_required
+def dojo_detail(request, dojo_id):
+    """View details of a specific dojo"""
+    # Get the dojo and check permissions
+    dojo = get_object_or_404(Dojo, id=dojo_id)
+    
+    # Only allow access to admins or users of this dojo
+    if not (request.user.is_superuser or (request.user.dojo and request.user.dojo.id == dojo_id)):
+        messages.error(request, "You don't have permission to view this dojo.")
+        return redirect('dashboardv1')
+    
+    # Handle dojo edit
+    if request.method == 'POST' and request.user.is_superuser:
+        dojo.name = request.POST.get('name', dojo.name)
+        dojo.address = request.POST.get('address', dojo.address)
+        dojo.city = request.POST.get('city', dojo.city)
+        dojo.province = request.POST.get('province', dojo.province)
+        dojo.country = request.POST.get('country', dojo.country)
+        dojo.phone = request.POST.get('phone', dojo.phone)
+        dojo.email = request.POST.get('email', dojo.email)
+        dojo.website = request.POST.get('website', dojo.website)
+        
+        if 'logo' in request.FILES:
+            dojo.logo = request.FILES['logo']
+            
+        dojo.save()
+        messages.success(request, f"Dojo '{dojo.name}' updated successfully!")
+    
+    # Check for AJAX requests for student/instructor data
+    data_type = request.GET.get('data')
+    if data_type:
+        if data_type == 'students':
+            students = CustomUser.objects.filter(dojo=dojo, is_student=True)
+            return render(request, 'pages/instructor/_student_list_partial.html', {'students': students})
+        elif data_type == 'instructors':
+            instructors = CustomUser.objects.filter(dojo=dojo, is_teacher=True)
+            return render(request, 'pages/instructor/_instructor_list_partial.html', {'instructors': instructors})
+    
+    # Get counts and data for the dojo
+    student_count = dojo.get_student_count()
+    instructor_count = dojo.get_instructor_count()
+    
+    # Get the classes (units) for this dojo
+    units = Unit.objects.filter(dojo=dojo).select_related('teacher')
+    
+    # Get active registration links
+    reg_links = DojoRegistrationLink.objects.filter(dojo=dojo, is_active=True)
+    
+    context = {
+        'dojo': dojo,
+        'units': units,
+        'student_count': student_count,
+        'instructor_count': instructor_count,
+        'registration_links': reg_links,
+        'can_edit': request.user.is_superuser,
+        'title': f'Dojo: {dojo.name}',
+        'parent': 'dojos',
+        'segment': 'dojo_detail',
+    }
+    
+    return render(request, 'pages/instructor/dojo_detail.html', context)
+
+@login_required
+def create_registration_link(request, dojo_id):
+    """Create a new registration link for a specific dojo"""
+    # Check permissions - only staff and teachers of this dojo can create links
+    dojo = get_object_or_404(Dojo, id=dojo_id)
+    if not request.user.is_staff and (not request.user.dojo or request.user.dojo.id != dojo_id):
+        messages.error(request, "You don't have permission to create registration links for this dojo.")
+        return redirect('dojo_list')
+    
+    if request.method == 'POST':
+        description = request.POST.get('description')
+        expires_days = request.POST.get('expires_days', 0)
+        max_uses = request.POST.get('max_uses', 0)
+        
+        try:
+            # Generate a unique registration code
+            code = DojoRegistrationLink.generate_code()
+            while DojoRegistrationLink.objects.filter(code=code).exists():
+                code = DojoRegistrationLink.generate_code()
+            
+            # Set expiration date if specified
+            expires_at = None
+            if int(expires_days) > 0:
+                expires_at = timezone.now() + datetime.timedelta(days=int(expires_days))
+            
+            # Create the registration link
+            reg_link = DojoRegistrationLink.objects.create(
+                dojo=dojo,
+                code=code,
+                description=description,
+                max_uses=int(max_uses),
+                expires_at=expires_at,
+                created_by=request.user
+            )
+            
+            messages.success(request, f"Registration link created successfully! Code: {code}")
+            return redirect('dojo_detail', dojo_id=dojo.id)
+            
+        except Exception as e:
+            messages.error(request, f"Error creating registration link: {str(e)}")
+            return redirect('create_registration_link', dojo_id=dojo.id)
+    
+    context = {
+        'dojo': dojo,
+        'title': f'Create Registration Link for {dojo.name}',
+        'parent': 'dojos',
+        'segment': 'create_registration_link',
+    }
+    
+    return render(request, 'pages/instructor/create_registration_link.html', context)
+
+@login_required
+def manage_registration_links(request):
+    """Manage all registration links for the user's dojos"""
+    if not request.user.is_authenticated:
+        return redirect('login')
+    
+    # Get relevant dojos based on user's role
+    if request.user.is_superuser:
+        dojos = Dojo.objects.all()
+    elif request.user.is_staff or request.user.is_teacher:
+        if request.user.dojo:
+            dojos = Dojo.objects.filter(id=request.user.dojo.id)
+        else:
+            dojos = Dojo.objects.none()
+    else:
+        messages.error(request, "You don't have permission to manage registration links.")
+        return redirect('dashboardv1')
+    
+    # Get all registration links for these dojos
+    registration_links = DojoRegistrationLink.objects.filter(
+        dojo__in=dojos
+    ).select_related('dojo', 'created_by').order_by('-created_at')
+    
+    # Handle POST requests for activation/deactivation/deletion
+    if request.method == 'POST':
+        link_id = request.POST.get('link_id')
+        action = request.POST.get('action')
+        
+        if link_id and action:
+            try:
+                reg_link = DojoRegistrationLink.objects.get(id=link_id)
+                
+                # Verify user has permission to modify this link
+                if not request.user.is_superuser and (not request.user.dojo or request.user.dojo.id != reg_link.dojo.id):
+                    messages.error(request, "You don't have permission to modify this registration link.")
+                else:
+                    if action == 'activate':
+                        reg_link.is_active = True
+                        reg_link.save()
+                        messages.success(request, "Registration link activated.")
+                    elif action == 'deactivate':
+                        reg_link.is_active = False
+                        reg_link.save()
+                        messages.success(request, "Registration link deactivated.")
+                    elif action == 'delete':
+                        reg_link.delete()
+                        messages.success(request, "Registration link deleted.")
+                    
+            except DojoRegistrationLink.DoesNotExist:
+                messages.error(request, "Registration link not found.")
+        else:
+            messages.error(request, "Invalid request.")
+    
+    context = {
+        'registration_links': registration_links,
+        'title': 'Manage Registration Links',
+        'parent': 'dojos',
+        'segment': 'manage_registration_links',
+    }
+    
+    return render(request, 'pages/instructor/manage_registration_links.html', context)
+
+@login_required
+def create_dojo(request):
+    """Create a new dojo (admin only)"""
+    if not request.user.is_superuser:
+        messages.error(request, "Only administrators can create new dojos.")
+        return redirect('dojo_list')
+    
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        if not name:
+            messages.error(request, "Dojo name is required.")
+            return render(request, 'pages/instructor/create_dojo.html')
+            
+        dojo = Dojo(
+            name=name,
+            address=request.POST.get('address', ''),
+            phone=request.POST.get('phone', ''),
+            email=request.POST.get('email', ''),
+            description=request.POST.get('description', '')
+        )
+        
+        # If there are additional fields in the POST that match fields in the Dojo model
+        # Feel free to add them here
+        
+        dojo.save()
+        messages.success(request, f"Dojo '{name}' created successfully!")
+        return redirect('dojo_detail', dojo_id=dojo.id)
+    
+    context = {
+        'title': 'Create New Dojo',
+        'parent': 'dojos',
+        'segment': 'create_dojo',
+    }
+    return render(request, 'pages/instructor/create_dojo.html', context)
+
+
+@login_required
+def select_dojo(request):
+    """Allow admins and instructors to select which dojo to manage"""
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+    
+    # Get dojos based on user's permissions
+    if request.user.is_superuser:
+        dojos = Dojo.objects.all().order_by('name')
+    elif request.user.is_teacher or request.user.is_staff:
+        # Teachers/staff can only see their assigned dojo
+        if request.user.dojo:
+            dojos = Dojo.objects.filter(id=request.user.dojo.id)
+        else:
+            messages.warning(request, "You don't have access to any dojos. Please contact an administrator.")
+            return redirect('dashboardv1')
+    else:
+        dojos = Dojo.objects.none()
+    
+    if request.method == 'POST':
+        dojo_id = request.POST.get('dojo_id')
+        try:
+            selected_dojo = Dojo.objects.get(id=dojo_id)
+            # Store the selected dojo in session
+            request.session['selected_dojo_id'] = selected_dojo.id
+            request.session['selected_dojo_name'] = selected_dojo.name
+            
+            messages.success(request, f"Now managing {selected_dojo.name}")
+            return redirect('dashboardv1')
+        except Dojo.DoesNotExist:
+            messages.error(request, "Invalid dojo selection")
+    
+    # Get currently selected dojo from session
+    selected_dojo_id = request.session.get('selected_dojo_id')
+    
+    context = {
+        'dojos': dojos,
+        'selected_dojo_id': selected_dojo_id,
+        'title': 'Select Dojo to Manage',
+        'parent': 'dojos',
+        'segment': 'select_dojo',
+    }
+    
+    return render(request, 'pages/instructor/select_dojo.html', context)

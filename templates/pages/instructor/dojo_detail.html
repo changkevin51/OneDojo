@@ -1,0 +1,494 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0">{{ dojo.name }}</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="{% url 'dashboardv1' %}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'dojo_list' %}">Dojos</a></li>
+            <li class="breadcrumb-item active">{{ dojo.name }}</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="content">
+    <div class="container-fluid">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <div class="row">
+        <!-- Dojo Info Column -->
+        <div class="col-md-4">
+          <!-- Dojo Details Card -->
+          <div class="card card-primary">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i class="fas fa-info-circle mr-1"></i> Dojo Information
+              </h3>
+              {% if can_edit %}
+              <div class="card-tools">
+                <button type="button" class="btn btn-tool" data-toggle="modal" data-target="#editDojoModal">
+                  <i class="fas fa-edit"></i>
+                </button>
+              </div>
+              {% endif %}
+            </div>
+            <div class="card-body box-profile">
+              <div class="text-center mb-3">
+                {% if dojo.logo %}
+                  <img class="profile-user-img img-fluid img-circle" 
+                       src="{{ dojo.logo.url }}" 
+                       alt="Dojo logo">
+                {% else %}
+                  <img class="profile-user-img img-fluid img-circle"
+                       src="{% static 'images/dojo-placeholder.png' %}"
+                       alt="Default dojo logo">
+                {% endif %}
+              </div>
+
+              <h3 class="profile-username text-center">{{ dojo.name }}</h3>
+              
+              <ul class="list-group list-group-unbordered mb-3">
+                <li class="list-group-item">
+                  <b><i class="fas fa-map-marker-alt mr-1"></i> Address</b> 
+                  <span class="float-right">{{ dojo.address|default:"Not provided" }}</span>
+                </li>
+                <li class="list-group-item">
+                  <b><i class="fas fa-city mr-1"></i> City</b> 
+                  <span class="float-right">{{ dojo.city|default:"Not provided" }}</span>
+                </li>
+                <li class="list-group-item">
+                  <b><i class="fas fa-map mr-1"></i> Province/State</b> 
+                  <span class="float-right">{{ dojo.province|default:"Not provided" }}</span>
+                </li>
+                <li class="list-group-item">
+                  <b><i class="fas fa-globe mr-1"></i> Country</b> 
+                  <span class="float-right">{{ dojo.country|default:"Not provided" }}</span>
+                </li>
+                <li class="list-group-item">
+                  <b><i class="fas fa-phone mr-1"></i> Phone</b> 
+                  <span class="float-right">{{ dojo.phone|default:"Not provided" }}</span>
+                </li>
+                <li class="list-group-item">
+                  <b><i class="fas fa-envelope mr-1"></i> Email</b> 
+                  <span class="float-right">
+                    {% if dojo.email %}
+                      <a href="mailto:{{ dojo.email }}">{{ dojo.email }}</a>
+                    {% else %}
+                      Not provided
+                    {% endif %}
+                  </span>
+                </li>
+                <li class="list-group-item">
+                  <b><i class="fas fa-globe mr-1"></i> Website</b> 
+                  <span class="float-right">
+                    {% if dojo.website %}
+                      <a href="{{ dojo.website }}" target="_blank">{{ dojo.website }}</a>
+                    {% else %}
+                      Not provided
+                    {% endif %}
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Dojo Statistics Card -->
+          <div class="card card-info">
+            <div class="card-header">
+              <h3 class="card-title">
+                <i class="fas fa-chart-pie mr-1"></i> Statistics
+              </h3>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-4 text-center">
+                  <div class="info-box bg-primary">
+                    <span class="info-box-icon"><i class="fas fa-users"></i></span>
+                    <div class="info-box-content">
+                      <span class="info-box-text">Students</span>
+                      <span class="info-box-number">{{ student_count }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 text-center">
+                  <div class="info-box bg-success">
+                    <span class="info-box-icon"><i class="fas fa-user-tie"></i></span>
+                    <div class="info-box-content">
+                      <span class="info-box-text">Instructors</span>
+                      <span class="info-box-number">{{ instructor_count }}</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 text-center">
+                  <div class="info-box bg-warning">
+                    <span class="info-box-icon"><i class="fas fa-book"></i></span>
+                    <div class="info-box-content">
+                      <span class="info-box-text">Classes</span>
+                      <span class="info-box-number">{{ units.count }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Units, Students and Registration Links Column -->
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header p-2">
+              <ul class="nav nav-pills">
+                <li class="nav-item"><a class="nav-link active" href="#classes" data-toggle="tab">Classes</a></li>
+                <li class="nav-item"><a class="nav-link" href="#students" data-toggle="tab">Students</a></li>
+                <li class="nav-item"><a class="nav-link" href="#instructors" data-toggle="tab">Instructors</a></li>
+                <li class="nav-item"><a class="nav-link" href="#registration" data-toggle="tab">Registration Links</a></li>
+              </ul>
+            </div>
+            <div class="card-body">
+              <div class="tab-content">
+                <!-- Classes Tab -->
+                <div class="tab-pane active" id="classes">
+                  <div class="d-flex justify-content-between mb-3">
+                    <h4>Classes (Units)</h4>
+                    {% if user.is_staff or user.is_teacher %}
+                    <a href="{% url 'create_class' %}?dojo={{ dojo.id }}" class="btn btn-sm btn-primary">
+                      <i class="fas fa-plus mr-1"></i> Add Class
+                    </a>
+                    {% endif %}
+                  </div>
+                  
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Code</th>
+                          <th>Name</th>
+                          <th>Instructor</th>
+                          <th>Students</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for unit in units %}
+                        <tr>
+                          <td>{{ unit.code }}</td>
+                          <td>{{ unit.name }}</td>
+                          <td>
+                            {% if unit.teacher %}
+                              {{ unit.teacher.get_full_name }}
+                            {% else %}
+                              <span class="text-danger">Unassigned</span>
+                            {% endif %}
+                          </td>
+                          <td>{{ unit.registration_set.count }}</td>
+                          <td>
+                            <a href="{% url 'edit_class' unit.id %}" class="btn btn-sm btn-info">
+                              <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'admin_student_list' unit.id %}" class="btn btn-sm btn-success">
+                              <i class="fas fa-users"></i>
+                            </a>
+                          </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                          <td colspan="5" class="text-center">No classes found for this dojo.</td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                
+                <!-- Students Tab -->
+                <div class="tab-pane" id="students">
+                  <div class="d-flex justify-content-between mb-3">
+                    <h4>Students</h4>
+                    <div>
+                      <a href="#" class="btn btn-sm btn-primary" id="refreshStudentsBtn">
+                        <i class="fas fa-sync-alt mr-1"></i> Refresh
+                      </a>
+                      {% if user.is_staff %}
+                      <a href="{% url 'create_user' %}?type=student&dojo={{ dojo.id }}" class="btn btn-sm btn-success">
+                        <i class="fas fa-user-plus mr-1"></i> Add Student
+                      </a>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div id="students-container">
+                    <div class="text-center p-5">
+                      <i class="fas fa-spinner fa-spin fa-2x"></i>
+                      <p class="mt-2">Loading students...</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Instructors Tab -->
+                <div class="tab-pane" id="instructors">
+                  <div class="d-flex justify-content-between mb-3">
+                    <h4>Instructors</h4>
+                    <div>
+                      <a href="#" class="btn btn-sm btn-primary" id="refreshInstructorsBtn">
+                        <i class="fas fa-sync-alt mr-1"></i> Refresh
+                      </a>
+                      {% if user.is_staff %}
+                      <a href="{% url 'create_user' %}?type=teacher&dojo={{ dojo.id }}" class="btn btn-sm btn-success">
+                        <i class="fas fa-user-plus mr-1"></i> Add Instructor
+                      </a>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div id="instructors-container">
+                    <div class="text-center p-5">
+                      <i class="fas fa-spinner fa-spin fa-2x"></i>
+                      <p class="mt-2">Loading instructors...</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Registration Links Tab -->
+                <div class="tab-pane" id="registration">
+                  <div class="d-flex justify-content-between mb-3">
+                    <h4>Registration Links</h4>
+                    <a href="{% url 'create_registration_link' dojo.id %}" class="btn btn-sm btn-primary">
+                      <i class="fas fa-plus mr-1"></i> Create Link
+                    </a>
+                  </div>
+                  
+                  {% if registration_links %}
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Code</th>
+                          <th>Description</th>
+                          <th>Uses</th>
+                          <th>Expires</th>
+                          <th>Status</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for link in registration_links %}
+                        <tr>
+                          <td>{{ link.code }}</td>
+                          <td>{{ link.description|default:"No description" }}</td>
+                          <td>
+                            {{ link.uses_count }}
+                            {% if link.max_uses > 0 %}
+                            / {{ link.max_uses }}
+                            {% else %}
+                            <span class="badge badge-info">Unlimited</span>
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if link.expires_at %}
+                              {{ link.expires_at|date:"M d, Y" }}
+                            {% else %}
+                              <span class="badge badge-info">Never</span>
+                            {% endif %}
+                          </td>
+                          <td>
+                            {% if link.is_expired %}
+                              <span class="badge badge-danger">Expired</span>
+                            {% else %}
+                              <span class="badge badge-success">Active</span>
+                            {% endif %}
+                          </td>
+                          <td>
+                            <a href="{% url 'register_with_dojo_code' link.code %}" target="_blank" class="btn btn-sm btn-info">
+                              <i class="fas fa-link"></i>
+                            </a>
+                            <button class="btn btn-sm btn-secondary copy-link-btn" 
+                                    data-link="{% url 'register_with_dojo_code' link.code %}"
+                                    data-toggle="tooltip" 
+                                    title="Copy link to clipboard">
+                              <i class="fas fa-copy"></i>
+                            </button>
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                  {% else %}
+                  <div class="alert alert-info">
+                    <i class="fas fa-info-circle mr-1"></i> No active registration links found. 
+                    <a href="{% url 'create_registration_link' dojo.id %}">Create a new registration link</a> to allow students to register for this dojo.
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Edit Dojo Modal -->
+{% if can_edit %}
+<div class="modal fade" id="editDojoModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h4 class="modal-title">Edit Dojo Details</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="name">Dojo Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ dojo.name }}" required>
+              </div>
+              <div class="form-group">
+                <label for="address">Address</label>
+                <input type="text" class="form-control" id="address" name="address" value="{{ dojo.address|default:'' }}">
+              </div>
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" class="form-control" id="city" name="city" value="{{ dojo.city|default:'' }}">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="province">Province/State</label>
+                    <input type="text" class="form-control" id="province" name="province" value="{{ dojo.province|default:'' }}">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="country">Country</label>
+                <input type="text" class="form-control" id="country" name="country" value="{{ dojo.country|default:'' }}">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="tel" class="form-control" id="phone" name="phone" value="{{ dojo.phone|default:'' }}">
+              </div>
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ dojo.email|default:'' }}">
+              </div>
+              <div class="form-group">
+                <label for="website">Website</label>
+                <input type="url" class="form-control" id="website" name="website" value="{{ dojo.website|default:'' }}">
+              </div>
+              <div class="form-group">
+                <label for="logo">Logo</label>
+                {% if dojo.logo %}
+                  <div class="mb-2">
+                    <img src="{{ dojo.logo.url }}" alt="Current logo" style="max-height: 100px;">
+                  </div>
+                {% endif %}
+                <div class="input-group">
+                  <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="logo" name="logo">
+                    <label class="custom-file-label" for="logo">Choose new file</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extrajs %}
+<script>
+  $(function () {
+    // Initialize custom file input
+    bsCustomFileInput.init();
+    
+    // Initialize tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+    
+    // Copy link to clipboard function
+    $('.copy-link-btn').on('click', function() {
+      var linkUrl = window.location.origin + $(this).data('link');
+      var tempInput = $('<input>');
+      $('body').append(tempInput);
+      tempInput.val(linkUrl).select();
+      document.execCommand('copy');
+      tempInput.remove();
+      
+      $(this).attr('title', 'Copied!').tooltip('_fixTitle').tooltip('show');
+      setTimeout(() => {
+        $(this).attr('title', 'Copy link to clipboard').tooltip('_fixTitle');
+      }, 1500);
+    });
+    
+    // Load students data
+    function loadStudents() {
+      $('#students-container').html('<div class="text-center p-5"><i class="fas fa-spinner fa-spin fa-2x"></i><p class="mt-2">Loading students...</p></div>');
+      $.get('?data=students', function(data) {
+        $('#students-container').html(data);
+      });
+    }
+    
+    // Load instructors data
+    function loadInstructors() {
+      $('#instructors-container').html('<div class="text-center p-5"><i class="fas fa-spinner fa-spin fa-2x"></i><p class="mt-2">Loading instructors...</p></div>');
+      $.get('?data=instructors', function(data) {
+        $('#instructors-container').html(data);
+      });
+    }
+    
+    // Load tab content when tab is activated
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      var target = $(e.target).attr("href");
+      if (target === '#students') {
+        loadStudents();
+      } else if (target === '#instructors') {
+        loadInstructors();
+      }
+    });
+    
+    // Refresh button handlers
+    $('#refreshStudentsBtn').click(function(e) {
+      e.preventDefault();
+      loadStudents();
+    });
+    
+    $('#refreshInstructorsBtn').click(function(e) {
+      e.preventDefault();
+      loadInstructors();
+    });
+  });
+</script>
+{% endblock %}

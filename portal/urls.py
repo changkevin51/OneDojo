@@ -17,6 +17,13 @@ urlpatterns = [
     path('register/student/', views.register_student, name='register_student'),
     path('register/teacher/', views.register_teacher, name='register_teacher'),
 
+    # Dojo Registration Links
+    path('register/dojo/<str:code>/', views.register_with_dojo_code, name='register_with_dojo_code'),
+    path('dojos/', views.dojo_list, name='dojo_list'),
+    path('dojos/<int:dojo_id>/', views.dojo_detail, name='dojo_detail'),
+    path('dojos/<int:dojo_id>/create-link/', views.create_registration_link, name='create_registration_link'),
+    path('registration-links/', views.manage_registration_links, name='manage_registration_links'),
+
     # Dashboards
     path('student_dashboard/', views.student_dashboard, name='student_dashboard'),
     path('teacher_dashboard/', views.teacher_dashboard, name='teacher_dashboard'),
@@ -214,12 +221,24 @@ urlpatterns = [
     path('users/', views.users_list, name='users_list'),
     path('users/<int:user_id>/', views.user_info, name='user_info'),
     path('users/create/', views.create_user, name='create_user'),  # New URL for creating users
+    path('users/create/<int:dojo_id>/', views.create_user, name='create_user'),  # New URL for creating users with dojo
+    path('users/<int:user_id>/delete/', views.delete_user, name='delete_user'),  # New URL for deleting users
 
     # Class Management
     path('class/create/', views.edit_class, name='create_class'),
     path('class/<int:unit_id>/edit/', views.edit_class, name='edit_class'),
     path('class/add-students/', views.add_students_to_class, name='add_students_to_class'),
     path('class/remove-student/', views.remove_student_from_class, name='remove_student_from_class'),
+
+    # Dojo Management URLs
+    path('dojos/', views.dojo_list, name='dojo_list'),
+    path('dojos/create/', views.create_dojo, name='create_dojo'),
+    path('dojos/<int:dojo_id>/', views.dojo_detail, name='dojo_detail'),
+    path('dojos/<int:dojo_id>/create-registration-link/', views.create_registration_link, name='create_registration_link'),
+    path('manage-registration-links/', views.manage_registration_links, name='manage_registration_links'),
+    path('register/<str:code>/', views.register_with_dojo_code, name='register_with_dojo_code'),
+
+    path('select-dojo/', views.select_dojo, name='select_dojo')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
