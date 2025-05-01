@@ -1,5 +1,9 @@
 import json
+import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
+
+# Set up logger for this module
+logger = logging.getLogger(__name__)
 
 class ChatConsumer(AsyncWebsocketConsumer): # functions for messages
     async def connect(self):
@@ -11,7 +15,7 @@ class ChatConsumer(AsyncWebsocketConsumer): # functions for messages
             self.channel_name
         )
         await self.accept()
-        print(f"WebSocket connected to room: {self.room_name}, channel: {self.channel_name}")
+        logger.info(f"WebSocket connected to room: {self.room_name}, channel: {self.channel_name}")
 
     async def no_op(self, event):
         """Do nothing with empty messages"""
@@ -22,12 +26,13 @@ class ChatConsumer(AsyncWebsocketConsumer): # functions for messages
             self.room_group_name,
             self.channel_name
         )
+        logger.info(f"WebSocket disconnected from room: {self.room_name}, channel: {self.channel_name}")
 
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
         sender = text_data_json['sender']
-        print(f"Sending message to WebSocket {self.channel_name}: {message}")
+        logger.debug(f"Sending message to WebSocket {self.channel_name}: {message}")
 
         await self.channel_layer.group_send(
             self.room_group_name,

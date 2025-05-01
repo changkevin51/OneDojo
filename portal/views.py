@@ -20,6 +20,9 @@ from django.http import JsonResponse
 import json
 from django.utils.timezone import localtime
 from django.core.cache import cache
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def register(request):
@@ -56,13 +59,13 @@ def user_login(request):
         username = request.POST.get('username')
         password = request.POST.get('password')
 
-        print(f"Attempting login with username: {username}")
+        logger.info(f"Attempting login with username: {username}")
 
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
             login(request, user)
-            print(f"User {username} logged in successfully.")
+            logger.info(f"User {username} logged in successfully.")
             
             if user.is_student:
                 return redirect('student_dashboard')
@@ -71,7 +74,7 @@ def user_login(request):
             else:
                 return redirect('dashboardv1')
         else:
-            print(f"Failed login attempt for username: {username}")
+            logger.warning(f"Failed login attempt for username: {username}")
             return render(request, "auth/login.html", {"error_message": "Invalid username or password"})
     
     return render(request, 'auth/login.html')
@@ -538,8 +541,8 @@ def post_assignment(request):
             return redirect('post_assignment')
 
     units = Unit.objects.filter(teacher=request.user)
-    print(f"Number of units: {units.count()}")  # Debug print
-    print(f"Units: {units}") #Debug print to show the units
+    logger.debug(f"Number of units: {units.count()}")
+    logger.debug(f"Units: {units}")
     return render(request, 'portal/post_assignment.html', {'units': units})
 
 
@@ -842,10 +845,10 @@ def register_v1(request):
     form = RegistrationForm(request.POST)
     if form.is_valid():
       form.save()
-      print('Account created successfully!')
+      logger.info('Account created successfully!')
       return redirect('/accounts/login/')
     else:
-      print("Registration failed!")
+      logger.warning("Registration failed!")
   else:
     form = RegistrationForm()
   
@@ -857,10 +860,10 @@ def register_v2(request):
     form = RegistrationForm(request.POST)
     if form.is_valid():
       form.save()
-      print('Account created successfully!')
+      logger.info('Account created successfully!')
       return redirect('/accounts/login/')
     else:
-      print("Registration failed!")
+      logger.warning("Registration failed!")
   else:
     form = RegistrationForm()
   
@@ -2869,21 +2872,17 @@ def register_with_dojo_code(request, code):
     try:
         reg_link = DojoRegistrationLink.objects.get(code=code)
         
-        # Check if the link is still valid
         if not reg_link.is_valid():
             messages.error(request, "This registration link has expired or is no longer active.")
             return redirect('login')
             
-        # Check if the link has reached maximum usage (if limit set)
         if reg_link.max_uses > 0 and reg_link.uses_count >= reg_link.max_uses:
             messages.error(request, "This registration link has reached its maximum usage limit.")
             return redirect('login')
         
-        # Store dojo info in session for the registration form
         request.session['registration_dojo_id'] = reg_link.dojo.id
         request.session['registration_code'] = code
         
-        # Redirect to student registration form
         messages.success(request, f"You're registering with {reg_link.dojo.name}. Please complete your information.")
         return redirect('register_student')
         

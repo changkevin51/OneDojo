@@ -39,7 +39,7 @@ class SQLiteChannelLayer(BaseChannelLayer): #inheritance
                 
 
                 if 'type' not in data:
-                    print(f"Warning: Message has no 'type' field: {data}")
+                    # print(f"Warning: Message has no 'type' field: {data}")
 
                     data['type'] = 'chat_message'
                     
@@ -48,13 +48,13 @@ class SQLiteChannelLayer(BaseChannelLayer): #inheritance
                 return data
                 
             except json.JSONDecodeError as e:
-                print(f"Error decoding message: {e}")
+                # print(f"Error decoding message: {e}")
 
                 msg.delete()
                 return None
                 
         except Channel.DoesNotExist:
-            print(f"Channel not found: {channel}")
+            # print(f"Channel not found: {channel}")
             return None
 
     @sync_to_async

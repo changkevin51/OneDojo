@@ -535,8 +535,6 @@ class CalendarEvent(models.Model):
                     )
                     created_count += 1
                 except Exception as e:
-
-                    print(f"Error creating birthday for {user}: {str(e)}")
                     continue
         
         return created_count
