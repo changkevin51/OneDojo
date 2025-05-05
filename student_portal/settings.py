@@ -20,12 +20,12 @@ ALLOWED_HOSTS = ['*']
 ASGI_APPLICATION = 'student_portal.asgi.application'
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "student_portal.chat.channel_layer.SQLiteChannelLayer",
+        "BACKEND": "student_portal.chat.channel_layer.SQLiteChannelLayer", #sqlite channel layer
     }
 }
 
 INSTALLED_APPS = [
-    'daphne' ,
+    'daphne' , 
     'channels',
     'admin_adminlte.apps.AdminAdminlteConfig',
     'django.contrib.admin',
@@ -48,8 +48,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'portal.middleware.APIErrorMiddleware'
-
+    'portal.middleware.APIErrorMiddleware',
+    'portal.middleware.DojoContextMiddleware'
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -144,3 +144,43 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'django.log',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'portal': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}

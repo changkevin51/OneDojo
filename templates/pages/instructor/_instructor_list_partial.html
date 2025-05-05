@@ -1,0 +1,50 @@
+{% load static %}
+
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Classes</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for instructor in instructors %}
+      <tr>
+        <td>
+          {% if instructor.profile_picture %}
+            <img src="{{ instructor.profile_picture.url }}" alt="{{ instructor.get_full_name }}" class="img-circle img-size-32 mr-2">
+          {% else %}
+            <img src="{% static 'images/default-avatar.png' %}" alt="Default avatar" class="img-circle img-size-32 mr-2">
+          {% endif %}
+          {{ instructor.get_full_name|default:instructor.username }}
+        </td>
+        <td>{{ instructor.email }}</td>
+        <td>
+          {% with instructor.unit_set.count as class_count %}
+            {{ class_count }} class{{ class_count|pluralize:"es" }}
+          {% endwith %}
+        </td>
+        <td>
+          <div class="btn-group btn-group-sm">
+            <a href="{% url 'user_info' instructor.id %}" class="btn btn-info">
+              <i class="fas fa-user"></i>
+            </a>
+            {% if user.is_staff %}
+            <a href="{% url 'user_info' instructor.id %}" class="btn btn-primary">
+              <i class="fas fa-edit"></i>
+            </a>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4" class="text-center">No instructors found for this dojo.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

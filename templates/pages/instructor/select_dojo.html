@@ -1,0 +1,59 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block title %} Select Dojo {% endblock title %}
+
+{% block content %}
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0">Select Dojo to Manage</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item active">Select Dojo</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Available Dojos</h3>
+          </div>
+
+          <div class="card-body">
+            {% if dojos %}
+              <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                  <label>Select a dojo to manage:</label>
+                  <select name="dojo_id" class="form-control">
+                    {% for dojo in dojos %}
+                      <option value="{{ dojo.id }}" {% if dojo.id == selected_dojo_id %}selected{% endif %}>
+                        {{ dojo.name }} ({{ dojo.city }}, {{ dojo.province }})
+                      </option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Select Dojo</button>
+              </form>
+            {% else %}
+              <div class="alert alert-warning">
+                No dojos available for your account. Please contact an administrator.
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

@@ -1,18 +1,91 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, User
 from django.db import models
 from django.utils import timezone
+from django.conf import settings
 import datetime
 import time
+import random
+import string
+import uuid
+
+# Dojo Model - Define this first so we can reference it in CustomUser
+class Dojo(models.Model):
+    """
+    Represents a physical dojo/school/location in the system
+    """
+    name = models.CharField(max_length=100)
+    address = models.TextField()
+    city = models.CharField(max_length=100, null=True, blank=True)
+    province = models.CharField(max_length=100, null=True, blank=True)
+    country = models.CharField(max_length=100, null=True, blank=True)
+    phone = models.CharField(max_length=20)
+    email = models.EmailField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        return self.name
+    
+    def get_student_count(self):
+        """Return count of students in this dojo"""
+        return CustomUser.objects.filter(dojo=self, is_student=True).count()
+    
+    def get_instructor_count(self):
+        """Return count of instructors in this dojo"""
+        return CustomUser.objects.filter(dojo=self, is_teacher=True).count()
+        
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Dojo'
+        verbose_name_plural = 'Dojos'
+
+
+class DojoRegistrationLink(models.Model):
+    dojo = models.ForeignKey(Dojo, on_delete=models.CASCADE, related_name='registration_links')
+    code = models.CharField(max_length=50, unique=True)
+    description = models.TextField(blank=True, null=True)
+    expiration_date = models.DateTimeField(blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='created_links')
+    max_uses = models.IntegerField(default=0, help_text="Maximum number of registrations (0 = unlimited)")
+    
+    def __str__(self):
+        return f"{self.dojo.name} - {self.code}"
+    
+    def is_valid(self):
+        if not self.is_active:
+            return False
+        if self.expiration_date and timezone.now() > self.expiration_date:
+            return False
+        return True
+    
+    @property
+    def uses_count(self):
+        """Return the number of users who registered with this link"""
+        return CustomUser.objects.filter(registration_link=self).count()
+    
+    @property
+    def expires_at(self):
+        """Alias for expiration_date to match admin field name"""
+        return self.expiration_date
+    
+    def save(self, *args, **kwargs):
+        if not self.code:
+            self.code = str(uuid.uuid4())[:8]
+        super().save(*args, **kwargs)
+
 
 class CustomUser(AbstractUser):
     profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
     
-
+    # Connect user to dojo
+    dojo = models.ForeignKey(Dojo, on_delete=models.SET_NULL, null=True, blank=True, related_name='users')
     is_student = models.BooleanField(default=False)  # To identify students
     is_teacher = models.BooleanField(default=False)  # To identify teachers
 
     gender = models.CharField(max_length=10, choices=[("female", "Female"), ("male", "Male"), ("other", "Other")], null=True, blank=True)
-    address = models.CharField(max_length=255, null=True, blank=True)
+    address = models.TextField(null=True, blank=True)
     province = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
     dob = models.DateField(null=True, blank=True)
@@ -52,6 +125,14 @@ class CustomUser(AbstractUser):
         verbose_name='user permissions',
     )
 
+    registration_link = models.ForeignKey(
+        DojoRegistrationLink,
+        on_delete=models.SET_NULL,
+        null=True, 
+        blank=True,
+        related_name='registered_users'
+    )
+
 
     def __str__(self):
         return self.username
@@ -77,7 +158,8 @@ class CustomUser(AbstractUser):
 # Unit Model
 class Unit(models.Model):
     name = models.CharField(max_length=200)
-    code = models.CharField(max_length=10, unique=True)
+    code = models.CharField(max_length=10)
+    dojo = models.ForeignKey(Dojo, on_delete=models.CASCADE, related_name='units')
     teacher = models.ForeignKey(
         CustomUser,
         on_delete=models.SET_NULL,  # Update to SET_NULL if you want to keep the unit
@@ -87,24 +169,27 @@ class Unit(models.Model):
     )
 
     def __str__(self):
-        return self.name
+        return f"{self.name} ({self.dojo.name})"
+        
+    class Meta:
+        unique_together = ['code', 'dojo']  # Code only has to be unique within a dojo
 
 # Session Model
 class Session(models.Model):
-    name = models.CharField(max_length=50, unique=True)
+    name = models.CharField(max_length=50)
+    dojo = models.ForeignKey(Dojo, on_delete=models.CASCADE, related_name='sessions')
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
-    
     academic_year = models.CharField(max_length=20, blank=True, null=True)
-    
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
-        return f"{self.name} ({self.start_date} - {self.end_date})"
+        return f"{self.name} ({self.dojo.name})"
 
     class Meta:
         verbose_name_plural = "Sessions"
         ordering = ['-start_date']
+        unique_together = ['name', 'dojo']  # Session names only need to be unique within a dojo
 
 # Registration Model
 class Registration(models.Model):
@@ -450,8 +535,6 @@ class CalendarEvent(models.Model):
                     )
                     created_count += 1
                 except Exception as e:
-
-                    print(f"Error creating birthday for {user}: {str(e)}")
                     continue
         
         return created_count

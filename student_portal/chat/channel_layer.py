@@ -5,11 +5,8 @@ from asgiref.sync import sync_to_async
 from channels.layers import BaseChannelLayer
 from .models import Channel, ChannelGroup, ChannelMessage
 
-class SQLiteChannelLayer(BaseChannelLayer):
-    """
-    A very naive SQLite‐backed channel layer.
-    """
-    # allow groups
+class SQLiteChannelLayer(BaseChannelLayer): #inheritance
+
     is_group = True
 
     def __init__(self, prefix="chan", **kwargs):
@@ -35,29 +32,29 @@ class SQLiteChannelLayer(BaseChannelLayer):
             msg = ChannelMessage.objects.filter(channel=chan).order_by("id").first()
             
             if not msg:
-                return {'type': 'no_op'}  # This will be caught by Channels and retried
+                return {'type': 'no_op'}  # can't return none bruh
             
             try:
                 data = json.loads(msg.message)
                 
-                # Make sure 'type' exists - this is critical!
+
                 if 'type' not in data:
-                    print(f"Warning: Message has no 'type' field: {data}")
-                    # Add a default type if missing
+                    # print(f"Warning: Message has no 'type' field: {data}")
+
                     data['type'] = 'chat_message'
                     
-                # Delete after successful processing
+
                 msg.delete()
                 return data
                 
             except json.JSONDecodeError as e:
-                print(f"Error decoding message: {e}")
-                # Delete corrupted message
+                # print(f"Error decoding message: {e}")
+
                 msg.delete()
                 return None
                 
         except Channel.DoesNotExist:
-            print(f"Channel not found: {channel}")
+            # print(f"Channel not found: {channel}")
             return None
 
     @sync_to_async

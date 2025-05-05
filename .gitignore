@@ -4,3 +4,5 @@ db.sqlite3
 .vscode/
 media/*
 media/submissions/*
+portal/__pycache__/*
+student_portal/chat/__pycache__/*

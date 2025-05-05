@@ -19,6 +19,7 @@
         <a href="{% url 'assignments' %}" class="nav-link">Assignments</a>
       </li>
       {% endif %}
+      
     
       {% if request.user.is_authenticated %}
         {% if request.user.is_superuser %}
@@ -42,6 +43,22 @@
         </li>
       {% endif %}
     </ul>
+
+    {% if request.user.is_authenticated %}
+      {% if request.user.is_superuser %}
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="{% url 'select_dojo' %}" class="nav-link">
+          <p>
+            {% if request.selected_dojo %}
+              Managing: {{ request.selected_dojo.name }}
+            {% else %}
+              Select Dojo
+            {% endif %}
+          </p>
+        </a>
+      </li>
+      {% endif %}
+    {% endif %}
 
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">

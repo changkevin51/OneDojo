@@ -1,0 +1,46 @@
+{% load static %}
+
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Belt</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for student in students %}
+      <tr>
+        <td>
+          {% if student.profile_picture %}
+            <img src="{{ student.profile_picture.url }}" alt="{{ student.get_full_name }}" class="img-circle img-size-32 mr-2">
+          {% else %}
+            <img src="{% static 'images/default-avatar.png' %}" alt="Default avatar" class="img-circle img-size-32 mr-2">
+          {% endif %}
+          {{ student.get_full_name|default:student.username }}
+        </td>
+        <td>{{ student.email }}</td>
+        <td>
+          <span class="badge" style="background-color: {{ student.get_belt_color }}">{{ student.get_belt_display }}</span>
+        </td>
+        <td>
+          <div class="btn-group btn-group-sm">
+            <a href="{% url 'admin_student_info' student.id %}" class="btn btn-info">
+              <i class="fas fa-eye"></i>
+            </a>
+            <a href="{% url 'user_info' student.id %}" class="btn btn-primary">
+              <i class="fas fa-edit"></i>
+            </a>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="4" class="text-center">No students found for this dojo.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
