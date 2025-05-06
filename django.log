@@ -225,3 +225,70 @@ WARNING 2025-04-30 22:00:11,705 log Not Found: /student_dashboard/dist/img/user8
 WARNING 2025-04-30 22:00:11,718 runserver [33mHTTP GET /student_dashboard/dist/img/user8-128x128.jpg 404 [0.52, 127.0.0.1:51917][0m
 INFO 2025-04-30 22:00:11,737 runserver [mHTTP GET /api/calendar/events/?start=2025-03-30T00%3A00%3A00-04%3A00&end=2025-05-11T00%3A00%3A00-04%3A00 200 [0.38, 127.0.0.1:51916][0m
 INFO 2025-05-05 20:26:20,256 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.04, 127.0.0.1:63036][0m
+INFO 2025-05-05 20:43:49,106 autoreload Watching for file changes with StatReloader
+INFO 2025-05-05 20:43:50,184 runserver [mHTTP GET / 200 [0.10, 127.0.0.1:64743][0m
+INFO 2025-05-05 20:43:53,779 views Attempting login with username: student
+WARNING 2025-05-05 20:43:54,474 views Failed login attempt for username: student
+INFO 2025-05-05 20:43:54,480 runserver [mHTTP POST / 200 [0.72, 127.0.0.1:64743][0m
+INFO 2025-05-05 20:43:56,921 views Attempting login with username: ray
+INFO 2025-05-05 20:43:57,636 views User ray logged in successfully.
+INFO 2025-05-05 20:43:57,682 runserver [32mHTTP POST / 302 [0.78, 127.0.0.1:64743][0m
+INFO 2025-05-05 20:43:57,866 runserver [mHTTP GET /student_dashboard/ 200 [0.16, 127.0.0.1:64743][0m
+INFO 2025-05-05 20:43:58,084 runserver [36mHTTP GET /static/dist/css/adminlte.min.css 304 [0.02, 127.0.0.1:64743][0m
+INFO 2025-05-05 20:43:58,090 runserver [36mHTTP GET /static/admin/js/vendor/jquery/jquery.min.js 304 [0.03, 127.0.0.1:64746][0m
+INFO 2025-05-05 20:43:58,095 runserver [36mHTTP GET /static/plugins/icheck-bootstrap/icheck-bootstrap.min.css 304 [0.02, 127.0.0.1:64761][0m
+INFO 2025-05-05 20:43:58,096 runserver [36mHTTP GET /static/plugins/summernote/summernote-bs4.min.css 304 [0.03, 127.0.0.1:64760][0m
+INFO 2025-05-05 20:43:58,099 runserver [36mHTTP GET /static/plugins/overlayScrollbars/css/OverlayScrollbars.min.css 304 [0.03, 127.0.0.1:64759][0m
+INFO 2025-05-05 20:43:58,102 runserver [36mHTTP GET /static/admin/css/forms.css 304 [0.02, 127.0.0.1:64762][0m
+INFO 2025-05-05 20:43:58,139 runserver [36mHTTP GET /static/plugins/fontawesome-free/css/all.min.css 304 [0.04, 127.0.0.1:64743][0m
+INFO 2025-05-05 20:43:58,141 runserver [36mHTTP GET /static/plugins/jqvmap/jqvmap.min.css 304 [0.03, 127.0.0.1:64759][0m
+INFO 2025-05-05 20:43:58,143 runserver [36mHTTP GET /static/plugins/daterangepicker/daterangepicker.css 304 [0.02, 127.0.0.1:64762][0m
+INFO 2025-05-05 20:43:58,144 runserver [36mHTTP GET /static/admin/css/widgets.css 304 [0.04, 127.0.0.1:64746][0m
+INFO 2025-05-05 20:43:58,145 runserver [36mHTTP GET /static/plugins/toastr/toastr.min.css 304 [0.03, 127.0.0.1:64761][0m
+INFO 2025-05-05 20:43:58,147 runserver [36mHTTP GET /static/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css 304 [0.03, 127.0.0.1:64760][0m
+INFO 2025-05-05 20:43:58,161 runserver [36mHTTP GET /static/plugins/bootstrap/js/bootstrap.bundle.min.js 304 [0.01, 127.0.0.1:64743][0m
+INFO 2025-05-05 20:43:58,174 runserver [36mHTTP GET /static/images/logo.png 304 [0.01, 127.0.0.1:64762][0m
+INFO 2025-05-05 20:43:58,177 runserver [36mHTTP GET /static/dist/img/user1-128x128.jpg 304 [0.01, 127.0.0.1:64759][0m
+INFO 2025-05-05 20:43:58,200 runserver [36mHTTP GET /static/dist/img/user3-128x128.jpg 304 [0.01, 127.0.0.1:64759][0m
+INFO 2025-05-05 20:43:58,202 runserver [36mHTTP GET /static/dist/img/user8-128x128.jpg 304 [0.01, 127.0.0.1:64762][0m
+INFO 2025-05-05 20:43:58,273 runserver [36mHTTP GET /static/plugins/jquery/jquery.min.js 304 [0.01, 127.0.0.1:64762][0m
+INFO 2025-05-05 20:43:58,294 runserver [36mHTTP GET /static/dist/js/adminlte.min.js 304 [0.02, 127.0.0.1:64759][0m
+INFO 2025-05-05 20:43:58,296 runserver [36mHTTP GET /static/dist/js/demo.js 304 [0.01, 127.0.0.1:64762][0m
+INFO 2025-05-05 20:43:58,313 runserver [36mHTTP GET /static/plugins/sparklines/sparkline.js 304 [0.02, 127.0.0.1:64743][0m
+INFO 2025-05-05 20:43:58,314 runserver [36mHTTP GET /static/plugins/chart.js/Chart.min.js 304 [0.02, 127.0.0.1:64761][0m
+INFO 2025-05-05 20:43:58,317 runserver [36mHTTP GET /static/plugins/jquery-ui/jquery-ui.min.js 304 [0.02, 127.0.0.1:64760][0m
+INFO 2025-05-05 20:43:58,334 runserver [36mHTTP GET /static/plugins/jqvmap/jquery.vmap.min.js 304 [0.02, 127.0.0.1:64762][0m
+INFO 2025-05-05 20:43:58,344 runserver [36mHTTP GET /static/plugins/jquery-knob/jquery.knob.min.js 304 [0.02, 127.0.0.1:64759][0m
+INFO 2025-05-05 20:43:58,347 runserver [36mHTTP GET /static/plugins/jqvmap/maps/jquery.vmap.usa.js 304 [0.02, 127.0.0.1:64746][0m
+INFO 2025-05-05 20:43:58,356 runserver [36mHTTP GET /static/plugins/daterangepicker/daterangepicker.js 304 [0.03, 127.0.0.1:64743][0m
+INFO 2025-05-05 20:43:58,358 runserver [36mHTTP GET /static/plugins/moment/moment.min.js 304 [0.03, 127.0.0.1:64760][0m
+INFO 2025-05-05 20:43:58,360 runserver [36mHTTP GET /static/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js 304 [0.02, 127.0.0.1:64761][0m
+INFO 2025-05-05 20:43:58,372 runserver [36mHTTP GET /static/plugins/summernote/summernote-bs4.min.js 304 [0.02, 127.0.0.1:64762][0m
+INFO 2025-05-05 20:43:58,383 runserver [36mHTTP GET /static/dist/js/pages/dashboard.js 304 [0.02, 127.0.0.1:64759][0m
+INFO 2025-05-05 20:43:58,386 runserver [36mHTTP GET /static/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js 304 [0.02, 127.0.0.1:64746][0m
+INFO 2025-05-05 20:43:58,402 runserver [36mHTTP GET /static/admin/js/core.js 304 [0.02, 127.0.0.1:64761][0m
+INFO 2025-05-05 20:43:58,403 runserver [36mHTTP GET /static/admin/js/jquery.init.js 304 [0.03, 127.0.0.1:64760][0m
+INFO 2025-05-05 20:43:58,410 runserver [36mHTTP GET /static/admin/js/admin/RelatedObjectLookups.js 304 [0.03, 127.0.0.1:64762][0m
+INFO 2025-05-05 20:43:58,414 runserver [36mHTTP GET /static/images/pfp_student.jpg 304 [0.02, 127.0.0.1:64743][0m
+INFO 2025-05-05 20:43:58,420 runserver [36mHTTP GET /static/admin/js/actions.js 304 [0.02, 127.0.0.1:64759][0m
+INFO 2025-05-05 20:43:58,423 runserver [36mHTTP GET /static/admin/js/urlify.js 304 [0.02, 127.0.0.1:64746][0m
+INFO 2025-05-05 20:43:58,446 runserver [36mHTTP GET /static/plugins/fontawesome-free/webfonts/fa-solid-900.woff2 304 [0.01, 127.0.0.1:64746][0m
+INFO 2025-05-05 20:43:58,476 runserver [36mHTTP GET /static/plugins/toastr/toastr.min.js 304 [0.02, 127.0.0.1:64761][0m
+INFO 2025-05-05 20:43:58,478 runserver [36mHTTP GET /static/admin/js/prepopulate.js 304 [0.03, 127.0.0.1:64759][0m
+INFO 2025-05-05 20:43:58,481 runserver [36mHTTP GET /static/admin/js/vendor/xregexp/xregexp.min.js 304 [0.04, 127.0.0.1:64743][0m
+INFO 2025-05-05 20:43:58,484 runserver [36mHTTP GET /static/plugins/fontawesome-free/webfonts/fa-regular-400.woff2 304 [0.02, 127.0.0.1:64746][0m
+INFO 2025-05-05 20:43:58,692 runserver WebSocket HANDSHAKING /ws/chat/general/ [127.0.0.1:64769]
+WARNING 2025-05-05 20:43:58,713 log Not Found: /student_dashboard/dist/img/user7-128x128.jpg
+WARNING 2025-05-05 20:43:58,743 runserver [33mHTTP GET /student_dashboard/dist/img/user7-128x128.jpg 404 [0.29, 127.0.0.1:64760][0m
+WARNING 2025-05-05 20:43:58,746 log Not Found: /student_dashboard/dist/img/user1-128x128.jpg
+WARNING 2025-05-05 20:43:58,786 runserver [33mHTTP GET /student_dashboard/dist/img/user1-128x128.jpg 404 [0.34, 127.0.0.1:64762][0m
+WARNING 2025-05-05 20:43:58,921 log Not Found: /student_dashboard/dist/img/user8-128x128.jpg
+WARNING 2025-05-05 20:43:58,930 log Not Found: /student_dashboard/dist/img/user5-128x128.jpg
+WARNING 2025-05-05 20:43:58,931 log Not Found: /student_dashboard/dist/img/user6-128x128.jpg
+WARNING 2025-05-05 20:43:58,932 runserver [33mHTTP GET /student_dashboard/dist/img/user8-128x128.jpg 404 [0.39, 127.0.0.1:64759][0m
+WARNING 2025-05-05 20:43:58,933 log Not Found: /student_dashboard/dist/img/user3-128x128.jpg
+WARNING 2025-05-05 20:43:58,943 runserver [33mHTTP GET /student_dashboard/dist/img/user5-128x128.jpg 404 [0.40, 127.0.0.1:64761][0m
+WARNING 2025-05-05 20:43:58,947 runserver [33mHTTP GET /student_dashboard/dist/img/user6-128x128.jpg 404 [0.42, 127.0.0.1:64743][0m
+WARNING 2025-05-05 20:43:58,950 runserver [33mHTTP GET /student_dashboard/dist/img/user3-128x128.jpg 404 [0.44, 127.0.0.1:64746][0m
+INFO 2025-05-05 20:43:58,999 runserver WebSocket CONNECT /ws/chat/general/ [127.0.0.1:64769]
+INFO 2025-05-05 20:43:59,029 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.25, 127.0.0.1:64760][0m
