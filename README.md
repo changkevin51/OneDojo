@@ -89,8 +89,12 @@ Follow these steps to set up the project locally:
 **(Note: The database (SQLite) is not included in the repository. You need to run the migration commands and create users.)**
 
 
-# Credits
+# Credits and Acknowledgements
 
-I used AdminLTE's Template for this app.
+* [AdminLTE's](https://adminlte.io/) Template was used for the development of the app.
+
+* AI assistance was used to help debug.
+
+
 
 
