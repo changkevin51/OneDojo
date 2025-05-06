@@ -2393,7 +2393,8 @@ def add_students_to_class(request):
                 start_date=timezone.now().date(),
                 end_date=timezone.now().date() + timezone.timedelta(days=180),
                 academic_year=f"{current_year}-{current_year+1}",
-                is_active=True
+                is_active=True,
+                dojo=unit.dojo
             )
         count = 0
         for student_id in student_ids:
