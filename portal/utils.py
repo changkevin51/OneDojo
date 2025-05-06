@@ -1,3 +1,6 @@
+# The majority of the code from this file is taken from django-admin-tools from the AdminLTE template.
+
+
 import datetime
 import json
 from django.template import Context

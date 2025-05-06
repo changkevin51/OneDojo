@@ -10,12 +10,44 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
-    <!-- Use Django's static tag for CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <style>
+      .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+        border-radius: 4px;
+        padding: 10px 15px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        z-index: 9999;
+        max-width: 300px;
+        display: none;
+        animation: fadeIn 0.5s, fadeOut 0.5s 3.5s;
+      }
+      
+      @keyframes fadeIn {
+        from {opacity: 0;}
+        to {opacity: 1;}
+      }
+      
+      @keyframes fadeOut {
+        from {opacity: 1;}
+        to {opacity: 0;}
+      }
+    </style>
 
   </head>
 
   <body class="img js-fullheight" style="background-image: url('{% static "images/bg.jpg" %}');">
+    <!-- Notification popup -->
+    <div id="registrationNotification" class="notification">
+      You must have a valid registration link provided by your instructor or admin to register.
+    </div>
+    
     <section class="ftco-section">
       <div class="container">
         <div class="row justify-content-center">
@@ -59,9 +91,9 @@
               <p class="mt-5 mb-2 text-center">
                 <a href="{% url 'password_reset' %}">Reset Pass</a>
                 &bull;
-                <a href="{% url 'register_student' %}" class="text-center">Sign UP</a>
+                <a href="javascript:void(0);" onclick="showRegistrationNotification()" class="text-center">Sign UP</a>
               </p>
-              <p class="w-100 text-center">Don't have an account? <a href="{% url 'register_student' %}">Register as a Student</a></p>
+              <p class="w-100 text-center">Don't have an account? <a href="javascript:void(0);" onclick="showRegistrationNotification()">Register as a Student</a></p>
               <br>
               <div class="form-group d-flex justify-content-center">
                 <a href="/admin" class="btn btn-dark">Admin Login</a>
@@ -72,10 +104,20 @@
       </div>
     </section>
       
-    <!-- Use Django's static tag for JavaScript -->
     <script src="{% static 'js/jquery.min.js' %}"></script>
     <script src="{% static 'js/popper.js' %}"></script>
     <script src="{% static 'js/bootstrap.min.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
+    
+    <script>
+      function showRegistrationNotification() {
+        const notification = document.getElementById('registrationNotification');
+        notification.style.display = 'block';
+        
+        setTimeout(function() {
+          notification.style.display = 'none';
+        }, 4000);
+      }
+    </script>
   </body>
 </html>

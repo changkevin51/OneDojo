@@ -53,7 +53,7 @@ class StudentRegistrationForm(forms.ModelForm):
         model = CustomUser
         fields = [
             'first_name', 'last_name', 'username', 'email', 'profile_picture', 'gender', 'address', 'province',
-            'city', 'dob'
+            'city', 'dob', 'password', 'confirm_password'
         ]
         exclude = ['profile_picture'] 
         
@@ -61,6 +61,8 @@ class StudentRegistrationForm(forms.ModelForm):
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
 
+            'password': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Password'}),
+            'confirm_password': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirm Password'}),
         }
 
     def clean(self):

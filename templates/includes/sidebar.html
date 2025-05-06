@@ -22,13 +22,21 @@
     <!-- Sidebar user panel (optional) -->
     <div class="user-panel mt-3 pb-3 mb-3 d-flex">
       <div class="image">
-        <img src="{% static 'dist/img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image">
+        {% if request.user.is_authenticated %}
+          {% if request.user.is_staff %}
+            <img src="{% static 'images/pfp_instructor.jpg' %}" alt="User Image" class="img-circle" width="40" height="40">
+          {% else %}
+            <img src="{% static 'images/pfp_student.jpg' %}" alt="User Image" class="img-circle" width="40" height="40">
+          {% endif %}
+        {% else %}
+          <img src="{% static 'dist/img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image">
+        {% endif %}
       </div>
       <div class="info">
         {% if request.user.is_authenticated %}
           <a href="#" class="d-block">{{request.user.username}}</a>
         {% else %}
-          <a href="#" class="d-block">Alexander Pierce</a>
+          <a href="#" class="d-block">Guest User</a>
         {% endif %}        
       </div>
     </div>

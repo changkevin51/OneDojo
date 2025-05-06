@@ -21,19 +21,16 @@ from .models import Dojo
 
 class DojoContextMiddleware(MiddlewareMixin):
     """Middleware to add selected dojo information to request"""
-    
+
     def process_request(self, request):
         if request.user.is_authenticated:
-            # Get selected dojo from session
             selected_dojo_id = request.session.get('selected_dojo_id')
             
-            # If no selected dojo but user has an assigned dojo, use that
             if not selected_dojo_id and hasattr(request.user, 'dojo') and request.user.dojo:
                 selected_dojo_id = request.user.dojo.id
                 request.session['selected_dojo_id'] = selected_dojo_id
                 request.session['selected_dojo_name'] = request.user.dojo.name
             
-            # Add dojo info to request for easy access in views
             if selected_dojo_id:
                 try:
                     from .models import Dojo
