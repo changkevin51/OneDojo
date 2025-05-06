@@ -91,7 +91,7 @@ Follow these steps to set up the project locally:
 
 # Credits and Acknowledgements
 
-* [AdminLTE's](https://adminlte.io/) Template was used for the development of the app.
+* [AdminLTE's](https://adminlte.io/) was used for the development of the app. The default template has been heavily modified to suit the requirements of the app.
 
 * AI assistance was used to help debug.
 
