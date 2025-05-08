@@ -733,3 +733,303 @@ INFO 2025-05-05 21:01:32,332 runserver [36mHTTP GET /static/admin/js/urlify.js 
 INFO 2025-05-05 21:01:32,333 runserver [36mHTTP GET /static/admin/js/vendor/xregexp/xregexp.min.js 304 [0.03, 127.0.0.1:49984][0m
 INFO 2025-05-05 21:01:32,336 runserver [36mHTTP GET /static/plugins/toastr/toastr.min.js 304 [0.03, 127.0.0.1:49959][0m
 INFO 2025-05-05 21:01:32,344 runserver [36mHTTP GET /static/plugins/summernote/summernote-bs4.min.js 304 [0.02, 127.0.0.1:49982][0m
+INFO 2025-05-08 11:29:45,066 autoreload Watching for file changes with StatReloader
+INFO 2025-05-08 11:29:47,922 runserver [mHTTP GET / 200 [0.18, 127.0.0.1:52331][0m
+INFO 2025-05-08 11:29:48,246 runserver [mHTTP GET /static/js/main.js 200 [0.19, 127.0.0.1:52336][0m
+INFO 2025-05-08 11:29:48,247 runserver [mHTTP GET /static/css/style.css 200 [0.20, 127.0.0.1:52331][0m
+INFO 2025-05-08 11:29:48,249 runserver [mHTTP GET /static/js/popper.js 200 [0.20, 127.0.0.1:52334][0m
+INFO 2025-05-08 11:29:48,265 runserver [mHTTP GET /static/js/bootstrap.min.js 200 [0.21, 127.0.0.1:52335][0m
+INFO 2025-05-08 11:29:48,324 runserver [mHTTP GET /static/js/jquery.min.js 200 [0.28, 127.0.0.1:52333][0m
+INFO 2025-05-08 11:29:48,476 runserver [mHTTP GET /static/images/bg.jpg 200 [0.02, 127.0.0.1:52343][0m
+INFO 2025-05-08 11:29:54,909 views Attempting login with username: ray
+INFO 2025-05-08 11:29:55,580 views User ray logged in successfully.
+INFO 2025-05-08 11:29:55,591 runserver [32mHTTP POST / 302 [0.70, 127.0.0.1:52343][0m
+INFO 2025-05-08 11:29:55,963 runserver [mHTTP GET /student_dashboard/ 200 [0.36, 127.0.0.1:52343][0m
+INFO 2025-05-08 11:29:56,101 runserver [36mHTTP GET /static/admin/js/vendor/jquery/jquery.min.js 304 [0.02, 127.0.0.1:52343][0m
+INFO 2025-05-08 11:29:56,118 runserver [36mHTTP GET /static/dist/css/adminlte.min.css 304 [0.03, 127.0.0.1:52357][0m
+INFO 2025-05-08 11:29:56,122 runserver [36mHTTP GET /static/plugins/summernote/summernote-bs4.min.css 304 [0.02, 127.0.0.1:52359][0m
+INFO 2025-05-08 11:29:56,129 runserver [36mHTTP GET /static/plugins/overlayScrollbars/css/OverlayScrollbars.min.css 304 [0.03, 127.0.0.1:52360][0m
+INFO 2025-05-08 11:29:56,131 runserver [36mHTTP GET /static/plugins/daterangepicker/daterangepicker.css 304 [0.02, 127.0.0.1:52361][0m
+INFO 2025-05-08 11:29:56,138 runserver [36mHTTP GET /static/plugins/fontawesome-free/css/all.min.css 304 [0.02, 127.0.0.1:52343][0m
+INFO 2025-05-08 11:29:56,158 runserver [36mHTTP GET /static/admin/css/widgets.css 304 [0.02, 127.0.0.1:52357][0m
+INFO 2025-05-08 11:29:56,161 runserver [36mHTTP GET /static/plugins/toastr/toastr.min.css 304 [0.03, 127.0.0.1:52360][0m
+INFO 2025-05-08 11:29:56,169 runserver [36mHTTP GET /static/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css 304 [0.03, 127.0.0.1:52361][0m
+INFO 2025-05-08 11:29:56,171 runserver [36mHTTP GET /static/admin/css/forms.css 304 [0.03, 127.0.0.1:52359][0m
+INFO 2025-05-08 11:29:56,173 runserver [mHTTP GET /static/plugins/fullcalendar/main.css 200 [0.08, 127.0.0.1:52358][0m
+INFO 2025-05-08 11:29:56,191 runserver [36mHTTP GET /static/plugins/jqvmap/jqvmap.min.css 304 [0.03, 127.0.0.1:52343][0m
+INFO 2025-05-08 11:29:56,196 runserver [36mHTTP GET /static/plugins/icheck-bootstrap/icheck-bootstrap.min.css 304 [0.01, 127.0.0.1:52361][0m
+INFO 2025-05-08 11:29:56,202 runserver [36mHTTP GET /static/plugins/bootstrap/js/bootstrap.bundle.min.js 304 [0.02, 127.0.0.1:52360][0m
+INFO 2025-05-08 11:29:56,205 runserver [36mHTTP GET /static/images/logo.png 304 [0.02, 127.0.0.1:52359][0m
+INFO 2025-05-08 11:29:56,207 runserver [36mHTTP GET /static/dist/img/user1-128x128.jpg 304 [0.02, 127.0.0.1:52357][0m
+INFO 2025-05-08 11:29:56,274 runserver [36mHTTP GET /static/dist/img/user8-128x128.jpg 304 [0.01, 127.0.0.1:52357][0m
+INFO 2025-05-08 11:29:56,281 runserver [36mHTTP GET /static/dist/img/user3-128x128.jpg 304 [0.01, 127.0.0.1:52359][0m
+INFO 2025-05-08 11:29:56,316 runserver [36mHTTP GET /static/plugins/jquery-ui/jquery-ui.min.js 304 [0.05, 127.0.0.1:52358][0m
+INFO 2025-05-08 11:29:56,324 runserver [36mHTTP GET /static/dist/js/demo.js 304 [0.05, 127.0.0.1:52343][0m
+INFO 2025-05-08 11:29:56,326 runserver [36mHTTP GET /static/plugins/jquery/jquery.min.js 304 [0.06, 127.0.0.1:52360][0m
+INFO 2025-05-08 11:29:56,328 runserver [36mHTTP GET /static/dist/js/adminlte.min.js 304 [0.06, 127.0.0.1:52361][0m
+INFO 2025-05-08 11:29:56,347 runserver [36mHTTP GET /static/plugins/chart.js/Chart.min.js 304 [0.06, 127.0.0.1:52357][0m
+INFO 2025-05-08 11:29:56,355 runserver [36mHTTP GET /static/plugins/sparklines/sparkline.js 304 [0.03, 127.0.0.1:52359][0m
+INFO 2025-05-08 11:29:56,371 runserver [36mHTTP GET /static/plugins/fontawesome-free/webfonts/fa-solid-900.woff2 304 [0.03, 127.0.0.1:52358][0m
+INFO 2025-05-08 11:29:56,390 runserver [36mHTTP GET /static/images/pfp_student.jpg 304 [0.05, 127.0.0.1:52360][0m
+INFO 2025-05-08 11:29:56,391 runserver [36mHTTP GET /static/plugins/fontawesome-free/webfonts/fa-regular-400.woff2 304 [0.05, 127.0.0.1:52343][0m
+INFO 2025-05-08 11:29:56,402 runserver [36mHTTP GET /static/plugins/jqvmap/jquery.vmap.min.js 304 [0.06, 127.0.0.1:52361][0m
+INFO 2025-05-08 11:29:56,407 runserver [36mHTTP GET /static/plugins/jqvmap/maps/jquery.vmap.usa.js 304 [0.04, 127.0.0.1:52357][0m
+INFO 2025-05-08 11:29:56,417 runserver [36mHTTP GET /static/plugins/jquery-knob/jquery.knob.min.js 304 [0.02, 127.0.0.1:52359][0m
+INFO 2025-05-08 11:29:56,451 runserver [36mHTTP GET /static/plugins/moment/moment.min.js 304 [0.04, 127.0.0.1:52343][0m
+INFO 2025-05-08 11:29:56,456 runserver [36mHTTP GET /static/plugins/daterangepicker/daterangepicker.js 304 [0.03, 127.0.0.1:52357][0m
+INFO 2025-05-08 11:29:56,457 runserver [36mHTTP GET /static/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js 304 [0.03, 127.0.0.1:52361][0m
+INFO 2025-05-08 11:29:56,458 runserver [36mHTTP GET /static/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js 304 [0.02, 127.0.0.1:52358][0m
+INFO 2025-05-08 11:29:56,460 runserver [36mHTTP GET /static/plugins/summernote/summernote-bs4.min.js 304 [0.02, 127.0.0.1:52360][0m
+INFO 2025-05-08 11:29:56,464 runserver [36mHTTP GET /static/dist/js/pages/dashboard.js 304 [0.02, 127.0.0.1:52359][0m
+INFO 2025-05-08 11:29:56,492 runserver [36mHTTP GET /static/admin/js/jquery.init.js 304 [0.02, 127.0.0.1:52359][0m
+INFO 2025-05-08 11:29:56,537 runserver [36mHTTP GET /static/admin/js/core.js 304 [0.06, 127.0.0.1:52360][0m
+INFO 2025-05-08 11:29:56,538 runserver [36mHTTP GET /static/admin/js/urlify.js 304 [0.05, 127.0.0.1:52358][0m
+INFO 2025-05-08 11:29:56,540 runserver [36mHTTP GET /static/admin/js/actions.js 304 [0.05, 127.0.0.1:52361][0m
+INFO 2025-05-08 11:29:56,541 runserver [36mHTTP GET /static/admin/js/admin/RelatedObjectLookups.js 304 [0.05, 127.0.0.1:52357][0m
+INFO 2025-05-08 11:29:56,548 runserver [36mHTTP GET /static/admin/js/prepopulate.js 304 [0.01, 127.0.0.1:52359][0m
+INFO 2025-05-08 11:29:56,591 runserver [36mHTTP GET /static/admin/js/vendor/xregexp/xregexp.min.js 304 [0.04, 127.0.0.1:52359][0m
+INFO 2025-05-08 11:29:56,602 runserver [36mHTTP GET /static/plugins/toastr/toastr.min.js 304 [0.04, 127.0.0.1:52357][0m
+INFO 2025-05-08 11:29:56,631 runserver [mHTTP GET /static/plugins/fullcalendar/main.js 200 [0.17, 127.0.0.1:52343][0m
+INFO 2025-05-08 11:29:56,681 runserver WebSocket HANDSHAKING /ws/chat/general/ [127.0.0.1:52370]
+INFO 2025-05-08 11:29:56,805 runserver WebSocket CONNECT /ws/chat/general/ [127.0.0.1:52370]
+WARNING 2025-05-08 11:29:56,952 log Not Found: /student_dashboard/dist/img/user7-128x128.jpg
+WARNING 2025-05-08 11:29:56,959 log Not Found: /student_dashboard/dist/img/user6-128x128.jpg
+WARNING 2025-05-08 11:29:56,961 runserver [33mHTTP GET /student_dashboard/dist/img/user7-128x128.jpg 404 [0.40, 127.0.0.1:52361][0m
+WARNING 2025-05-08 11:29:56,994 log Not Found: /student_dashboard/dist/img/user5-128x128.jpg
+WARNING 2025-05-08 11:29:57,012 runserver [33mHTTP GET /student_dashboard/dist/img/user6-128x128.jpg 404 [0.40, 127.0.0.1:52357][0m
+WARNING 2025-05-08 11:29:57,150 runserver [33mHTTP GET /student_dashboard/dist/img/user5-128x128.jpg 404 [0.54, 127.0.0.1:52359][0m
+WARNING 2025-05-08 11:29:57,268 log Not Found: /student_dashboard/dist/img/user3-128x128.jpg
+WARNING 2025-05-08 11:29:57,273 log Not Found: /student_dashboard/dist/img/user1-128x128.jpg
+WARNING 2025-05-08 11:29:57,283 runserver [33mHTTP GET /student_dashboard/dist/img/user3-128x128.jpg 404 [0.70, 127.0.0.1:52358][0m
+WARNING 2025-05-08 11:29:57,308 runserver [33mHTTP GET /student_dashboard/dist/img/user1-128x128.jpg 404 [0.75, 127.0.0.1:52360][0m
+WARNING 2025-05-08 11:29:57,311 log Not Found: /student_dashboard/dist/img/user8-128x128.jpg
+WARNING 2025-05-08 11:29:57,340 runserver [33mHTTP GET /student_dashboard/dist/img/user8-128x128.jpg 404 [0.65, 127.0.0.1:52343][0m
+INFO 2025-05-08 11:29:57,433 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.28, 127.0.0.1:52361][0m
+INFO 2025-05-08 11:30:51,810 runserver WebSocket HANDSHAKING /ws/chat/general/ [127.0.0.1:52448]
+INFO 2025-05-08 11:30:51,862 runserver WebSocket CONNECT /ws/chat/general/ [127.0.0.1:52448]
+INFO 2025-05-08 11:30:57,050 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.04, 127.0.0.1:52456][0m
+INFO 2025-05-08 11:31:04,618 runserver WebSocket DISCONNECT /ws/chat/general/ [127.0.0.1:52448]
+INFO 2025-05-08 11:31:09,778 runserver [mHTTP GET /student_dashboard/ 200 [0.04, 127.0.0.1:52471][0m
+INFO 2025-05-08 11:31:09,916 runserver [mHTTP GET /static/plugins/overlayScrollbars/css/OverlayScrollbars.min.css 200 [0.03, 127.0.0.1:52476][0m
+INFO 2025-05-08 11:31:09,922 runserver [mHTTP GET /static/admin/css/forms.css 200 [0.03, 127.0.0.1:52478][0m
+INFO 2025-05-08 11:31:09,925 runserver [mHTTP GET /static/admin/css/widgets.css 200 [0.03, 127.0.0.1:52479][0m
+INFO 2025-05-08 11:31:09,931 runserver [mHTTP GET /static/dist/css/adminlte.min.css 200 [0.05, 127.0.0.1:52475][0m
+INFO 2025-05-08 11:31:09,932 runserver [mHTTP GET /static/plugins/fontawesome-free/css/all.min.css 200 [0.04, 127.0.0.1:52477][0m
+INFO 2025-05-08 11:31:09,952 runserver [mHTTP GET /static/plugins/toastr/toastr.min.css 200 [0.03, 127.0.0.1:52476][0m
+INFO 2025-05-08 11:31:09,957 runserver [mHTTP GET /static/plugins/summernote/summernote-bs4.min.css 200 [0.03, 127.0.0.1:52478][0m
+INFO 2025-05-08 11:31:09,972 runserver [mHTTP GET /static/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css 200 [0.04, 127.0.0.1:52479][0m
+INFO 2025-05-08 11:31:09,978 runserver [mHTTP GET /static/plugins/icheck-bootstrap/icheck-bootstrap.min.css 200 [0.04, 127.0.0.1:52477][0m
+INFO 2025-05-08 11:31:09,985 runserver [mHTTP GET /static/plugins/fullcalendar/main.css 200 [0.02, 127.0.0.1:52478][0m
+INFO 2025-05-08 11:31:09,992 runserver [mHTTP GET /static/plugins/jqvmap/jqvmap.min.css 200 [0.03, 127.0.0.1:52476][0m
+INFO 2025-05-08 11:31:09,994 runserver [mHTTP GET /static/plugins/daterangepicker/daterangepicker.css 200 [0.03, 127.0.0.1:52475][0m
+INFO 2025-05-08 11:31:10,006 runserver [mHTTP GET /static/admin/js/vendor/jquery/jquery.min.js 200 [0.13, 127.0.0.1:52471][0m
+INFO 2025-05-08 11:31:10,020 runserver [mHTTP GET /static/images/logo.png 200 [0.02, 127.0.0.1:52477][0m
+INFO 2025-05-08 11:31:10,021 runserver [mHTTP GET /static/dist/img/user1-128x128.jpg 200 [0.02, 127.0.0.1:52478][0m
+INFO 2025-05-08 11:31:10,058 runserver [mHTTP GET /static/dist/img/user3-128x128.jpg 200 [0.02, 127.0.0.1:52478][0m
+INFO 2025-05-08 11:31:10,061 runserver [mHTTP GET /static/dist/img/user8-128x128.jpg 200 [0.02, 127.0.0.1:52477][0m
+INFO 2025-05-08 11:31:10,066 runserver [mHTTP GET /static/plugins/bootstrap/js/bootstrap.bundle.min.js 200 [0.09, 127.0.0.1:52479][0m
+INFO 2025-05-08 11:31:10,122 runserver [mHTTP GET /static/dist/js/adminlte.min.js 200 [0.05, 127.0.0.1:52478][0m
+INFO 2025-05-08 11:31:10,176 runserver [mHTTP GET /static/plugins/jquery/jquery.min.js 200 [0.11, 127.0.0.1:52477][0m
+INFO 2025-05-08 11:31:10,203 runserver [mHTTP GET /static/dist/js/demo.js 200 [0.08, 127.0.0.1:52479][0m
+INFO 2025-05-08 11:31:10,207 runserver [mHTTP GET /static/plugins/sparklines/sparkline.js 200 [0.06, 127.0.0.1:52476][0m
+INFO 2025-05-08 11:31:10,240 runserver [mHTTP GET /static/plugins/jqvmap/jquery.vmap.min.js 200 [0.10, 127.0.0.1:52478][0m
+INFO 2025-05-08 11:31:10,246 runserver [mHTTP GET /static/plugins/jqvmap/maps/jquery.vmap.usa.js 200 [0.06, 127.0.0.1:52477][0m
+INFO 2025-05-08 11:31:10,295 runserver [mHTTP GET /static/images/pfp_student.jpg 200 [0.07, 127.0.0.1:52476][0m
+INFO 2025-05-08 11:31:10,309 runserver [mHTTP GET /static/plugins/jquery-knob/jquery.knob.min.js 200 [0.10, 127.0.0.1:52479][0m
+INFO 2025-05-08 11:31:10,329 runserver [mHTTP GET /static/plugins/chart.js/Chart.min.js 200 [0.19, 127.0.0.1:52475][0m
+INFO 2025-05-08 11:31:10,342 runserver [mHTTP GET /static/plugins/fontawesome-free/webfonts/fa-solid-900.woff2 200 [0.09, 127.0.0.1:52478][0m
+INFO 2025-05-08 11:31:10,344 runserver [mHTTP GET /static/plugins/fontawesome-free/webfonts/fa-regular-400.woff2 200 [0.08, 127.0.0.1:52477][0m
+INFO 2025-05-08 11:31:10,347 runserver [mHTTP GET /static/plugins/jquery-ui/jquery-ui.min.js 200 [0.22, 127.0.0.1:52471][0m
+INFO 2025-05-08 11:31:10,445 runserver [mHTTP GET /static/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js 200 [0.09, 127.0.0.1:52479][0m
+INFO 2025-05-08 11:31:10,452 runserver [mHTTP GET /static/plugins/daterangepicker/daterangepicker.js 200 [0.10, 127.0.0.1:52476][0m
+INFO 2025-05-08 11:31:10,468 runserver [mHTTP GET /static/plugins/summernote/summernote-bs4.min.js 200 [0.11, 127.0.0.1:52478][0m
+INFO 2025-05-08 11:31:10,476 runserver [mHTTP GET /static/dist/js/pages/dashboard.js 200 [0.10, 127.0.0.1:52471][0m
+INFO 2025-05-08 11:31:10,479 runserver [mHTTP GET /static/plugins/moment/moment.min.js 200 [0.13, 127.0.0.1:52475][0m
+INFO 2025-05-08 11:31:10,480 runserver [mHTTP GET /static/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js 200 [0.12, 127.0.0.1:52477][0m
+INFO 2025-05-08 11:31:10,507 runserver [mHTTP GET /static/plugins/fullcalendar/main.js 200 [0.05, 127.0.0.1:52479][0m
+INFO 2025-05-08 11:31:10,528 runserver [mHTTP GET /static/admin/js/jquery.init.js 200 [0.05, 127.0.0.1:52476][0m
+INFO 2025-05-08 11:31:10,544 runserver WebSocket HANDSHAKING /ws/chat/general/ [127.0.0.1:52503]
+INFO 2025-05-08 11:31:10,548 runserver [mHTTP GET /static/admin/js/urlify.js 200 [0.05, 127.0.0.1:52471][0m
+INFO 2025-05-08 11:31:10,552 runserver [mHTTP GET /static/admin/js/admin/RelatedObjectLookups.js 200 [0.05, 127.0.0.1:52475][0m
+INFO 2025-05-08 11:31:10,554 runserver [mHTTP GET /static/admin/js/core.js 200 [0.06, 127.0.0.1:52477][0m
+INFO 2025-05-08 11:31:10,555 runserver [mHTTP GET /static/admin/js/actions.js 200 [0.06, 127.0.0.1:52478][0m
+INFO 2025-05-08 11:31:10,575 runserver [mHTTP GET /static/admin/js/prepopulate.js 200 [0.05, 127.0.0.1:52479][0m
+INFO 2025-05-08 11:31:10,602 runserver WebSocket CONNECT /ws/chat/general/ [127.0.0.1:52503]
+INFO 2025-05-08 11:31:10,630 runserver [mHTTP GET /static/plugins/toastr/toastr.min.js 200 [0.07, 127.0.0.1:52471][0m
+WARNING 2025-05-08 11:31:10,720 log Not Found: /student_dashboard/dist/img/user1-128x128.jpg
+INFO 2025-05-08 11:31:10,730 runserver [mHTTP GET /static/admin/js/vendor/xregexp/xregexp.min.js 200 [0.20, 127.0.0.1:52476][0m
+WARNING 2025-05-08 11:31:10,766 runserver [33mHTTP GET /student_dashboard/dist/img/user1-128x128.jpg 404 [0.20, 127.0.0.1:52475][0m
+WARNING 2025-05-08 11:31:10,817 log Not Found: /student_dashboard/dist/img/user5-128x128.jpg
+WARNING 2025-05-08 11:31:10,820 runserver [33mHTTP GET /student_dashboard/dist/img/user5-128x128.jpg 404 [0.23, 127.0.0.1:52479][0m
+WARNING 2025-05-08 11:31:10,821 log Not Found: /student_dashboard/dist/img/user3-128x128.jpg
+WARNING 2025-05-08 11:31:10,840 runserver [33mHTTP GET /student_dashboard/dist/img/user3-128x128.jpg 404 [0.27, 127.0.0.1:52478][0m
+WARNING 2025-05-08 11:31:10,840 log Not Found: /student_dashboard/dist/img/user7-128x128.jpg
+WARNING 2025-05-08 11:31:10,847 runserver [33mHTTP GET /student_dashboard/dist/img/user7-128x128.jpg 404 [0.28, 127.0.0.1:52477][0m
+WARNING 2025-05-08 11:31:10,884 log Not Found: /student_dashboard/dist/img/user6-128x128.jpg
+WARNING 2025-05-08 11:31:10,890 runserver [33mHTTP GET /student_dashboard/dist/img/user6-128x128.jpg 404 [0.24, 127.0.0.1:52471][0m
+WARNING 2025-05-08 11:31:10,952 log Not Found: /student_dashboard/dist/img/user8-128x128.jpg
+WARNING 2025-05-08 11:31:10,955 runserver [33mHTTP GET /student_dashboard/dist/img/user8-128x128.jpg 404 [0.18, 127.0.0.1:52476][0m
+INFO 2025-05-08 11:31:10,960 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.12, 127.0.0.1:52475][0m
+INFO 2025-05-08 11:31:13,200 runserver [32mHTTP GET /accounts/logout/ 302 [0.07, 127.0.0.1:52475][0m
+INFO 2025-05-08 11:31:13,229 runserver [32mHTTP GET /accounts/login/ 301 [0.02, 127.0.0.1:52475][0m
+INFO 2025-05-08 11:31:13,260 runserver [mHTTP GET / 200 [0.02, 127.0.0.1:52475][0m
+INFO 2025-05-08 11:31:13,278 runserver WebSocket DISCONNECT /ws/chat/general/ [127.0.0.1:52503]
+INFO 2025-05-08 11:31:13,337 runserver [mHTTP GET /static/css/style.css 200 [0.02, 127.0.0.1:52475][0m
+INFO 2025-05-08 11:31:13,346 runserver [mHTTP GET /static/js/popper.js 200 [0.02, 127.0.0.1:52471][0m
+INFO 2025-05-08 11:31:13,346 runserver [mHTTP GET /static/js/bootstrap.min.js 200 [0.02, 127.0.0.1:52477][0m
+INFO 2025-05-08 11:31:13,349 runserver [mHTTP GET /static/js/main.js 200 [0.02, 127.0.0.1:52478][0m
+INFO 2025-05-08 11:31:13,351 runserver [mHTTP GET /static/js/jquery.min.js 200 [0.03, 127.0.0.1:52476][0m
+INFO 2025-05-08 11:31:13,358 runserver [mHTTP GET /static/images/bg.jpg 200 [0.03, 127.0.0.1:52479][0m
+INFO 2025-05-08 11:31:16,417 views Attempting login with username: michael
+INFO 2025-05-08 11:31:17,269 views User michael logged in successfully.
+INFO 2025-05-08 11:31:17,282 runserver [32mHTTP POST / 302 [0.87, 127.0.0.1:52525][0m
+INFO 2025-05-08 11:31:17,350 runserver [mHTTP GET /student_dashboard/ 200 [0.06, 127.0.0.1:52525][0m
+INFO 2025-05-08 11:31:17,469 runserver WebSocket HANDSHAKING /ws/chat/general/ [127.0.0.1:52538]
+WARNING 2025-05-08 11:31:17,532 log Not Found: /student_dashboard/dist/img/user7-128x128.jpg
+WARNING 2025-05-08 11:31:17,539 runserver [33mHTTP GET /student_dashboard/dist/img/user7-128x128.jpg 404 [0.11, 127.0.0.1:52533][0m
+WARNING 2025-05-08 11:31:17,653 log Not Found: /student_dashboard/dist/img/user6-128x128.jpg
+WARNING 2025-05-08 11:31:17,662 log Not Found: /student_dashboard/dist/img/user5-128x128.jpg
+WARNING 2025-05-08 11:31:17,688 runserver [33mHTTP GET /student_dashboard/dist/img/user6-128x128.jpg 404 [0.24, 127.0.0.1:52536][0m
+WARNING 2025-05-08 11:31:17,692 runserver [33mHTTP GET /student_dashboard/dist/img/user5-128x128.jpg 404 [0.25, 127.0.0.1:52535][0m
+WARNING 2025-05-08 11:31:17,717 log Not Found: /student_dashboard/dist/img/user1-128x128.jpg
+WARNING 2025-05-08 11:31:17,720 log Not Found: /student_dashboard/dist/img/user8-128x128.jpg
+INFO 2025-05-08 11:31:17,724 runserver WebSocket CONNECT /ws/chat/general/ [127.0.0.1:52538]
+WARNING 2025-05-08 11:31:17,729 runserver [33mHTTP GET /student_dashboard/dist/img/user1-128x128.jpg 404 [0.30, 127.0.0.1:52525][0m
+WARNING 2025-05-08 11:31:17,730 runserver [33mHTTP GET /student_dashboard/dist/img/user8-128x128.jpg 404 [0.28, 127.0.0.1:52537][0m
+WARNING 2025-05-08 11:31:17,733 log Not Found: /student_dashboard/dist/img/user3-128x128.jpg
+WARNING 2025-05-08 11:31:17,748 runserver [33mHTTP GET /student_dashboard/dist/img/user3-128x128.jpg 404 [0.31, 127.0.0.1:52534][0m
+INFO 2025-05-08 11:31:17,751 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.19, 127.0.0.1:52533][0m
+INFO 2025-05-08 11:31:21,363 runserver [mHTTP GET /student_dashboard/ 200 [0.07, 127.0.0.1:52547][0m
+INFO 2025-05-08 11:31:21,379 runserver WebSocket DISCONNECT /ws/chat/general/ [127.0.0.1:52370]
+INFO 2025-05-08 11:31:21,493 runserver [36mHTTP GET /static/admin/js/vendor/jquery/jquery.min.js 304 [0.02, 127.0.0.1:52547][0m
+INFO 2025-05-08 11:31:21,498 runserver [36mHTTP GET /static/dist/css/adminlte.min.css 304 [0.02, 127.0.0.1:52549][0m
+INFO 2025-05-08 11:31:21,502 runserver [36mHTTP GET /static/plugins/overlayScrollbars/css/OverlayScrollbars.min.css 304 [0.02, 127.0.0.1:52550][0m
+INFO 2025-05-08 11:31:21,508 runserver [36mHTTP GET /static/plugins/fontawesome-free/css/all.min.css 304 [0.02, 127.0.0.1:52551][0m
+INFO 2025-05-08 11:31:21,510 runserver [36mHTTP GET /static/admin/css/forms.css 304 [0.02, 127.0.0.1:52552][0m
+INFO 2025-05-08 11:31:21,512 runserver [36mHTTP GET /static/admin/css/widgets.css 304 [0.02, 127.0.0.1:52553][0m
+INFO 2025-05-08 11:31:21,528 runserver [36mHTTP GET /static/plugins/toastr/toastr.min.css 304 [0.02, 127.0.0.1:52547][0m
+INFO 2025-05-08 11:31:21,540 runserver [36mHTTP GET /static/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css 304 [0.02, 127.0.0.1:52550][0m
+INFO 2025-05-08 11:31:21,542 runserver [36mHTTP GET /static/plugins/icheck-bootstrap/icheck-bootstrap.min.css 304 [0.02, 127.0.0.1:52551][0m
+INFO 2025-05-08 11:31:21,544 runserver [36mHTTP GET /static/plugins/jqvmap/jqvmap.min.css 304 [0.03, 127.0.0.1:52552][0m
+INFO 2025-05-08 11:31:21,545 runserver [36mHTTP GET /static/plugins/daterangepicker/daterangepicker.css 304 [0.02, 127.0.0.1:52553][0m
+INFO 2025-05-08 11:31:21,548 runserver [36mHTTP GET /static/plugins/summernote/summernote-bs4.min.css 304 [0.03, 127.0.0.1:52549][0m
+INFO 2025-05-08 11:31:21,556 runserver [36mHTTP GET /static/plugins/bootstrap/js/bootstrap.bundle.min.js 304 [0.02, 127.0.0.1:52547][0m
+INFO 2025-05-08 11:31:21,576 runserver [36mHTTP GET /static/dist/img/user1-128x128.jpg 304 [0.02, 127.0.0.1:52552][0m
+INFO 2025-05-08 11:31:21,577 runserver [36mHTTP GET /static/images/logo.png 304 [0.02, 127.0.0.1:52550][0m
+INFO 2025-05-08 11:31:21,628 runserver [36mHTTP GET /static/dist/js/adminlte.min.js 304 [0.02, 127.0.0.1:52549][0m
+INFO 2025-05-08 11:31:21,630 runserver [36mHTTP GET /static/plugins/jquery-ui/jquery-ui.min.js 304 [0.01, 127.0.0.1:52551][0m
+INFO 2025-05-08 11:31:21,632 runserver [36mHTTP GET /static/dist/js/demo.js 304 [0.02, 127.0.0.1:52553][0m
+INFO 2025-05-08 11:31:21,633 runserver [36mHTTP GET /static/dist/img/user8-128x128.jpg 304 [0.04, 127.0.0.1:52552][0m
+INFO 2025-05-08 11:31:21,634 runserver [36mHTTP GET /static/plugins/jquery/jquery.min.js 304 [0.02, 127.0.0.1:52547][0m
+INFO 2025-05-08 11:31:21,636 runserver [36mHTTP GET /static/dist/img/user3-128x128.jpg 304 [0.03, 127.0.0.1:52550][0m
+INFO 2025-05-08 11:31:21,662 runserver [36mHTTP GET /static/images/pfp_student.jpg 304 [0.02, 127.0.0.1:52549][0m
+INFO 2025-05-08 11:31:21,669 runserver [36mHTTP GET /static/plugins/jqvmap/maps/jquery.vmap.usa.js 304 [0.02, 127.0.0.1:52553][0m
+INFO 2025-05-08 11:31:21,671 runserver [36mHTTP GET /static/plugins/jquery-knob/jquery.knob.min.js 304 [0.02, 127.0.0.1:52551][0m
+INFO 2025-05-08 11:31:21,672 runserver [36mHTTP GET /static/plugins/chart.js/Chart.min.js 304 [0.03, 127.0.0.1:52552][0m
+INFO 2025-05-08 11:31:21,674 runserver [36mHTTP GET /static/plugins/jqvmap/jquery.vmap.min.js 304 [0.02, 127.0.0.1:52547][0m
+INFO 2025-05-08 11:31:21,675 runserver [36mHTTP GET /static/plugins/sparklines/sparkline.js 304 [0.03, 127.0.0.1:52550][0m
+INFO 2025-05-08 11:31:21,718 runserver [36mHTTP GET /static/plugins/moment/moment.min.js 304 [0.04, 127.0.0.1:52549][0m
+INFO 2025-05-08 11:31:21,721 runserver [36mHTTP GET /static/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js 304 [0.03, 127.0.0.1:52552][0m
+INFO 2025-05-08 11:31:21,723 runserver [36mHTTP GET /static/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js 304 [0.02, 127.0.0.1:52547][0m
+INFO 2025-05-08 11:31:21,732 runserver [36mHTTP GET /static/plugins/daterangepicker/daterangepicker.js 304 [0.04, 127.0.0.1:52550][0m
+INFO 2025-05-08 11:31:21,744 runserver [36mHTTP GET /static/dist/js/pages/dashboard.js 304 [0.05, 127.0.0.1:52553][0m
+INFO 2025-05-08 11:31:21,761 runserver [36mHTTP GET /static/plugins/summernote/summernote-bs4.min.js 304 [0.06, 127.0.0.1:52551][0m
+INFO 2025-05-08 11:31:21,805 runserver WebSocket HANDSHAKING /ws/chat/general/ [127.0.0.1:52555]
+INFO 2025-05-08 11:31:21,810 runserver [36mHTTP GET /static/admin/js/jquery.init.js 304 [0.04, 127.0.0.1:52549][0m
+INFO 2025-05-08 11:31:21,814 runserver [36mHTTP GET /static/admin/js/admin/RelatedObjectLookups.js 304 [0.04, 127.0.0.1:52547][0m
+INFO 2025-05-08 11:31:21,815 runserver [36mHTTP GET /static/admin/js/core.js 304 [0.04, 127.0.0.1:52551][0m
+INFO 2025-05-08 11:31:21,818 runserver [36mHTTP GET /static/admin/js/prepopulate.js 304 [0.02, 127.0.0.1:52552][0m
+INFO 2025-05-08 11:31:21,830 runserver [36mHTTP GET /static/admin/js/actions.js 304 [0.03, 127.0.0.1:52550][0m
+INFO 2025-05-08 11:31:21,830 runserver [36mHTTP GET /static/admin/js/urlify.js 304 [0.03, 127.0.0.1:52553][0m
+INFO 2025-05-08 11:31:21,865 runserver [36mHTTP GET /static/admin/js/vendor/xregexp/xregexp.min.js 304 [0.04, 127.0.0.1:52549][0m
+INFO 2025-05-08 11:31:21,875 runserver [36mHTTP GET /static/plugins/toastr/toastr.min.js 304 [0.04, 127.0.0.1:52547][0m
+INFO 2025-05-08 11:31:21,881 runserver WebSocket CONNECT /ws/chat/general/ [127.0.0.1:52555]
+WARNING 2025-05-08 11:31:21,990 log Not Found: /student_dashboard/dist/img/user7-128x128.jpg
+WARNING 2025-05-08 11:31:22,003 runserver [33mHTTP GET /student_dashboard/dist/img/user7-128x128.jpg 404 [0.16, 127.0.0.1:52552][0m
+WARNING 2025-05-08 11:31:22,096 log Not Found: /student_dashboard/dist/img/user1-128x128.jpg
+WARNING 2025-05-08 11:31:22,103 runserver [33mHTTP GET /student_dashboard/dist/img/user1-128x128.jpg 404 [0.26, 127.0.0.1:52551][0m
+WARNING 2025-05-08 11:31:22,116 log Not Found: /student_dashboard/dist/img/user5-128x128.jpg
+WARNING 2025-05-08 11:31:22,119 runserver [33mHTTP GET /student_dashboard/dist/img/user5-128x128.jpg 404 [0.26, 127.0.0.1:52550][0m
+WARNING 2025-05-08 11:31:22,124 log Not Found: /student_dashboard/dist/img/user3-128x128.jpg
+WARNING 2025-05-08 11:31:22,158 runserver [33mHTTP GET /student_dashboard/dist/img/user3-128x128.jpg 404 [0.30, 127.0.0.1:52553][0m
+WARNING 2025-05-08 11:31:22,190 log Not Found: /student_dashboard/dist/img/user8-128x128.jpg
+WARNING 2025-05-08 11:31:22,194 log Not Found: /student_dashboard/dist/img/user6-128x128.jpg
+WARNING 2025-05-08 11:31:22,196 runserver [33mHTTP GET /student_dashboard/dist/img/user8-128x128.jpg 404 [0.29, 127.0.0.1:52547][0m
+WARNING 2025-05-08 11:31:22,199 runserver [33mHTTP GET /student_dashboard/dist/img/user6-128x128.jpg 404 [0.31, 127.0.0.1:52549][0m
+INFO 2025-05-08 11:31:22,213 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.17, 127.0.0.1:52552][0m
+INFO 2025-05-08 11:32:18,047 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.04, 127.0.0.1:52610][0m
+INFO 2025-05-08 11:32:22,040 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.04, 127.0.0.1:52615][0m
+INFO 2025-05-08 11:33:18,042 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:52684][0m
+INFO 2025-05-08 11:33:22,048 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.04, 127.0.0.1:52690][0m
+INFO 2025-05-08 11:34:18,037 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:52892][0m
+INFO 2025-05-08 11:34:22,086 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.08, 127.0.0.1:52934][0m
+INFO 2025-05-08 11:35:27,125 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.06, 127.0.0.1:53039][0m
+INFO 2025-05-08 11:35:27,135 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.06, 127.0.0.1:53040][0m
+INFO 2025-05-08 11:36:27,078 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.07, 127.0.0.1:53114][0m
+INFO 2025-05-08 11:36:27,088 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.07, 127.0.0.1:53115][0m
+INFO 2025-05-08 11:37:22,932 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.13, 127.0.0.1:53114][0m
+INFO 2025-05-08 11:37:23,501 runserver WebSocket DISCONNECT /ws/chat/general/ [127.0.0.1:52538]
+INFO 2025-05-08 11:37:23,512 runserver WebSocket DISCONNECT /ws/chat/general/ [127.0.0.1:52555]
+INFO 2025-05-08 11:40:53,725 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.04, 127.0.0.1:53226][0m
+INFO 2025-05-08 11:40:53,729 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.05, 127.0.0.1:53199][0m
+INFO 2025-05-08 11:41:22,027 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.02, 127.0.0.1:53393][0m
+INFO 2025-05-08 11:41:27,026 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.02, 127.0.0.1:53442][0m
+INFO 2025-05-08 11:42:27,037 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:53527][0m
+INFO 2025-05-08 11:42:27,051 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.04, 127.0.0.1:53528][0m
+INFO 2025-05-08 11:43:27,046 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.02, 127.0.0.1:53527][0m
+INFO 2025-05-08 11:43:27,062 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:53528][0m
+INFO 2025-05-08 11:44:27,025 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.02, 127.0.0.1:53527][0m
+INFO 2025-05-08 11:44:27,046 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.02, 127.0.0.1:53528][0m
+INFO 2025-05-08 11:45:22,078 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.02, 127.0.0.1:53738][0m
+INFO 2025-05-08 11:45:27,053 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.02, 127.0.0.1:53743][0m
+INFO 2025-05-08 11:46:23,457 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:53804][0m
+INFO 2025-05-08 11:46:27,036 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.01, 127.0.0.1:53808][0m
+INFO 2025-05-08 11:47:22,065 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.04, 127.0.0.1:53901][0m
+INFO 2025-05-08 11:47:27,026 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.02, 127.0.0.1:53904][0m
+INFO 2025-05-08 11:48:27,075 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:53975][0m
+INFO 2025-05-08 11:48:27,092 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:53976][0m
+INFO 2025-05-08 11:49:22,030 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:54084][0m
+INFO 2025-05-08 11:49:27,030 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.02, 127.0.0.1:54092][0m
+INFO 2025-05-08 11:50:27,038 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.02, 127.0.0.1:54169][0m
+INFO 2025-05-08 11:50:27,045 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.02, 127.0.0.1:54170][0m
+INFO 2025-05-08 11:51:27,043 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.02, 127.0.0.1:54247][0m
+INFO 2025-05-08 11:51:27,068 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.02, 127.0.0.1:54250][0m
+INFO 2025-05-08 11:52:27,079 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:54311][0m
+INFO 2025-05-08 11:52:27,090 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:54312][0m
+INFO 2025-05-08 12:50:38,587 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.05, 127.0.0.1:54392][0m
+INFO 2025-05-08 13:09:33,088 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.14, 127.0.0.1:56113][0m
+INFO 2025-05-08 13:10:22,037 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:56166][0m
+INFO 2025-05-08 13:11:27,042 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:56233][0m
+INFO 2025-05-08 13:12:27,069 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.02, 127.0.0.1:56300][0m
+INFO 2025-05-08 13:13:27,048 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.04, 127.0.0.1:56359][0m
+INFO 2025-05-08 13:14:27,232 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:56442][0m
+INFO 2025-05-08 13:15:27,037 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:56614][0m
+INFO 2025-05-08 13:16:27,037 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:56614][0m
+INFO 2025-05-08 13:17:27,057 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.04, 127.0.0.1:56797][0m
+INFO 2025-05-08 13:18:27,098 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.06, 127.0.0.1:56932][0m
+INFO 2025-05-08 13:19:27,045 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:57016][0m
+INFO 2025-05-08 13:20:27,032 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:57109][0m
+INFO 2025-05-08 13:21:27,081 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.05, 127.0.0.1:57245][0m
+INFO 2025-05-08 13:22:27,084 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.05, 127.0.0.1:57345][0m
+INFO 2025-05-08 13:23:27,073 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.04, 127.0.0.1:57413][0m
+INFO 2025-05-08 13:24:27,080 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.06, 127.0.0.1:57505][0m
+INFO 2025-05-08 13:25:27,094 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.08, 127.0.0.1:57588][0m
+INFO 2025-05-08 13:26:27,072 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.06, 127.0.0.1:57665][0m
+INFO 2025-05-08 13:27:27,064 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:57747][0m
+INFO 2025-05-08 13:28:27,098 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.06, 127.0.0.1:57811][0m
+INFO 2025-05-08 13:29:27,042 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:57875][0m
+INFO 2025-05-08 13:30:27,077 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.05, 127.0.0.1:57875][0m
+INFO 2025-05-08 13:31:27,079 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:58012][0m
+INFO 2025-05-08 13:32:27,097 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.06, 127.0.0.1:58087][0m
+INFO 2025-05-08 13:33:27,067 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.05, 127.0.0.1:58176][0m
+INFO 2025-05-08 13:34:27,078 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.06, 127.0.0.1:58176][0m
+INFO 2025-05-08 13:35:27,069 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.04, 127.0.0.1:58176][0m
+INFO 2025-05-08 13:36:27,062 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.04, 127.0.0.1:58176][0m
+INFO 2025-05-08 13:37:27,060 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.05, 127.0.0.1:58176][0m
+INFO 2025-05-08 13:38:27,023 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.02, 127.0.0.1:58543][0m
+INFO 2025-05-08 13:39:27,036 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:58631][0m
+INFO 2025-05-08 13:40:27,090 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.06, 127.0.0.1:58705][0m
+INFO 2025-05-08 13:41:27,038 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:58789][0m
+INFO 2025-05-08 13:42:27,074 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.05, 127.0.0.1:58789][0m
+INFO 2025-05-08 13:43:27,055 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.04, 127.0.0.1:58789][0m
+INFO 2025-05-08 13:44:22,054 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.04, 127.0.0.1:58789][0m

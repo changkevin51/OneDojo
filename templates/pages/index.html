@@ -420,7 +420,6 @@
           <div class="card-body">
             <h6 class="text-uppercase mb-3">Recent Activity</h6>
             <div class="timeline small">
-              <!-- Add your recent activity items here -->
               <div class="time-label">
                 <span class="bg-info">Today</span>
               </div>
@@ -889,18 +888,15 @@ document.querySelector('.card-footer form').addEventListener('submit', function(
 </style>
 
 <script>
-  // Get references to the elements
   const openChatButton = document.getElementById('open-chat-btn');
   const closeChatButton = document.getElementById('close-chat-btn');
   const chatBox = document.querySelector('.floating-chat');
 
-  // Open the chat when the floating button is clicked
   openChatButton.addEventListener('click', function(event) {
-    event.preventDefault(); // Prevent the link from navigating
+    event.preventDefault(); 
     chatBox.style.display = 'block'; // Show the chat box
   });
 
-  // Close the chat when the close button inside the chat box is clicked
   closeChatButton.addEventListener('click', function() {
     chatBox.style.display = 'none'; // Hide the chat box
   });
