@@ -1033,3 +1033,200 @@ INFO 2025-05-08 13:41:27,038 runserver [mHTTP GET /api/calendar/events/?start=2
 INFO 2025-05-08 13:42:27,074 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.05, 127.0.0.1:58789][0m
 INFO 2025-05-08 13:43:27,055 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.04, 127.0.0.1:58789][0m
 INFO 2025-05-08 13:44:22,054 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.04, 127.0.0.1:58789][0m
+INFO 2025-05-16 20:39:46,320 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 20:39:48,841 runserver [mHTTP GET / 200 [0.11, 127.0.0.1:54456][0m
+INFO 2025-05-16 20:39:49,160 runserver [mHTTP GET /static/js/main.js 200 [0.21, 127.0.0.1:54460][0m
+INFO 2025-05-16 20:39:49,162 runserver [mHTTP GET /static/css/style.css 200 [0.22, 127.0.0.1:54456][0m
+INFO 2025-05-16 20:39:49,168 runserver [mHTTP GET /static/js/popper.js 200 [0.22, 127.0.0.1:54458][0m
+INFO 2025-05-16 20:39:49,206 runserver [mHTTP GET /static/images/bg.jpg 200 [0.03, 127.0.0.1:54456][0m
+INFO 2025-05-16 20:39:49,233 runserver [mHTTP GET /static/js/jquery.min.js 200 [0.29, 127.0.0.1:54457][0m
+INFO 2025-05-16 20:39:49,252 runserver [mHTTP GET /static/js/bootstrap.min.js 200 [0.30, 127.0.0.1:54459][0m
+WARNING 2025-05-16 20:39:49,810 log Not Found: /favicon.ico
+WARNING 2025-05-16 20:39:49,812 runserver [33mHTTP GET /favicon.ico 404 [0.27, 127.0.0.1:54459][0m
+INFO 2025-05-16 20:39:53,444 runserver [32mHTTP GET /admin 301 [0.02, 127.0.0.1:54459][0m
+INFO 2025-05-16 20:39:53,461 runserver [32mHTTP GET /admin/ 302 [0.01, 127.0.0.1:54459][0m
+INFO 2025-05-16 20:39:53,568 runserver [mHTTP GET /admin/login/?next=/admin/ 200 [0.10, 127.0.0.1:54459][0m
+INFO 2025-05-16 20:39:53,679 runserver [mHTTP GET /static/images/logo.png 200 [0.03, 127.0.0.1:54458][0m
+INFO 2025-05-16 20:39:53,707 runserver [mHTTP GET /static/plugins/fontawesome-free/css/all.min.css 200 [0.06, 127.0.0.1:54459][0m
+INFO 2025-05-16 20:39:53,711 runserver [mHTTP GET /static/plugins/icheck-bootstrap/icheck-bootstrap.min.css 200 [0.06, 127.0.0.1:54457][0m
+INFO 2025-05-16 20:39:53,730 runserver [mHTTP GET /static/dist/css/adminlte.min.css 200 [0.08, 127.0.0.1:54456][0m
+INFO 2025-05-16 20:39:53,813 runserver [mHTTP GET /static/dist/js/adminlte.min.js 200 [0.12, 127.0.0.1:54458][0m
+INFO 2025-05-16 20:39:53,870 runserver [mHTTP GET /static/plugins/bootstrap/js/bootstrap.bundle.min.js 200 [0.20, 127.0.0.1:54479][0m
+INFO 2025-05-16 20:39:53,876 runserver [mHTTP GET /static/plugins/jquery/jquery.min.js 200 [0.21, 127.0.0.1:54460][0m
+INFO 2025-05-16 20:39:53,914 runserver [mHTTP GET /static/plugins/fontawesome-free/webfonts/fa-solid-900.woff2 200 [0.02, 127.0.0.1:54460][0m
+INFO 2025-05-16 20:39:55,570 runserver [32mHTTP POST /admin/login/?next=/admin/ 302 [0.33, 127.0.0.1:54460][0m
+INFO 2025-05-16 20:39:55,944 runserver [mHTTP GET /admin/ 200 [0.37, 127.0.0.1:54460][0m
+INFO 2025-05-16 20:39:56,100 runserver [mHTTP GET /static/admin/css/widgets.css 200 [0.03, 127.0.0.1:54456][0m
+INFO 2025-05-16 20:39:56,101 runserver [mHTTP GET /static/plugins/overlayScrollbars/css/OverlayScrollbars.min.css 200 [0.03, 127.0.0.1:54479][0m
+INFO 2025-05-16 20:39:56,102 runserver [mHTTP GET /static/plugins/summernote/summernote-bs4.min.css 200 [0.03, 127.0.0.1:54459][0m
+INFO 2025-05-16 20:39:56,103 runserver [mHTTP GET /static/admin/css/forms.css 200 [0.03, 127.0.0.1:54458][0m
+INFO 2025-05-16 20:39:56,106 runserver [mHTTP GET /static/plugins/toastr/toastr.min.css 200 [0.03, 127.0.0.1:54457][0m
+INFO 2025-05-16 20:39:56,125 runserver [mHTTP GET /static/dist/img/user1-128x128.jpg 200 [0.01, 127.0.0.1:54457][0m
+INFO 2025-05-16 20:39:56,127 runserver [mHTTP GET /static/dist/img/user8-128x128.jpg 200 [0.01, 127.0.0.1:54458][0m
+INFO 2025-05-16 20:39:56,132 runserver [mHTTP GET /static/plugins/jqvmap/jqvmap.min.css 200 [0.02, 127.0.0.1:54479][0m
+INFO 2025-05-16 20:39:56,139 runserver [mHTTP GET /static/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css 200 [0.03, 127.0.0.1:54456][0m
+INFO 2025-05-16 20:39:56,140 runserver [mHTTP GET /static/plugins/daterangepicker/daterangepicker.css 200 [0.03, 127.0.0.1:54459][0m
+INFO 2025-05-16 20:39:56,146 runserver [mHTTP GET /static/dist/img/user3-128x128.jpg 200 [0.01, 127.0.0.1:54458][0m
+INFO 2025-05-16 20:39:56,172 runserver [mHTTP GET /static/dist/js/demo.js 200 [0.03, 127.0.0.1:54479][0m
+INFO 2025-05-16 20:39:56,173 runserver [mHTTP GET /static/admin/js/vendor/jquery/jquery.min.js 200 [0.11, 127.0.0.1:54460][0m
+INFO 2025-05-16 20:39:56,244 runserver [mHTTP GET /static/plugins/jqvmap/maps/jquery.vmap.usa.js 200 [0.03, 127.0.0.1:54459][0m
+INFO 2025-05-16 20:39:56,245 runserver [mHTTP GET /static/plugins/sparklines/sparkline.js 200 [0.03, 127.0.0.1:54479][0m
+INFO 2025-05-16 20:39:56,255 runserver [mHTTP GET /static/plugins/jqvmap/jquery.vmap.min.js 200 [0.04, 127.0.0.1:54456][0m
+INFO 2025-05-16 20:39:56,256 runserver [mHTTP GET /static/plugins/jquery-knob/jquery.knob.min.js 200 [0.04, 127.0.0.1:54457][0m
+INFO 2025-05-16 20:39:56,258 runserver [mHTTP GET /static/images/pfp_instructor.jpg 200 [0.01, 127.0.0.1:54479][0m
+INFO 2025-05-16 20:39:56,268 runserver [mHTTP GET /static/plugins/fontawesome-free/webfonts/fa-regular-400.woff2 200 [0.02, 127.0.0.1:54459][0m
+INFO 2025-05-16 20:39:56,297 runserver [mHTTP GET /static/plugins/chart.js/Chart.min.js 200 [0.11, 127.0.0.1:54460][0m
+INFO 2025-05-16 20:39:56,308 runserver [mHTTP GET /static/plugins/daterangepicker/daterangepicker.js 200 [0.04, 127.0.0.1:54457][0m
+INFO 2025-05-16 20:39:56,309 runserver [mHTTP GET /static/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js 200 [0.04, 127.0.0.1:54479][0m
+INFO 2025-05-16 20:39:56,311 runserver [mHTTP GET /static/plugins/summernote/summernote-bs4.min.js 200 [0.04, 127.0.0.1:54459][0m
+INFO 2025-05-16 20:39:56,321 runserver [mHTTP GET /static/plugins/jquery-ui/jquery-ui.min.js 200 [0.16, 127.0.0.1:54458][0m
+INFO 2025-05-16 20:39:56,337 runserver [mHTTP GET /static/plugins/moment/moment.min.js 200 [0.08, 127.0.0.1:54456][0m
+INFO 2025-05-16 20:39:56,352 runserver [mHTTP GET /static/dist/js/pages/dashboard.js 200 [0.04, 127.0.0.1:54479][0m
+INFO 2025-05-16 20:39:56,353 runserver [mHTTP GET /static/admin/js/jquery.init.js 200 [0.04, 127.0.0.1:54457][0m
+INFO 2025-05-16 20:39:56,358 runserver [mHTTP GET /static/admin/js/core.js 200 [0.03, 127.0.0.1:54459][0m
+INFO 2025-05-16 20:39:56,367 runserver [mHTTP GET /static/admin/js/admin/RelatedObjectLookups.js 200 [0.04, 127.0.0.1:54458][0m
+INFO 2025-05-16 20:39:56,374 runserver [mHTTP GET /static/admin/js/actions.js 200 [0.03, 127.0.0.1:54456][0m
+INFO 2025-05-16 20:39:56,381 runserver [mHTTP GET /static/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js 200 [0.08, 127.0.0.1:54460][0m
+INFO 2025-05-16 20:39:56,382 runserver [mHTTP GET /static/admin/js/prepopulate.js 200 [0.02, 127.0.0.1:54457][0m
+INFO 2025-05-16 20:39:56,384 runserver [mHTTP GET /static/admin/js/urlify.js 200 [0.02, 127.0.0.1:54479][0m
+INFO 2025-05-16 20:39:56,407 runserver [mHTTP GET /static/plugins/toastr/toastr.min.js 200 [0.04, 127.0.0.1:54458][0m
+INFO 2025-05-16 20:39:56,469 runserver [mHTTP GET /static/admin/js/vendor/xregexp/xregexp.min.js 200 [0.11, 127.0.0.1:54459][0m
+INFO 2025-05-16 20:40:06,620 runserver [mHTTP GET /student_list/1/ 200 [0.06, 127.0.0.1:54459][0m
+INFO 2025-05-16 20:40:07,941 runserver [mHTTP GET /admin/ 200 [0.02, 127.0.0.1:54459][0m
+INFO 2025-05-16 20:40:09,368 runserver [32mHTTP GET /class/1/edit/ 302 [0.03, 127.0.0.1:54459][0m
+INFO 2025-05-16 20:40:09,477 runserver [mHTTP GET /select-dojo/ 200 [0.08, 127.0.0.1:54459][0m
+INFO 2025-05-16 20:40:12,531 runserver [32mHTTP POST /select-dojo/ 302 [0.02, 127.0.0.1:54459][0m
+INFO 2025-05-16 20:40:12,558 runserver [mHTTP GET /dashboard-v1/ 200 [0.02, 127.0.0.1:54459][0m
+INFO 2025-05-16 20:40:12,787 runserver [mHTTP GET /static/plugins/fullcalendar/main.css 200 [0.14, 127.0.0.1:54459][0m
+WARNING 2025-05-16 20:40:12,890 log Not Found: /dashboard-v1/dist/img/user3-128x128.jpg
+WARNING 2025-05-16 20:40:12,890 log Not Found: /dashboard-v1/dist/img/user1-128x128.jpg
+WARNING 2025-05-16 20:40:12,891 log Not Found: /dashboard-v1/dist/img/user7-128x128.jpg
+WARNING 2025-05-16 20:40:12,892 log Not Found: /dashboard-v1/dist/img/user5-128x128.jpg
+WARNING 2025-05-16 20:40:12,893 runserver [33mHTTP GET /dashboard-v1/dist/img/user3-128x128.jpg 404 [0.24, 127.0.0.1:54460][0m
+WARNING 2025-05-16 20:40:12,894 runserver [33mHTTP GET /dashboard-v1/dist/img/user1-128x128.jpg 404 [0.24, 127.0.0.1:54479][0m
+WARNING 2025-05-16 20:40:12,896 runserver [33mHTTP GET /dashboard-v1/dist/img/user7-128x128.jpg 404 [0.24, 127.0.0.1:54457][0m
+WARNING 2025-05-16 20:40:12,897 runserver [33mHTTP GET /dashboard-v1/dist/img/user5-128x128.jpg 404 [0.24, 127.0.0.1:54456][0m
+WARNING 2025-05-16 20:40:12,929 log Not Found: /dashboard-v1/dist/img/user6-128x128.jpg
+WARNING 2025-05-16 20:40:12,931 runserver [33mHTTP GET /dashboard-v1/dist/img/user6-128x128.jpg 404 [0.05, 127.0.0.1:54459][0m
+WARNING 2025-05-16 20:40:12,944 log Not Found: /dashboard-v1/dist/img/user8-128x128.jpg
+WARNING 2025-05-16 20:40:12,946 runserver [33mHTTP GET /dashboard-v1/dist/img/user8-128x128.jpg 404 [0.05, 127.0.0.1:54460][0m
+INFO 2025-05-16 20:40:12,947 runserver [mHTTP GET /static/plugins/fullcalendar/main.js 200 [0.30, 127.0.0.1:54458][0m
+INFO 2025-05-16 20:40:12,975 runserver WebSocket HANDSHAKING /ws/chat/general/ [127.0.0.1:54501]
+INFO 2025-05-16 20:40:13,003 runserver WebSocket CONNECT /ws/chat/general/ [127.0.0.1:54501]
+INFO 2025-05-16 20:40:13,044 runserver [mHTTP GET /api/calendar/events/?start=2025-04-27T00%3A00%3A00-04%3A00&end=2025-06-08T00%3A00%3A00-04%3A00 200 [0.03, 127.0.0.1:54458][0m
+INFO 2025-05-16 20:40:15,378 runserver [mHTTP GET /admin/ 200 [0.03, 127.0.0.1:54458][0m
+INFO 2025-05-16 20:40:15,390 runserver WebSocket DISCONNECT /ws/chat/general/ [127.0.0.1:54501]
+INFO 2025-05-16 20:40:17,863 runserver [mHTTP GET /class/1/edit/ 200 [0.04, 127.0.0.1:54528][0m
+ERROR 2025-05-16 20:41:07,384 log Internal Server Error: /classes/delete/1/
+Traceback (most recent call last):
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\asgiref\sync.py", line 518, in thread_handler
+    raise exc_info[1]
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\django\core\handlers\exception.py", line 42, in inner
+    response = await get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\asgiref\sync.py", line 518, in thread_handler
+    raise exc_info[1]
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\django\core\handlers\base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\asgiref\sync.py", line 468, in __call__
+    ret = await asyncio.shield(exec_coro)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\asgiref\current_thread_executor.py", line 40, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\asgiref\sync.py", line 522, in thread_handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chang\Documents\Python_Projects\DojoTest2\portal\views.py", line 2385, in delete_class
+    return redirect('classes')
+           ^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\django\shortcuts.py", line 48, in redirect
+    return redirect_class(resolve_url(to, *args, **kwargs))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\django\shortcuts.py", line 145, in resolve_url
+    return reverse(to, args=args, kwargs=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\django\urls\resolvers.py", line 828, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'classes' not found. 'classes' is not a valid view function or pattern name.
+ERROR 2025-05-16 20:41:07,421 runserver [35;1mHTTP POST /classes/delete/1/ 500 [0.27, 127.0.0.1:54528][0m
+INFO 2025-05-16 20:42:44,505 autoreload C:\Users\chang\Documents\Python_Projects\DojoTest2\portal\views.py changed, reloading.
+INFO 2025-05-16 20:42:46,780 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 20:43:14,517 autoreload C:\Users\chang\Documents\Python_Projects\DojoTest2\portal\views.py changed, reloading.
+INFO 2025-05-16 20:43:16,281 autoreload Watching for file changes with StatReloader
+WARNING 2025-05-16 20:43:18,883 log Not Found: /classes/delete/1/
+WARNING 2025-05-16 20:43:18,886 runserver [33mHTTP POST /classes/delete/1/ 404 [0.07, 127.0.0.1:54677][0m
+WARNING 2025-05-16 20:43:19,978 log Not Found: /class/1/edit/
+WARNING 2025-05-16 20:43:19,979 runserver [33mHTTP GET /class/1/edit/ 404 [0.03, 127.0.0.1:54677][0m
+INFO 2025-05-16 20:43:20,171 runserver [mHTTP GET /admin/ 200 [0.07, 127.0.0.1:54677][0m
+INFO 2025-05-16 20:43:21,326 runserver [mHTTP GET /student_list/2/ 200 [0.02, 127.0.0.1:54677][0m
+INFO 2025-05-16 20:43:23,128 runserver [mHTTP GET /admin/ 200 [0.04, 127.0.0.1:54677][0m
+INFO 2025-05-16 20:48:10,481 autoreload C:\Users\chang\Documents\Python_Projects\DojoTest2\student_portal\urls.py changed, reloading.
+INFO 2025-05-16 20:48:11,827 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 20:48:23,046 autoreload C:\Users\chang\Documents\Python_Projects\DojoTest2\portal\views.py changed, reloading.
+INFO 2025-05-16 20:48:24,095 autoreload Watching for file changes with StatReloader
+INFO 2025-05-16 20:48:25,320 runserver [mHTTP GET /admin/ 200 [0.08, 127.0.0.1:54862][0m
+INFO 2025-05-16 20:48:27,241 runserver [mHTTP GET /class/create/ 200 [0.03, 127.0.0.1:54862][0m
+INFO 2025-05-16 20:48:32,326 runserver [32mHTTP POST /class/create/ 302 [0.03, 127.0.0.1:54862][0m
+INFO 2025-05-16 20:48:32,373 runserver [mHTTP GET /student_list/3/ 200 [0.04, 127.0.0.1:54862][0m
+INFO 2025-05-16 20:48:35,480 runserver [mHTTP GET /class/3/edit/ 200 [0.03, 127.0.0.1:54862][0m
+INFO 2025-05-16 20:48:38,072 runserver [mHTTP GET /admin/ 200 [0.03, 127.0.0.1:54862][0m
+INFO 2025-05-16 20:48:39,807 runserver [mHTTP GET /class/2/edit/ 200 [0.05, 127.0.0.1:54862][0m
+INFO 2025-05-16 20:48:41,357 runserver [mHTTP GET /admin/ 200 [0.04, 127.0.0.1:54862][0m
+INFO 2025-05-16 20:48:42,725 runserver [mHTTP GET /class/3/edit/ 200 [0.02, 127.0.0.1:54862][0m
+ERROR 2025-05-16 20:48:45,403 log Internal Server Error: /classes/delete/3/
+Traceback (most recent call last):
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\asgiref\sync.py", line 518, in thread_handler
+    raise exc_info[1]
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\django\core\handlers\exception.py", line 42, in inner
+    response = await get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\asgiref\sync.py", line 518, in thread_handler
+    raise exc_info[1]
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\django\core\handlers\base.py", line 253, in _get_response_async
+    response = await wrapped_callback(
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\asgiref\sync.py", line 468, in __call__
+    ret = await asyncio.shield(exec_coro)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\asgiref\current_thread_executor.py", line 40, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\asgiref\sync.py", line 522, in thread_handler
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\django\contrib\auth\decorators.py", line 23, in _wrapper_view
+    return view_func(request, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\chang\Documents\Python_Projects\DojoTest2\portal\views.py", line 2385, in delete_class
+    return redirect('admin_dashboard')
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\django\shortcuts.py", line 48, in redirect
+    return redirect_class(resolve_url(to, *args, **kwargs))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\django\shortcuts.py", line 145, in resolve_url
+    return reverse(to, args=args, kwargs=kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\django\urls\base.py", line 88, in reverse
+    return resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\chang\Documents\Python_Projects\DojoTest2\.conda\Lib\site-packages\django\urls\resolvers.py", line 828, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'admin_dashboard' not found. 'admin_dashboard' is not a valid view function or pattern name.
+ERROR 2025-05-16 20:48:45,421 runserver [35;1mHTTP POST /classes/delete/3/ 500 [0.10, 127.0.0.1:54862][0m
+INFO 2025-05-16 20:50:23,945 autoreload C:\Users\chang\Documents\Python_Projects\DojoTest2\portal\views.py changed, reloading.
+INFO 2025-05-16 20:50:25,251 autoreload Watching for file changes with StatReloader
+WARNING 2025-05-16 20:50:26,821 log Not Found: /class/3/edit/
+WARNING 2025-05-16 20:50:26,822 runserver [33mHTTP GET /class/3/edit/ 404 [0.03, 127.0.0.1:54975][0m
+INFO 2025-05-16 20:50:27,836 runserver [mHTTP GET /admin/ 200 [0.05, 127.0.0.1:54975][0m
+INFO 2025-05-16 20:50:31,196 runserver [mHTTP GET /class/2/edit/ 200 [0.03, 127.0.0.1:54975][0m
+INFO 2025-05-16 20:50:33,253 runserver [32mHTTP POST /classes/delete/2/ 302 [0.04, 127.0.0.1:54975][0m
+INFO 2025-05-16 20:50:33,308 runserver [mHTTP GET /admin/ 200 [0.05, 127.0.0.1:54975][0m
+INFO 2025-05-16 20:50:35,267 runserver [mHTTP GET /class/create/ 200 [0.03, 127.0.0.1:54975][0m

@@ -24,6 +24,7 @@ import logging
 from datetime import timedelta
 logger = logging.getLogger(__name__)
 
+# This register function is not used right now
 def register(request):
     """register new user"""
     if request.method == "POST":
@@ -2371,6 +2372,17 @@ def edit_class(request, unit_id=None):
         'segment': 'edit_class',
     }
     return render(request, 'pages/instructor/edit_class.html', context)
+
+@login_required
+def delete_class(request, unit_id):
+    if not (request.user.is_staff or request.user.is_teacher):
+        messages.error(request, "Permission denied")
+        return redirect('dashboardv1')
+    unit = get_object_or_404(Unit, id=unit_id)
+    unit_name = unit.name
+    unit.delete()
+    messages.success(request, f"Class '{unit_name}' has been deleted.")
+    return redirect('admin:index')
 
 @login_required
 def add_students_to_class(request):

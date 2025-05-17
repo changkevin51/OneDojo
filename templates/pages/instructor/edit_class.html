@@ -65,6 +65,11 @@
                     </div>
                     <div class="card-footer">
                         <button type="submit" class="btn btn-primary">Save Class Information</button>
+                        {% if unit.id %}
+                        <button type="button" class="btn btn-danger float-right" data-toggle="modal" data-target="#deleteClassModal">
+                            <i class="fas fa-trash-alt"></i> Delete Class
+                        </button>
+                        {% endif %}
                     </div>
                 </form>
             </div>
@@ -178,6 +183,37 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Add Selected Students</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if unit.id %}
+<div class="modal fade" id="deleteClassModal" tabindex="-1" role="dialog" aria-labelledby="deleteClassModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger">
+                <h5 class="modal-title" id="deleteClassModalLabel">Confirm Class Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post" action="{% url 'delete_class' unit.id %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i> Warning: This action cannot be undone!
+                    </div>
+                    <p>Are you sure you want to delete the class <strong>{{ unit.name }}</strong>?</p>
+                    <p>This will remove all student registrations for this class.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash-alt"></i> Delete Class
+                    </button>
                 </div>
             </form>
         </div>

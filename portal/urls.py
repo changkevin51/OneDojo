@@ -226,6 +226,7 @@ urlpatterns = [
 
     # Class Management
     path('class/create/', views.edit_class, name='create_class'),
+    path('classes/delete/<int:unit_id>/', views.delete_class, name='delete_class'),
     path('class/<int:unit_id>/edit/', views.edit_class, name='edit_class'),
     path('class/add-students/', views.add_students_to_class, name='add_students_to_class'),
     path('class/remove-student/', views.remove_student_from_class, name='remove_student_from_class'),
