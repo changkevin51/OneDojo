@@ -118,6 +118,12 @@
           notification.style.display = 'none';
         }, 4000);
       }
+      
+      // Auto-fill demo credentials
+      document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('username').value = 'student';
+        document.getElementById('password-field').value = 'student';
+      });
     </script>
   </body>
 </html>

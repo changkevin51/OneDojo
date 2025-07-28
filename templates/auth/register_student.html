@@ -22,7 +22,6 @@
           <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             
-            <!-- Add hidden field for dojo_id -->
             {% if dojo_id %}
             <input type="hidden" name="dojo_id" value="{{ dojo_id }}">
             {% endif %}
@@ -150,7 +149,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.1/mdb.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Initialize all form-outline elements (including password fields)
       document.querySelectorAll('.form-outline').forEach((element) => {
         new mdb.Input(element).init();
       });

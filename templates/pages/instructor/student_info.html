@@ -1147,14 +1147,12 @@ $(document).ready(function() {
     });
 
     $('#progressReportModal').on('shown.bs.modal', function() {
-      // Destroy all existing instances first
       $('#progressReportModal .summernote-full').each(function() {
         if ($(this).summernote) {
           $(this).summernote('destroy');
         }
       });
       
-      // Initialize each textarea with explicit configuration
       $('#progressReportModal textarea[name="strengths"]').summernote({
         height: 150,
         toolbar: [
@@ -1194,7 +1192,7 @@ $(document).ready(function() {
             down: 'fas fa-arrow-down'
         },
         format: 'YYYY-MM-DD HH:mm:ss',
-        sideBySide: true,  // Shows the time picker alongside the date picker
+        sideBySide: true,  
         stepping: 15  // Minutes stepping interval
     });
 });
@@ -1237,16 +1235,15 @@ function viewSubmission(eventId) {
         .done(function(data) {
             console.log('API Response:', data);
             
-            // Set event ID for feedback functionality
             $('#submissionDetailModal').attr('data-event-id', eventId);
             
-            // Populate assignment details
+            // assignment details
             $('#assignmentTitle').text(data.title);
             $('#assignmentContent').html(data.content);
             $('#assignmentDueDate').html(`<i class="fas fa-clock"></i> Due: ${moment(data.due_date).format('MMM D, YYYY HH:mm')}`);
             
             if (data.submission) {
-                // Status and Notes
+                // status and Notes
                 let submissionHtml = `
                     <div class="alert alert-success mb-3">
                         <i class="fas fa-check-circle mr-2"></i> 
@@ -1522,16 +1519,13 @@ $(document).ready(function() {
   });
 });
 
-// Template insertion functionality
 let currentEditor = '';
 let currentCategory = '';
 
-// When a template button is clicked, store which editor to insert into
 $('button[data-toggle="modal"][data-target="#feedbackTemplatesModal"]').click(function() {
   currentEditor = $(this).data('editor');
   currentCategory = $(this).data('category');
   
-  // Load templates for the selected category
   loadFeedbackTemplatesByCategory(currentCategory);
   
   // Prevent the modal from closing when clicking buttons inside it
@@ -1540,7 +1534,6 @@ $('button[data-toggle="modal"][data-target="#feedbackTemplatesModal"]').click(fu
   });
 });
 
-// Function to load feedback templates via AJAX for a specific category
 function loadFeedbackTemplatesByCategory(category) {
   $('.templates-loading').show();
   $('.templates-container').empty();
@@ -1624,7 +1617,7 @@ function insertFeedbackTemplate(content) {
   
   $editor.summernote('code', newContent);
   
-  $('#feedbackTemplatesModal').on('hidden.bs.modal', function() {
+  $('#feedbackTemplates\').on('hidden.bs.modal', function() {
     $('#feedbackTemplatesModal').off('hidden.bs.modal');
     
     setTimeout(function() {
