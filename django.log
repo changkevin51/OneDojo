@@ -1325,3 +1325,75 @@ INFO 2025-07-28 12:04:24,652 runserver [mHTTP GET /admin/login/?next=/admin/ 20
 INFO 2025-07-28 12:05:11,543 runserver [mHTTP GET /admin/login/?next=/admin/ 200 [0.08, 127.0.0.1:55271][0m
 INFO 2025-07-28 12:05:17,071 runserver [mHTTP GET /admin/login/?next=/admin/ 200 [0.01, 127.0.0.1:55271][0m
 INFO 2025-07-28 12:05:25,017 runserver [mHTTP GET /admin/login/?next=/admin/ 200 [0.01, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:06:07,092 runserver [mHTTP GET /admin/login/?next=/admin/ 200 [0.01, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:06:16,106 runserver [mHTTP GET /admin/login/?next=/admin/ 200 [0.02, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:06:23,992 runserver [32mHTTP GET /admin/ 302 [0.01, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:06:24,013 runserver [mHTTP GET /admin/login/?next=/admin/ 200 [0.02, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:06:34,096 runserver [mHTTP POST /admin/login/?next=/admin/ 200 [0.01, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:06:36,212 runserver [mHTTP POST /admin/login/?next=/admin/ 200 [0.01, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:07:24,143 runserver [mHTTP GET / 200 [0.01, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:07:25,742 views Attempting login with username: student
+WARNING 2025-07-28 12:07:26,495 views Failed login attempt for username: student
+INFO 2025-07-28 12:07:26,500 runserver [mHTTP POST / 200 [0.76, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:07:31,559 views Attempting login with username: student
+WARNING 2025-07-28 12:07:32,293 views Failed login attempt for username: student
+INFO 2025-07-28 12:07:32,297 runserver [mHTTP POST / 200 [0.74, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:07:33,630 views Attempting login with username: student
+WARNING 2025-07-28 12:07:34,346 views Failed login attempt for username: student
+INFO 2025-07-28 12:07:34,350 runserver [mHTTP POST / 200 [0.72, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:07:37,438 runserver [32mHTTP GET /admin/ 302 [0.01, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:07:37,451 runserver [mHTTP GET /admin/login/?next=/admin/ 200 [0.01, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:07:38,758 runserver [mHTTP POST /admin/login/?next=/admin/ 200 [0.01, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:07:42,184 runserver [mHTTP POST /admin/login/?next=/admin/ 200 [0.71, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:07:46,510 runserver [32mHTTP POST /admin/login/?next=/admin/ 302 [0.69, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:07:46,594 runserver [mHTTP GET /admin/ 200 [0.07, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:07:47,148 runserver [mHTTP GET /static/plugins/overlayScrollbars/css/OverlayScrollbars.min.css 200 [0.49, 127.0.0.1:55490][0m
+INFO 2025-07-28 12:07:47,161 runserver [mHTTP GET /static/plugins/toastr/toastr.min.css 200 [0.49, 127.0.0.1:55519][0m
+INFO 2025-07-28 12:07:47,178 runserver [mHTTP GET /static/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css 200 [0.02, 127.0.0.1:55490][0m
+INFO 2025-07-28 12:07:47,183 runserver [mHTTP GET /static/plugins/summernote/summernote-bs4.min.css 200 [0.50, 127.0.0.1:55520][0m
+INFO 2025-07-28 12:07:47,195 runserver [mHTTP GET /static/plugins/jqvmap/jqvmap.min.css 200 [0.02, 127.0.0.1:55519][0m
+INFO 2025-07-28 12:07:47,196 runserver [mHTTP GET /static/admin/css/widgets.css 200 [0.53, 127.0.0.1:55518][0m
+INFO 2025-07-28 12:07:47,204 runserver [mHTTP GET /static/admin/css/forms.css 200 [0.54, 127.0.0.1:55517][0m
+INFO 2025-07-28 12:07:47,211 runserver [mHTTP GET /static/plugins/daterangepicker/daterangepicker.css 200 [0.03, 127.0.0.1:55490][0m
+INFO 2025-07-28 12:07:47,214 runserver [mHTTP GET /static/dist/img/user1-128x128.jpg 200 [0.02, 127.0.0.1:55520][0m
+INFO 2025-07-28 12:07:47,223 runserver [mHTTP GET /static/dist/img/user8-128x128.jpg 200 [0.02, 127.0.0.1:55518][0m
+INFO 2025-07-28 12:07:47,238 runserver [mHTTP GET /static/dist/img/user3-128x128.jpg 200 [0.01, 127.0.0.1:55520][0m
+INFO 2025-07-28 12:07:47,256 runserver [mHTTP GET /static/plugins/jquery-ui/jquery-ui.min.js 200 [0.01, 127.0.0.1:55520][0m
+INFO 2025-07-28 12:07:47,278 runserver [mHTTP GET /static/plugins/chart.js/Chart.min.js 200 [0.01, 127.0.0.1:55520][0m
+INFO 2025-07-28 12:07:47,285 runserver [mHTTP GET /static/dist/js/demo.js 200 [0.05, 127.0.0.1:55518][0m
+INFO 2025-07-28 12:07:47,301 runserver [mHTTP GET /static/plugins/sparklines/sparkline.js 200 [0.01, 127.0.0.1:55518][0m
+INFO 2025-07-28 12:07:47,303 runserver [mHTTP GET /static/plugins/jqvmap/jquery.vmap.min.js 200 [0.01, 127.0.0.1:55520][0m
+INFO 2025-07-28 12:07:47,317 runserver [mHTTP GET /static/plugins/jqvmap/maps/jquery.vmap.usa.js 200 [0.01, 127.0.0.1:55520][0m
+INFO 2025-07-28 12:07:47,320 runserver [mHTTP GET /static/plugins/jquery-knob/jquery.knob.min.js 200 [0.01, 127.0.0.1:55518][0m
+INFO 2025-07-28 12:07:47,331 runserver [mHTTP GET /static/admin/js/vendor/jquery/jquery.min.js 200 [0.67, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:07:47,343 runserver [mHTTP GET /static/plugins/moment/moment.min.js 200 [0.01, 127.0.0.1:55518][0m
+INFO 2025-07-28 12:07:47,349 runserver [mHTTP GET /static/plugins/daterangepicker/daterangepicker.js 200 [0.02, 127.0.0.1:55520][0m
+INFO 2025-07-28 12:07:47,374 runserver [mHTTP GET /static/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js 200 [0.02, 127.0.0.1:55520][0m
+INFO 2025-07-28 12:07:47,375 runserver [mHTTP GET /static/plugins/summernote/summernote-bs4.min.js 200 [0.01, 127.0.0.1:55518][0m
+INFO 2025-07-28 12:07:47,389 runserver [mHTTP GET /static/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js 200 [0.02, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:07:47,394 runserver [mHTTP GET /static/admin/js/core.js 200 [0.02, 127.0.0.1:55519][0m
+INFO 2025-07-28 12:07:47,395 runserver [mHTTP GET /static/dist/js/pages/dashboard.js 200 [0.03, 127.0.0.1:55490][0m
+INFO 2025-07-28 12:07:47,396 runserver [mHTTP GET /static/admin/js/jquery.init.js 200 [0.03, 127.0.0.1:55517][0m
+INFO 2025-07-28 12:07:47,413 runserver [mHTTP GET /static/images/pfp_instructor.jpg 200 [0.01, 127.0.0.1:55271][0m
+INFO 2025-07-28 12:07:47,417 runserver [mHTTP GET /static/admin/js/urlify.js 200 [0.01, 127.0.0.1:55517][0m
+INFO 2025-07-28 12:07:47,421 runserver [mHTTP GET /static/admin/js/prepopulate.js 200 [0.02, 127.0.0.1:55519][0m
+INFO 2025-07-28 12:07:47,430 runserver [mHTTP GET /static/admin/js/actions.js 200 [0.04, 127.0.0.1:55520][0m
+INFO 2025-07-28 12:07:47,432 runserver [mHTTP GET /static/admin/js/admin/RelatedObjectLookups.js 200 [0.05, 127.0.0.1:55518][0m
+INFO 2025-07-28 12:07:47,437 runserver [mHTTP GET /static/plugins/fontawesome-free/webfonts/fa-regular-400.woff2 200 [0.03, 127.0.0.1:55490][0m
+INFO 2025-07-28 12:07:47,438 runserver [mHTTP GET /static/plugins/toastr/toastr.min.js 200 [0.01, 127.0.0.1:55517][0m
+INFO 2025-07-28 12:07:47,603 runserver [mHTTP GET /static/admin/js/vendor/xregexp/xregexp.min.js 200 [0.19, 127.0.0.1:55271][0m
+INFO 2025-07-30 18:47:45,806 autoreload C:\Users\chang\Documents\Python_Projects\DojoTest2\portal\urls.py changed, reloading.
+INFO 2025-07-30 18:47:52,187 autoreload Watching for file changes with StatReloader
+INFO 2025-07-30 18:48:00,028 autoreload C:\Users\chang\Documents\Python_Projects\DojoTest2\portal\urls.py changed, reloading.
+INFO 2025-07-30 18:48:02,034 autoreload Watching for file changes with StatReloader
+INFO 2025-08-04 21:59:40,239 autoreload Watching for file changes with StatReloader
+INFO 2025-08-04 21:59:45,963 runserver [mHTTP GET / 200 [0.09, 127.0.0.1:60297][0m
+INFO 2025-08-04 21:59:46,241 runserver [mHTTP GET /static/js/main.js 200 [0.20, 127.0.0.1:60305][0m
+INFO 2025-08-04 21:59:46,251 runserver [mHTTP GET /static/css/style.css 200 [0.21, 127.0.0.1:60297][0m
+INFO 2025-08-04 21:59:46,251 runserver [mHTTP GET /static/js/jquery.min.js 200 [0.21, 127.0.0.1:60298][0m
+INFO 2025-08-04 21:59:46,256 runserver [mHTTP GET /static/js/popper.js 200 [0.21, 127.0.0.1:60303][0m
+INFO 2025-08-04 21:59:46,258 runserver [mHTTP GET /static/js/bootstrap.min.js 200 [0.22, 127.0.0.1:60304][0m
+INFO 2025-08-04 21:59:46,259 runserver [mHTTP GET /static/images/bg.jpg 200 [0.21, 127.0.0.1:60306][0m
+WARNING 2025-08-04 21:59:46,741 log Not Found: /favicon.ico
+WARNING 2025-08-04 21:59:46,741 runserver [33mHTTP GET /favicon.ico 404 [0.14, 127.0.0.1:60306][0m
+INFO 2025-08-04 22:02:02,008 runserver [mHTTP GET / 200 [0.03, 127.0.0.1:60468][0m

@@ -7,3 +7,5 @@ media/submissions/*
 portal/__pycache__/*
 student_portal/chat/__pycache__/*
 django.log
+nest.txt
+*.log

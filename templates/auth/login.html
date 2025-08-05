@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     
     <style>
+      /* Custom styles can be added here if needed */
+      
+      /* Notification popup styles - commented out
       .notification {
         position: fixed;
         top: 20px;
@@ -38,15 +41,17 @@
         from {opacity: 1;}
         to {opacity: 0;}
       }
+      */
     </style>
 
   </head>
 
   <body class="img js-fullheight" style="background-image: url('{% static "images/bg.jpg" %}');">
-    <!-- Notification popup -->
+    <!-- Notification popup - commented out
     <div id="registrationNotification" class="notification">
       You must have a valid registration link provided by your instructor or admin to register.
     </div>
+    -->
     
     <section class="ftco-section">
       <div class="container">
@@ -91,9 +96,9 @@
               <p class="mt-5 mb-2 text-center">
                 <a href="{% url 'password_reset' %}">Reset Pass</a>
                 &bull;
-                <a href="javascript:void(0);" onclick="showRegistrationNotification()" class="text-center">Sign UP</a>
+                <a href="https://onedojo.tech/register/FTB4SWTT/" class="text-center">Sign UP</a>
               </p>
-              <p class="w-100 text-center">Don't have an account? <a href="javascript:void(0);" onclick="showRegistrationNotification()">Register as a Student</a></p>
+              <p class="w-100 text-center">Don't have an account? <a href="https://onedojo.tech/register/FTB4SWTT/">Register as a Student</a></p>
               <br>
               <div class="form-group d-flex justify-content-center">
                 <a href="/admin" class="btn btn-dark">Admin Login</a>
@@ -110,6 +115,7 @@
     <script src="{% static 'js/main.js' %}"></script>
     
     <script>
+      /*
       function showRegistrationNotification() {
         const notification = document.getElementById('registrationNotification');
         notification.style.display = 'block';
@@ -118,6 +124,7 @@
           notification.style.display = 'none';
         }, 4000);
       }
+      */
       
       // Auto-fill demo credentials
       document.addEventListener('DOMContentLoaded', function() {
