@@ -17,6 +17,8 @@ class Dojo(models.Model):
     country = models.CharField(max_length=100, null=True, blank=True)
     phone = models.CharField(max_length=20)
     email = models.EmailField()
+    website = models.URLField(null=True, blank=True)
+    logo = models.ImageField(upload_to='dojo_logos/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -148,6 +150,13 @@ class CustomUser(AbstractUser):
         if self.first_name and self.last_name:
             return f"{self.first_name} {self.last_name}"
         return self.username
+
+    def get_belt_display(self):
+        """get belt display name"""
+        for value, label in self.BELT_CHOICES:
+            if value == self.belt:
+                return label
+        return self.belt
 
 # unit model
 class Unit(models.Model):

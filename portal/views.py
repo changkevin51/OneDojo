@@ -23,6 +23,7 @@ from django.core.cache import cache
 import logging
 from datetime import timedelta
 logger = logging.getLogger(__name__)
+from django.db import models
 
 # This register function is not used right now
 def register(request):
@@ -98,6 +99,7 @@ def register_units(request):
 def register_student(request, dojo_id=None):
     """register student with dojo from url"""
     selected_dojo = None
+    registration_code = None
     if dojo_id:
         try:
             selected_dojo = Dojo.objects.get(id=dojo_id)
@@ -139,7 +141,7 @@ def register_student(request, dojo_id=None):
     context = {'form': form}
     if selected_dojo:
         context['dojo_name'] = selected_dojo.name
-        context['dojo_id'] = selected_dojo.id
+        context['dojo_id'] = getattr(selected_dojo, 'id', None)
     return render(request, 'auth/register_student.html', context)
 
 def register_teacher(request, dojo_id=None):
@@ -317,52 +319,6 @@ def student_progress(request):
         'now': timezone.now(),
     }
     return render(request, 'pages/student_progress.html', context)
-
-@login_required
-def student_criteria(request):
-    """student criteria progress page"""
-    if not request.user.is_student:
-        return redirect('login')
-    progress_reports = TimelineEvent.objects.filter(
-        student=request.user,
-        event_type='progress_report'
-    ).order_by('-created_at')
-    completed_assignments = TimelineEvent.objects.filter(
-        student=request.user,
-        event_type='assignment',
-        is_submitted=True
-    ).count()
-    total_assignments = TimelineEvent.objects.filter(
-        student=request.user,
-        event_type='assignment'
-    ).count()
-    completion_rate = 0
-    if total_assignments > 0:
-        completion_rate = (completed_assignments / total_assignments) * 100
-    attendance_stats = Attendance.get_attendance_stats(request.user.id)
-    achievement_criteria = [
-      {"name": "Basics", "description": "Fundamental techniques", "threshold": 20, "color": "#4CAF50"},
-      {"name": "Forms", "description": "Basic forms mastery", "threshold": 40, "color": "#2196F3"},
-      {"name": "Sparring", "description": "Controlled sparring", "threshold": 60, "color": "#FF9800"},
-      {"name": "Advanced", "description": "Advanced techniques", "threshold": 80, "color": "#9C27B0"},
-      {"name": "Mastery", "description": "Complete belt level mastery", "threshold": 100, "color": "#F44336"}
-    ]
-    student_progress_value = 65 
-    for criteria in achievement_criteria:
-        criteria['achieved'] = student_progress_value >= criteria['threshold']
-    context = {
-        'progress_reports': progress_reports,
-        'completion_rate': round(completion_rate),
-        'completed_assignments': completed_assignments,
-        'total_assignments': total_assignments,
-        'attendance_stats': attendance_stats,
-        'achievement_criteria': achievement_criteria,
-        'student_progress_value': student_progress_value,
-        'parent': 'progress',
-        'segment': 'student_progress',
-        'now': timezone.now(),
-    }
-    return render(request, 'pages/student_criteria.html', context)
 
 @login_required
 def view_assignment(request):
@@ -686,7 +642,7 @@ def event_feedback(request, event_id):
                     'id': feedback.id,
                     'content': feedback.content,
                     'created_at': feedback.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-                    'author': feedback.author.get_full_name()
+                    'author': feedback.author.get_full_name() if feedback.author else 'Unknown'
                 }
             })
         return JsonResponse({'error': 'Content is required'}, status=400)
@@ -2439,7 +2395,10 @@ def remove_student_from_class(request):
             return redirect('admin:index')
         try:
             registration = Registration.objects.get(id=registration_id)
-            student_name = registration.student.get_full_name() or registration.student.username
+            if registration.student:
+                student_name = registration.student.get_full_name() or registration.student.username
+            else:
+                student_name = "Unknown Student"
             registration.delete()
             messages.success(request, f"Removed {student_name} from class")
         except Registration.DoesNotExist:

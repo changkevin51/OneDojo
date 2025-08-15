@@ -1617,7 +1617,7 @@ function insertFeedbackTemplate(content) {
   
   $editor.summernote('code', newContent);
   
-  $('#feedbackTemplates\').on('hidden.bs.modal', function() {
+  $('#feedbackTemplatesModal').on('hidden.bs.modal', function() {
     $('#feedbackTemplatesModal').off('hidden.bs.modal');
     
     setTimeout(function() {
