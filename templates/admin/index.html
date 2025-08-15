@@ -68,7 +68,11 @@
                       <strong>Instructors:</strong>
                     </div>
                     <p class="text-lg">
-                      {{ unit.teacher.get_full_name|default:unit.teacher.username }}
+                      {% if unit.teacher %}
+                        {{ unit.teacher.get_full_name|default:unit.teacher.username }}
+                      {% else %}
+                        <span class="text-muted">No instructor assigned</span>
+                      {% endif %}
                     </p>
                   </div>
                 </div>
