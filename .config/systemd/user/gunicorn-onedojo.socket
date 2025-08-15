@@ -1,0 +1,9 @@
+[Unit]
+Description=gunicorn socket for onedojo
+
+[Socket]
+ListenStream=%h/onedojo/gunicorn.sock
+SocketMode=0660
+
+[Install]
+WantedBy=sockets.target

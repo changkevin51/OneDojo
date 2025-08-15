@@ -1,0 +1,19 @@
+[Unit]
+Description=Gunicorn for onedojo (socket)
+After=network.target
+
+[Service]
+WorkingDirectory=%h/onedojo
+Environment="PATH=%h/onedojo/venv/bin"
+ExecStart=%h/onedojo/venv/bin/gunicorn \
+  --workers 3 \
+  --timeout 120 \
+  --bind unix:%h/onedojo/gunicorn.sock \
+  --access-logfile - \
+  --error-logfile - \
+  student_portal.wsgi:application
+Restart=on-failure
+RestartSec=5
+# Set Group to the Caddy group if you want the socket owned differently;
+# you can leave this out and use SocketMode above instead.
+#Group=caddy
